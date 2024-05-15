@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<Compile Update="**\StateContext.*.cs">
+			<DependentUpon>StateContext.cs</DependentUpon>
+		</Compile>
+		<Compile Update="**\DependencyInjection.*.cs">
+			<DependentUpon>DependencyInjection.cs</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Mapster" Version="7.4.0" />
+	  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+	  <PackageReference Include="StackExchange.Redis" Version="2.7.33" PrivateAssets="compile" />
+	  <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="8.0.1" PrivateAssets="compile" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\TBotPlatform.Contracts\TBotPlatform.Contracts.csproj" />
+	</ItemGroup>
+
+</Project>
