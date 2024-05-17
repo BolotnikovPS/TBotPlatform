@@ -78,22 +78,6 @@ public static partial class DependencyInjection
                 }
             }
 
-            if (attr.IsLockUserState)
-            {
-                var lockStates = states
-                                .Where(x => x.IsLockUserState)
-                                .ToList();
-
-                switch (lockStates.Count)
-                {
-                    case < 1:
-                        throw new Exception($"Нет состояния определяющее параметр {nameof(StateActivatorBaseAttribute.IsLockUserState)} атрибута {nameof(StateActivatorBaseAttribute)}");
-
-                    case > 1:
-                        throw new Exception($"В состоянии {type.Name} имеются дубли по LockUserState с состояниями {string.Join(",", lockStates)}");
-                }
-            }
-
             if (attr.MenuType.CheckAny())
             {
                 var isIMenuButtonType = attr.MenuType.GetInterfaces().Any(x => x.Name == menuButtonInterfaceName);
@@ -117,6 +101,19 @@ public static partial class DependencyInjection
                 );
 
             services.AddScoped(type);
+        }
+
+        var lockStates = states
+                        .Where(x => x.IsLockUserState)
+                        .ToList();
+
+        switch (lockStates.Count)
+        {
+            case < 1:
+                throw new Exception($"Нет состояния определяющее параметр {nameof(StateActivatorBaseAttribute.IsLockUserState)} атрибута {nameof(StateActivatorBaseAttribute)}");
+
+            case > 1:
+                throw new Exception($"Имеются дубли по параметру {nameof(StateActivatorBaseAttribute.IsLockUserState)} атрибута {nameof(StateActivatorBaseAttribute)}. Список состояний: {string.Join(",", lockStates)}");
         }
 
         var stateStartCount = states
