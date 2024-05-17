@@ -8,6 +8,7 @@ public interface IStartReceivingHandler
     /// Обрабатывает данные при поступлении сообщения
     /// </summary>
     /// <param name="update"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task HandleUpdateAsync(Update update, CancellationToken cancellationToken);
 }

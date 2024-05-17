@@ -108,7 +108,7 @@ internal partial class StateContext<T>
 
         var checkToEdit = MarkupNextState.CheckAny()
                           && ChatMessage.CallbackQueryDateIdOrNull.CheckAny()
-                          && (DateTime.UtcNow - ChatMessage.CallbackQueryDateIdOrNull.Value).TotalDays < 1;
+                          && (DateTime.UtcNow - ChatMessage.CallbackQueryDateIdOrNull!.Value).TotalDays < 1;
 
         if (photoData.CheckAny())
         {
@@ -116,7 +116,7 @@ internal partial class StateContext<T>
             {
                 await botClient.DeleteMessageAsync(
                     UserDb.ChatId,
-                    ChatMessage.CallbackQueryMessageIdOrNull.Value,
+                    ChatMessage.CallbackQueryMessageIdOrNull!.Value,
                     cancellationToken
                     );
             }

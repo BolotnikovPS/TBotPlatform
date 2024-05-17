@@ -4,7 +4,7 @@ public class PaginationData<T>
     where T : class
 {
     /// <summary>
-    /// коллекция значений
+    /// Коллекция значений
     /// </summary>
     public List<T> Values { get; set; }
 
@@ -19,12 +19,12 @@ public class PaginationData<T>
     public bool IsPrevious { get; set; } = false;
 
     /// <summary>
-    /// Значение кнопки для перехоа на следующую страницу
+    /// Значение кнопки для перехода на следующую страницу
     /// </summary>
     public string NextValue { get; set; }
 
     /// <summary>
-    /// Значение кнопки для перехоа на предыдущую страницу
+    /// Значение кнопки для перехода на предыдущую страницу
     /// </summary>
     public string PreviousValue { get; set; }
 }

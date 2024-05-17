@@ -17,8 +17,6 @@ internal class TelegramClientHostedService(
     IServiceProvider services
     ) : BackgroundService
 {
-    private readonly ILogger _logger = logger;
-
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         await base.StartAsync(cancellationToken);
@@ -30,7 +28,7 @@ internal class TelegramClientHostedService(
         {
             var result = await telegramBotClient.GetMeAsync(stoppingToken);
 
-            _logger.LogInformation("Запущен бот {name}", result.FirstName);
+            logger.LogInformation("Запущен бот {name}", result.FirstName);
 
             ReceiverOptions receiverOptions = null;
 
@@ -53,7 +51,7 @@ internal class TelegramClientHostedService(
 
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Поступило сообщение id = {updateId}: {update}", update.Id, update.ToJson());
+        logger.LogInformation("Поступило сообщение id = {updateId}: {update}", update.Id, update.ToJson());
 
         var timer = Stopwatch.StartNew();
 
@@ -64,12 +62,12 @@ internal class TelegramClientHostedService(
 
         timer.Stop();
 
-        _logger.LogInformation("Время выполнения для id = {updateId}: {elapsed}", update.Id, timer.Elapsed);
+        logger.LogInformation("Время выполнения для id = {updateId}: {elapsed}", update.Id, timer.Elapsed);
     }
 
     private Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
-        _logger.LogError(exception, "Возникло исключение");
+        logger.LogError(exception, "Возникло исключение");
 
         return Task.CompletedTask;
     }

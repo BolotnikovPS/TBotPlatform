@@ -153,7 +153,7 @@ internal partial class StateContext<T>(
                      .AppendLine(text)
                      .ToString();
 
-        if (ChatMessage.CallbackQueryMessageWithCaption)
+        if (ChatMessage!.CallbackQueryMessageWithCaption)
         {
             await botClient.EditMessageCaptionAsync(
                 UserDb.ChatId,
@@ -228,13 +228,13 @@ internal partial class StateContext<T>(
             && message.Photo.CheckAny()
            )
         {
-            var photo = message.Photo[^1];
+            var photo = message.Photo![^1];
             return await DownloadFileAsync(photo.FileId, cancellationToken);
         }
 
         if (!message.CheckAny()
             || !message.Document.CheckAny()
-            || !message.Document.MimeType.Contains("image"))
+            || !message.Document!.MimeType!.Contains("image"))
         {
             return default;
         }
@@ -264,13 +264,13 @@ internal partial class StateContext<T>(
 
             await using var fileStream = new MemoryStream();
 
-            await botClient.DownloadFileAsync(file.FilePath, fileStream, cancellationToken);
+            await botClient.DownloadFileAsync(file.FilePath!, fileStream, cancellationToken);
 
-            return new FileData()
+            return new FileData
             {
                 Byte = fileStream.ToArray(),
                 Name = file.FilePath,
-                Size = file.FileSize.Value,
+                Size = file.FileSize!.Value,
             };
         }
         catch (Exception ex)

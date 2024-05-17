@@ -16,10 +16,11 @@ public static partial class DependencyInjection
         string botType
         )
     {
-        var result = executingAssembly.GetTypes()
-                                      .Where(z => z.IsDefined(typeof(StateActivatorBaseAttribute), false))
-                                      .OrderBy(z => z.FullName)
-                                      .ToList();
+        var result = executingAssembly
+                    .GetTypes()
+                    .Where(z => z.IsDefined(typeof(StateActivatorBaseAttribute), false))
+                    .OrderBy(z => z.FullName)
+                    .ToList();
 
         if (!result.CheckAny())
         {
@@ -44,7 +45,7 @@ public static partial class DependencyInjection
                 type.GetCustomAttributes(typeof(StateActivatorBaseAttribute), true).FirstOrDefault() as
                     StateActivatorBaseAttribute;
 
-            if (!attr.OnlyForBot.In("None", botType)
+            if (!attr!.OnlyForBot.In("None", botType)
                 && attr.OnlyForBot.CheckAny()
                )
             {
@@ -53,9 +54,10 @@ public static partial class DependencyInjection
 
             if (attr.ButtonsTypes.CheckAny())
             {
-                var checkButtons = states.Where(c => c.ButtonsTypes.CheckAny())
-                                         .Where(x => x.ButtonsTypes.Any(q => attr.ButtonsTypes.Any(z => z.ToString() == q)))
-                                         .ToList();
+                var checkButtons = states
+                                  .Where(c => c.ButtonsTypes.CheckAny())
+                                  .Where(x => x.ButtonsTypes.Any(q => attr.ButtonsTypes.Any(z => z.ToString() == q)))
+                                  .ToList();
 
                 if (checkButtons.CheckAny())
                 {
@@ -65,9 +67,10 @@ public static partial class DependencyInjection
 
             if (attr.TextsTypes.CheckAny())
             {
-                var checkTexts = states.Where(c => c.TextsTypes.CheckAny())
-                                       .Where(x => x.TextsTypes.Any(q => attr.TextsTypes.Any(z => z.ToString() == q)))
-                                       .ToList();
+                var checkTexts = states
+                                .Where(c => c.TextsTypes.CheckAny())
+                                .Where(x => x.TextsTypes.Any(q => attr.TextsTypes.Any(z => z.ToString() == q)))
+                                .ToList();
 
                 if (checkTexts.CheckAny())
                 {
@@ -77,11 +80,17 @@ public static partial class DependencyInjection
 
             if (attr.IsLockUserState)
             {
-                var checkLock = states.Any(x => x.IsLockUserState);
+                var lockStates = states
+                                .Where(x => x.IsLockUserState)
+                                .ToList();
 
-                if (checkLock)
+                switch (lockStates.Count)
                 {
-                    throw new Exception($"В состоянии {type.Name} имеются дубли по LockUserState с состояниями {string.Join(",", checkLock)}");
+                    case < 1:
+                        throw new Exception($"Нет состояния определяющее параметр {nameof(StateActivatorBaseAttribute.IsLockUserState)} атрибута {nameof(StateActivatorBaseAttribute)}");
+
+                    case > 1:
+                        throw new Exception($"В состоянии {type.Name} имеются дубли по LockUserState с состояниями {string.Join(",", lockStates)}");
                 }
             }
 
@@ -108,11 +117,6 @@ public static partial class DependencyInjection
                 );
 
             services.AddScoped(type);
-        }
-
-        if (states.Count(z => z.IsLockUserState) != 1)
-        {
-            throw new Exception("Нет состояния LockUserState");
         }
 
         var stateStartCount = states

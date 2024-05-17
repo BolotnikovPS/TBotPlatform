@@ -11,7 +11,7 @@ public class ChatMessage
     public string Message { get; }
 
     /// <summary>
-    /// Сообщение от пользователя с ссылкой на другое сообщение
+    /// Сообщение от пользователя со ссылкой на другое сообщение
     /// </summary>
     public string ReplyToMessageOrNull { get; }
 

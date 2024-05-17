@@ -194,7 +194,7 @@ internal class StateFactory<T>(
 
     private StateHistory<T> Convert(StateFactoryData lazyStateHistory)
     {
-        var stateType = GetType(lazyStateHistory.StateTypeName);
+        var stateType = FindType(lazyStateHistory.StateTypeName);
 
         if (!stateType.CheckAny())
         {
@@ -204,12 +204,12 @@ internal class StateFactory<T>(
         return new StateHistory<T>(
             stateType,
             lazyStateHistory.MenuTypeName.CheckAny()
-                ? Activator.CreateInstance(GetType(lazyStateHistory.MenuTypeName)) as IMenuButton<T>
+                ? Activator.CreateInstance(FindType(lazyStateHistory.MenuTypeName)) as IMenuButton<T>
                 : null,
             lazyStateHistory.IsInlineState
             );
 
-        Type GetType(string name)
+        Type FindType(string name)
         {
             return Array.Find(
                 stateFactorySettings
