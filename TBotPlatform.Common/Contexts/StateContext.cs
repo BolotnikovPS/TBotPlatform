@@ -16,7 +16,6 @@ namespace TBotPlatform.Common.Contexts;
 
 internal partial class StateContext<T>(
     ILogger logger,
-    IMap map,
     ITelegramBotClient botClient
     ) : IStateContext<T>
     where T : UserBase
@@ -106,7 +105,7 @@ internal partial class StateContext<T>(
             throw new ChatIdArgException();
         }
 
-        var newMarkup = map.Map<ReplyKeyboardMarkup>(replyMarkup);
+        var newMarkup = Map(replyMarkup);
 
         if (!newMarkup.CheckAny())
         {

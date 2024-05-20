@@ -15,7 +15,6 @@ namespace TBotPlatform.Common.Factories;
 
 internal class StateContextFactory<T>(
     ILogger<StateContextFactory<T>> logger,
-    IMap map,
     ITelegramBotClient botClient,
     IServiceScopeFactory serviceScopeFactory
     ) : IStateContextFactory<T>
@@ -31,7 +30,7 @@ internal class StateContextFactory<T>(
         CancellationToken cancellationToken
         )
     {
-        var stateContext = new StateContext<T>(logger, map, botClient);
+        var stateContext = new StateContext<T>(logger, botClient);
         await stateContext.CreateStateContextAsync(user, update, markupNextState, cancellationToken);
 
         if (stateHistory.CheckAny())

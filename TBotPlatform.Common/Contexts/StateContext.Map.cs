@@ -1,21 +1,17 @@
-﻿using Mapster;
-using TBotPlatform.Contracts.Bots.Buttons;
+﻿using TBotPlatform.Contracts.Bots.Buttons;
 using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TBotPlatform.Common.Mapper.Config;
+namespace TBotPlatform.Common.Contexts;
 
-internal class MarkupRegister : IRegister
+internal partial class StateContext<T>
 {
-    public void Register(TypeAdapterConfig config)
-    {
-        config.NewConfig<ButtonsRuleMassivList, ReplyKeyboardMarkup>()
-              .MapWith(src => GenerateButtons(src));
+    private ReplyKeyboardMarkup Map(ButtonsRuleMassivList cakes)
+        => GenerateButtons(cakes);
 
-        config.NewConfig<InlineMarkupMassivList, InlineKeyboardButton[][]>()
-              .MapWith(src => GenerateButtons(src));
-    }
+    private InlineKeyboardButton[][] Map(InlineMarkupMassivList cakes)
+        => GenerateButtons(cakes);
 
     private static ReplyKeyboardMarkup GenerateButtons(ButtonsRuleMassivList cakes)
     {

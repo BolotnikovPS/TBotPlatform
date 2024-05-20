@@ -21,7 +21,7 @@ internal partial class StateContext<T>
 
         if (inlineMarkupList.CheckAny())
         {
-            inlineKeyboard = map.Map<InlineKeyboardButton[][]>(
+            inlineKeyboard = Map(
                 new InlineMarkupMassivList
                 {
                     new()
@@ -45,7 +45,7 @@ internal partial class StateContext<T>
 
         if (inlineMarkupList.CheckAny())
         {
-            inlineKeyboard = map.Map<InlineKeyboardButton[][]>(
+            inlineKeyboard = Map(
                 new InlineMarkupMassivList
                 {
                     new()
@@ -69,7 +69,7 @@ internal partial class StateContext<T>
 
         if (inlineMarkupMassivList.CheckAny())
         {
-            inlineKeyboard = map.Map<InlineKeyboardButton[][]>(inlineMarkupMassivList);
+            inlineKeyboard = Map(inlineMarkupMassivList);
         }
 
         return SendOrUpdateTextMessageAsync(text, inlineKeyboard, null, cancellationToken);
