@@ -20,7 +20,7 @@ internal class StateFactory<T>(
 
     public StateHistory<T> GetStateByNameOrDefault(string nameOfState = "")
     {
-        if (nameOfState?.Length == 0)
+        if (!nameOfState.CheckAny())
         {
             return CreateContextFunc();
         }
@@ -42,8 +42,8 @@ internal class StateFactory<T>(
 
         var statesInMemoryOrEmpty = await GetStatesInMemoryOrEmptyAsync(chatId, cancellationToken);
 
-        if (newState?.IsInlineState == false
-            && newState.StateTypeName != statesInMemoryOrEmpty?.LastOrDefault()
+        if (!newState.IsInlineState
+            && !newState.StateTypeName.In(statesInMemoryOrEmpty?.LastOrDefault())
            )
         {
             statesInMemoryOrEmpty?.Add(newState.StateTypeName);
@@ -65,8 +65,8 @@ internal class StateFactory<T>(
 
         var statesInMemoryOrEmpty = await GetStatesInMemoryOrEmptyAsync(chatId, cancellationToken);
 
-        if (newState?.IsInlineState == false
-            && newState.StateTypeName != statesInMemoryOrEmpty?.LastOrDefault()
+        if (!newState.IsInlineState
+            && !newState.StateTypeName.In(statesInMemoryOrEmpty?.LastOrDefault())
            )
         {
             statesInMemoryOrEmpty?.Add(newState.StateTypeName);

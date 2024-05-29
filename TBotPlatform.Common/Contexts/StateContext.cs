@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Text;
-using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
@@ -9,7 +8,6 @@ using TBotPlatform.Extension;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 using PMode = Telegram.Bot.Types.Enums.ParseMode;
 
 namespace TBotPlatform.Common.Contexts;
@@ -35,8 +33,8 @@ internal partial class StateContext<T>(
         T user,
         Update update,
         MarkupNextState markupNextState,
-        CancellationToken cancellationToken,
-        bool protectContent = false
+        bool protectContent,
+        CancellationToken cancellationToken
         )
     {
         cancellationToken.ThrowIfCancellationRequested();

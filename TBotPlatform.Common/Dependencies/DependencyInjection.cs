@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TBotPlatform.Common.BackgroundServices;
 using TBotPlatform.Contracts.Abstractions;
+using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Extension;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
@@ -22,7 +23,7 @@ public static partial class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddTelegramClientHostedService(this IServiceCollection services, string token, params UpdateType[] updateType)
+    public static IServiceCollection AddTelegramClientHostedService(this IServiceCollection services, TelegramSettings telegramSettings, params UpdateType[] updateType)
     {
         services
            .AddSingleton(
@@ -30,7 +31,8 @@ public static partial class DependencyInjection
                 {
                     UpdateType = updateType,
                 })
-           .AddTelegramClient(token)
+           .AddSingleton(telegramSettings)
+           .AddTelegramClient(telegramSettings.Token)
            .AddHostedService<TelegramClientHostedService>();
 
         return services;

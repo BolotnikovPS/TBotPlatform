@@ -1,4 +1,4 @@
-﻿namespace TBotPlatform.Contracts.Attibutes;
+﻿namespace TBotPlatform.Contracts.Attributes;
 
 [AttributeUsage(AttributeTargets.Class)]
 public abstract class StateActivatorBaseAttribute : Attribute

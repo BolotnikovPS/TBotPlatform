@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TBotPlatform.Contracts.Abstractions;
-using TBotPlatform.Contracts.Attibutes;
+using TBotPlatform.Contracts.Attributes;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.StateFactory;
 using TBotPlatform.Extension;

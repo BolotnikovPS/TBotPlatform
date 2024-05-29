@@ -4,8 +4,9 @@ using TBotPlatform.Common.Contexts;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Factories;
-using TBotPlatform.Contracts.Attibutes;
+using TBotPlatform.Contracts.Attributes;
 using TBotPlatform.Contracts.Bots;
+using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Extension;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -16,6 +17,7 @@ namespace TBotPlatform.Common.Factories;
 internal class StateContextFactory<T>(
     ILogger<StateContextFactory<T>> logger,
     ITelegramBotClient botClient,
+    TelegramSettings telegramSettings,
     IServiceScopeFactory serviceScopeFactory
     ) : IStateContextFactory<T>
     where T : UserBase
@@ -31,7 +33,13 @@ internal class StateContextFactory<T>(
         )
     {
         var stateContext = new StateContext<T>(logger, botClient);
-        await stateContext.CreateStateContextAsync(user, update, markupNextState, cancellationToken);
+        await stateContext.CreateStateContextAsync(
+            user,
+            update,
+            markupNextState,
+            telegramSettings.ProtectContent,
+            cancellationToken
+            );
 
         if (stateHistory.CheckAny())
         {
