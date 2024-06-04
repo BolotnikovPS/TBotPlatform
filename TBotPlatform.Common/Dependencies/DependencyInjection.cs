@@ -14,7 +14,7 @@ public static partial class DependencyInjection
     {
         if (!token.CheckAny())
         {
-            throw new Exception("Токен телеграмма пустой");
+            throw new ArgumentNullException(nameof(token));
         }
 
         services

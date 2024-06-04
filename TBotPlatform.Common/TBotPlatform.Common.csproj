@@ -12,6 +12,9 @@
 		<Compile Update="**\StateContext.*.cs">
 			<DependentUpon>StateContext.cs</DependentUpon>
 		</Compile>
+		<Compile Update="**\StateFactory.*.cs">
+			<DependentUpon>StateFactory.cs</DependentUpon>
+		</Compile>
 		<Compile Update="**\DependencyInjection.*.cs">
 			<DependentUpon>DependencyInjection.cs</DependentUpon>
 		</Compile>

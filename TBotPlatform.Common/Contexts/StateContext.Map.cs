@@ -7,10 +7,10 @@ namespace TBotPlatform.Common.Contexts;
 
 internal partial class StateContext<T>
 {
-    private ReplyKeyboardMarkup Map(ButtonsRuleMassivList cakes)
+    private static ReplyKeyboardMarkup Map(ButtonsRuleMassivList cakes)
         => GenerateButtons(cakes);
 
-    private InlineKeyboardButton[][] Map(InlineMarkupMassivList cakes)
+    private static InlineKeyboardButton[][] Map(InlineMarkupMassivList cakes)
         => GenerateButtons(cakes);
 
     private static ReplyKeyboardMarkup GenerateButtons(ButtonsRuleMassivList cakes)

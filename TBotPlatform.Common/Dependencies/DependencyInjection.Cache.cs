@@ -37,17 +37,15 @@ public static partial class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection AddHealthCheckRedis(this IServiceCollection services, string redisConnectionString, string[] tags = null)
+    private static void AddHealthCheckRedis(this IServiceCollection services, string redisConnectionString, string[] tags = null)
     {
         if (!tags.CheckAny())
         {
-            return services;
+            return;
         }
 
         services
            .AddHealthChecks()
            .AddRedis(redisConnectionString, null, null, tags);
-
-        return services;
     }
 }

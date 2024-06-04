@@ -3,12 +3,11 @@ using TBotPlatform.Contracts.Abstractions.Cache;
 using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.StateFactory;
-using TBotPlatform.Contracts.Cache;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Factories;
 
-internal class StateFactory<T>(
+internal partial class StateFactory<T>(
     ICacheService cache,
     StateFactoryDataCollection stateFactoryDataCollection,
     StateFactorySettings stateFactorySettings
@@ -27,9 +26,7 @@ internal class StateFactory<T>(
 
         var newState = stateFactoryDataCollection.FirstOrDefault(q => q.StateTypeName == nameOfState);
 
-        return newState.CheckAny()
-            ? Convert(newState)
-            : CreateContextFunc();
+        return ConvertStateFactoryData(newState);
     }
 
     public async Task<StateHistory<T>> GetStateByButtonsTypeOrDefaultAsync(long chatId, string buttonTypeValue, CancellationToken cancellationToken)
@@ -40,19 +37,21 @@ internal class StateFactory<T>(
                      && q.ButtonsTypes.Any(z => z == buttonTypeValue)
                 );
 
-        var statesInMemoryOrEmpty = await GetStatesInMemoryOrEmptyAsync(chatId, cancellationToken);
+        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
 
-        if (!newState.IsInlineState
-            && !newState.StateTypeName.In(statesInMemoryOrEmpty?.LastOrDefault())
-           )
+        var checkNewState = newState.CheckAny()
+                            && !newState!.IsInlineState
+                            && !newState.StateTypeName.In(statesInMemoryOrEmpty?.LastOrDefault());
+
+        if (!checkNewState)
         {
-            statesInMemoryOrEmpty?.Add(newState.StateTypeName);
-            await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+            return ConvertStateFactoryData(newState);
         }
 
-        return newState.CheckAny()
-            ? Convert(newState)
-            : CreateContextFunc();
+        statesInMemoryOrEmpty?.Add(newState.StateTypeName);
+        await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+
+        return ConvertStateFactoryData(newState);
     }
 
     public async Task<StateHistory<T>> GetStateByCommandsTypeOrDefaultAsync(long chatId, string commandTypeValue, CancellationToken cancellationToken)
@@ -63,19 +62,20 @@ internal class StateFactory<T>(
                      && q.CommandsTypes.Any(z => z == commandTypeValue)
                 );
 
-        var statesInMemoryOrEmpty = await GetStatesInMemoryOrEmptyAsync(chatId, cancellationToken);
+        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
 
-        if (!newState.IsInlineState
-            && !newState.StateTypeName.In(statesInMemoryOrEmpty?.LastOrDefault())
-           )
+        var checkNewState = newState.CheckAny()
+                            && !newState!.IsInlineState
+                            && !newState.StateTypeName.In(statesInMemoryOrEmpty?.LastOrDefault());
+        if (!checkNewState)
         {
-            statesInMemoryOrEmpty?.Add(newState.StateTypeName);
-            await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+            return ConvertStateFactoryData(newState);
         }
 
-        return newState.CheckAny()
-            ? Convert(newState)
-            : CreateContextFunc();
+        statesInMemoryOrEmpty?.Add(newState.StateTypeName);
+        await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+
+        return ConvertStateFactoryData(newState);
     }
 
     public StateHistory<T> GetStateByTextsTypeOrDefault(long chatId, string textTypeValue)
@@ -86,14 +86,12 @@ internal class StateFactory<T>(
                      && q.TextsTypes.Any(z => z == textTypeValue)
                 );
 
-        return newState.CheckAny()
-            ? Convert(newState)
-            : CreateContextFunc();
+        return ConvertStateFactoryData(newState);
     }
 
     public async Task<StateHistory<T>> GetStateMainAsync(long chatId, CancellationToken cancellationToken)
     {
-        var statesInMemoryOrEmpty = await GetStatesInMemoryOrEmptyAsync(chatId, cancellationToken);
+        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
         statesInMemoryOrEmpty.Clear();
         await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
 
@@ -102,7 +100,7 @@ internal class StateFactory<T>(
 
     public async Task<StateHistory<T>> GetStatePreviousOrMainAsync(long chatId, CancellationToken cancellationToken)
     {
-        var statesInMemoryOrEmpty = await GetStatesInMemoryOrEmptyAsync(chatId, cancellationToken);
+        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
         if (statesInMemoryOrEmpty.Count == 0)
         {
             return CreateContextFunc();
@@ -115,7 +113,7 @@ internal class StateFactory<T>(
 
     public async Task<IMenuButton<T>> GetLastMenuAsync(long chatId, CancellationToken cancellationToken)
     {
-        var statesInMemoryOrEmpty = await GetStatesInMemoryOrEmptyAsync(chatId, cancellationToken);
+        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
         var result = await GetLastStateWithMenuOrMainAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
 
         return result.CheckAny() ? result.MenuState : default;
@@ -126,35 +124,6 @@ internal class StateFactory<T>(
         var state = stateFactoryDataCollection.FirstOrDefault(z => z.IsLockUserState);
 
         return Convert(state);
-    }
-
-    private async Task<List<string>> GetStatesInMemoryOrEmptyAsync(long chatId, CancellationToken cancellationToken)
-    {
-        var values = await cache.GetValueFromCollectionAsync<UserStateInCache>(CacheCollectionKeyName, chatId.ToString(), cancellationToken);
-
-        if (!values.CheckAny())
-        {
-            return [];
-        }
-
-        return values.StatesTypeName.CheckAny() ? values.StatesTypeName : [];
-    }
-
-    private async Task UpdateValueStateAsync(List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)
-    {
-        while (statesInMemoryOrEmpty.Count > MaxState)
-        {
-            var toRemove = statesInMemoryOrEmpty.FirstOrDefault();
-            statesInMemoryOrEmpty.Remove(toRemove);
-        }
-
-        var values = new UserStateInCache
-        {
-            ChatId = chatId.ToString(),
-            StatesTypeName = statesInMemoryOrEmpty,
-        };
-
-        await cache.AddValueToCollectionAsync(CacheCollectionKeyName, values, cancellationToken);
     }
 
     private async Task<StateHistory<T>> GetLastStateWithMenuOrMainAsync(List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)
@@ -178,45 +147,6 @@ internal class StateFactory<T>(
             }
 
             statesInMemoryOrEmpty.Remove(lastState);
-        }
-    }
-
-    private StateHistory<T> CreateContextFunc()
-    {
-        var state = stateFactoryDataCollection
-           .FirstOrDefault(
-                q => q.CommandsTypes.CheckAny()
-                     && q.CommandsTypes.Any(x => x.In("/start"))
-                );
-
-        return Convert(state!);
-    }
-
-    private StateHistory<T> Convert(StateFactoryData lazyStateHistory)
-    {
-        var stateType = FindType(lazyStateHistory.StateTypeName);
-
-        if (!stateType.CheckAny())
-        {
-            throw new Exception("Состояние не найдено");
-        }
-
-        return new StateHistory<T>(
-            stateType,
-            lazyStateHistory.MenuTypeName.CheckAny()
-                ? Activator.CreateInstance(FindType(lazyStateHistory.MenuTypeName)) as IMenuButton<T>
-                : null,
-            lazyStateHistory.IsInlineState
-            );
-
-        Type FindType(string name)
-        {
-            return Array.Find(
-                stateFactorySettings
-                   .Assembly
-                   .GetTypes(),
-                z => z.Name == name
-                );
         }
     }
 }
