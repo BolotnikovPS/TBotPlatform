@@ -14,9 +14,6 @@ internal partial class StateFactory<T>(
     ) : IStateFactory<T>
     where T : UserBase
 {
-    private const string CacheCollectionKeyName = "UserStates";
-    private const int MaxState = 10;
-
     public StateHistory<T> GetStateByNameOrDefault(string nameOfState = "")
     {
         if (!nameOfState.CheckAny())
@@ -51,6 +48,8 @@ internal partial class StateFactory<T>(
         statesInMemoryOrEmpty?.Add(newState.StateTypeName);
         await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
 
+        await UnBindStateAsync(chatId, cancellationToken);
+
         return ConvertStateFactoryData(newState);
     }
 
@@ -67,6 +66,7 @@ internal partial class StateFactory<T>(
         var checkNewState = newState.CheckAny()
                             && !newState!.IsInlineState
                             && !newState.StateTypeName.In(statesInMemoryOrEmpty?.LastOrDefault());
+
         if (!checkNewState)
         {
             return ConvertStateFactoryData(newState);
@@ -74,6 +74,8 @@ internal partial class StateFactory<T>(
 
         statesInMemoryOrEmpty?.Add(newState.StateTypeName);
         await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+
+        await UnBindStateAsync(chatId, cancellationToken);
 
         return ConvertStateFactoryData(newState);
     }
@@ -94,6 +96,8 @@ internal partial class StateFactory<T>(
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
         statesInMemoryOrEmpty.Clear();
         await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+
+        await UnBindStateAsync(chatId, cancellationToken);
 
         return CreateContextFunc();
     }
@@ -126,6 +130,34 @@ internal partial class StateFactory<T>(
         return Convert(state);
     }
 
+    public async Task<StateHistory<T>> GetBindStateOrNullAsync(long chatId, CancellationToken cancellationToken)
+    {
+        var value = await GetBindStateNameAsync(chatId, cancellationToken);
+
+        var state = stateFactoryDataCollection.FirstOrDefault(z => z.StateTypeName == value);
+
+        return value.CheckAny()
+            ? Convert(state)
+            : null;
+    }
+
+    public Task BindStateAsync(long chatId, StateHistory<T> state, CancellationToken cancellationToken)
+    {
+        var value = stateFactoryDataCollection.FirstOrDefault(z => z.StateTypeName == state.StateType.Name);
+
+        if (!value.CheckAny())
+        {
+            throw new Exception("Состояние не найдено");
+        }
+
+        return AddBindStateAsync(chatId, value?.StateTypeName, cancellationToken);
+    }
+
+    public Task UnBindStateAsync(long chatId, CancellationToken cancellationToken)
+    {
+        return RemoveBindStateAsync(chatId, cancellationToken);
+    }
+
     private async Task<StateHistory<T>> GetLastStateWithMenuOrMainAsync(List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)
     {
         while (true)
@@ -135,6 +167,9 @@ internal partial class StateFactory<T>(
             if (!lastState.CheckAny())
             {
                 await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+                
+                await UnBindStateAsync(chatId, cancellationToken);
+
                 return CreateContextFunc();
             }
 
@@ -143,6 +178,9 @@ internal partial class StateFactory<T>(
             if (state?.MenuTypeName != null)
             {
                 await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+
+                await UnBindStateAsync(chatId, cancellationToken);
+
                 return Convert(state);
             }
 

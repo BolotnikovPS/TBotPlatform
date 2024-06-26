@@ -18,9 +18,9 @@ internal partial class StateFactory<T>
         return Convert(state!);
     }
 
-    private StateHistory<T> Convert(StateFactoryData lazyStateHistory)
+    private StateHistory<T> Convert(StateFactoryData stateData)
     {
-        var stateType = FindType(lazyStateHistory.StateTypeName);
+        var stateType = FindType(stateData.StateTypeName);
 
         if (!stateType.CheckAny())
         {
@@ -29,10 +29,10 @@ internal partial class StateFactory<T>
 
         return new StateHistory<T>(
             stateType,
-            lazyStateHistory.MenuTypeName.CheckAny()
-                ? Activator.CreateInstance(FindType(lazyStateHistory.MenuTypeName)) as IMenuButton<T>
+            stateData.MenuTypeName.CheckAny()
+                ? Activator.CreateInstance(FindType(stateData.MenuTypeName)) as IMenuButton<T>
                 : null,
-            lazyStateHistory.IsInlineState
+            stateData.IsInlineState
             );
 
         Type FindType(string name)

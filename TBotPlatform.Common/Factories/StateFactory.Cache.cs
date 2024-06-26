@@ -5,6 +5,10 @@ namespace TBotPlatform.Common.Factories;
 
 internal partial class StateFactory<T>
 {
+    private const string CacheCollectionKeyName = "UserStates";
+    private const string CacheBindCollectionKeyName = "UserStatesBind";
+    private const int MaxState = 10;
+
     private async Task<List<string>> GetStatesInCacheOrEmptyAsync(long chatId, CancellationToken cancellationToken)
     {
         var values = await cache.GetValueFromCollectionAsync<UserStateInCache>(CacheCollectionKeyName, chatId.ToString(), cancellationToken);
@@ -32,5 +36,37 @@ internal partial class StateFactory<T>
         };
 
         await cache.AddValueToCollectionAsync(CacheCollectionKeyName, values, cancellationToken);
+    }
+
+    private async Task<string> GetBindStateNameAsync(long chatId, CancellationToken cancellationToken)
+    {
+        var values = await cache.GetValueFromCollectionAsync<UserBindStateInCache>(CacheBindCollectionKeyName, chatId.ToString(), cancellationToken);
+
+        return values.CheckAny()
+            ? values.StatesTypeName
+            : default;
+    }
+
+    private async Task AddBindStateAsync(long chatId, string statesTypeName, CancellationToken cancellationToken)
+    {
+        var value = await cache.GetValueFromCollectionAsync<UserBindStateInCache>(CacheBindCollectionKeyName, chatId.ToString(), cancellationToken);
+
+        if (value.CheckAny())
+        {
+            await RemoveBindStateAsync(chatId, cancellationToken);
+        }
+
+        value = new UserBindStateInCache
+        {
+            ChatId = chatId.ToString(),
+            StatesTypeName = statesTypeName,
+        };
+
+        await cache.AddValueToCollectionAsync(CacheBindCollectionKeyName, value, cancellationToken);
+    }
+
+    private Task RemoveBindStateAsync(long chatId, CancellationToken cancellationToken)
+    {
+        return cache.RemoveValueFromCollectionAsync(CacheBindCollectionKeyName, chatId.ToString(), cancellationToken);
     }
 }

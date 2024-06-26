@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Text;
+﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
 using TBotPlatform.Contracts.Bots.Exceptions;
+using TBotPlatform.Contracts.Bots.StateContext;
 using TBotPlatform.Extension;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -21,6 +22,7 @@ internal partial class StateContext<T>(
     public MarkupNextState MarkupNextState { get; private set; }
     public T UserDb { get; private set; }
     public ChatMessage ChatMessage { get; private set; }
+    public EBindStateType BindState { get; private set; }
     public bool IsForceReplyLastMenu { get; private set; }
 
     private bool ProtectContent { get; set; }
@@ -55,6 +57,11 @@ internal partial class StateContext<T>(
     public void SetNeedIsForceReplyLastMenu()
     {
         IsForceReplyLastMenu = true;
+    }
+
+    public void SetBindState(EBindStateType type)
+    {
+        BindState = type;
     }
 
     public Task<Message> SendDocumentAsync(

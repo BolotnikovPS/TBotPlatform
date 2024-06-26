@@ -1,6 +1,7 @@
 ﻿using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
 using TBotPlatform.Contracts.Bots.Markups;
+using TBotPlatform.Contracts.Bots.StateContext;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -9,6 +10,12 @@ namespace TBotPlatform.Contracts.Abstractions.Contexts;
 public interface IStateContext<out T> : IAsyncDisposable
 where T : UserBase
 {
+    /// <summary>
+    /// Получает необходимость зафиксировать состояние
+    /// </summary>
+    /// <returns></returns>
+    EBindStateType BindState { get; }
+
     /// <summary>
     /// Получает необходимость отправки менюшки
     /// </summary>
@@ -37,6 +44,12 @@ where T : UserBase
     /// Устанавливает необходимость отправки менюшки
     /// </summary>
     void SetNeedIsForceReplyLastMenu();
+
+    /// <summary>
+    /// Устанавливает необходимость зафиксировать состояние
+    /// </summary>
+    /// <param name="type"></param>
+    void SetBindState(EBindStateType type);
 
     /// <summary>
     /// Отправляет документы в чат

@@ -67,4 +67,29 @@ where T : UserBase
     /// </summary>
     /// <returns></returns>
     StateHistory<T> GetLockState();
+
+    /// <summary>
+    /// Получает забиндинное состояние или null
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<StateHistory<T>> GetBindStateOrNullAsync(long chatId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Добавляет бинд для состояния
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <param name="state"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task BindStateAsync(long chatId, StateHistory<T> state, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Снимает бинд состояний для пользователя
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task UnBindStateAsync(long chatId, CancellationToken cancellationToken);
 }

@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Attributes;
 using TBotPlatform.Contracts.Bots;
@@ -86,6 +86,13 @@ public static partial class DependencyInjection
                 {
                     throw new Exception($"Класс {attr.MenuType.Name} находится в атрибуте {nameof(StateActivatorBaseAttribute)} но не наследуется от {menuButtonInterfaceName}");
                 }
+            }
+
+            if (attr.MenuType.CheckAny()
+                && attr.IsInlineState
+               )
+            {
+                throw new Exception($"Класс {type.Name} не должен определять атрибут {nameof(StateActivatorBaseAttribute)} в котором единовременно определены {nameof(attr.IsInlineState)} = true и {nameof(attr.MenuType)} != null");
             }
 
             states.Add(
