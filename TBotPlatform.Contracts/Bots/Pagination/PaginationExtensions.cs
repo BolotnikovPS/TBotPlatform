@@ -37,7 +37,7 @@ public static class PaginationExtensions
         var isNext = skip + step < values.Count;
         var isPrevious = currentPosition != 1;
 
-        return new PaginationData<T>
+        return new()
         {
             Values = pag,
             IsNext = isNext,

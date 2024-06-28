@@ -24,10 +24,10 @@ internal partial class StateFactory<T>
 
         if (!stateType.CheckAny())
         {
-            throw new Exception("Состояние не найдено");
+            throw new("Состояние не найдено");
         }
 
-        return new StateHistory<T>(
+        return new(
             stateType,
             stateData.MenuTypeName.CheckAny()
                 ? Activator.CreateInstance(FindType(stateData.MenuTypeName)) as IMenuButton<T>

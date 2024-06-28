@@ -17,7 +17,7 @@ internal partial class StateContext<T>
     {
         var result = cakes.Select(x => GenerateButtons(x.ButtonsRules)).ToArray();
 
-        return new ReplyKeyboardMarkup(result)
+        return new(result)
         {
             IsPersistent = true,
             ResizeKeyboard = true,

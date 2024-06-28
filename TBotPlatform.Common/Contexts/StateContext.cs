@@ -43,7 +43,7 @@ internal partial class StateContext<T>(
 
         ProtectContent = protectContent;
 
-        ChatMessage = new ChatMessage(
+        ChatMessage = new(
             update?.Message?.Text,
             update?.Message?.ReplyToMessage?.Text,
             update?.CallbackQuery,
@@ -270,7 +270,7 @@ internal partial class StateContext<T>(
 
             await botClient.DownloadFileAsync(file.FilePath!, fileStream, cancellationToken);
 
-            return new FileData
+            return new()
             {
                 Byte = fileStream.ToArray(),
                 Name = file.FilePath,

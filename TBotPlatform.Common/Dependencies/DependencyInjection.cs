@@ -18,7 +18,7 @@ public static partial class DependencyInjection
         }
 
         services
-           .AddScoped<ITelegramBotClient, TelegramBotClient>(_ => new TelegramBotClient(token));
+           .AddScoped<ITelegramBotClient, TelegramBotClient>(_ => new(token));
 
         return services;
     }

@@ -147,7 +147,7 @@ internal partial class StateFactory<T>(
 
         if (!value.CheckAny())
         {
-            throw new Exception("Состояние не найдено");
+            throw new("Состояние не найдено");
         }
 
         return AddBindStateAsync(chatId, value?.StateTypeName, cancellationToken);

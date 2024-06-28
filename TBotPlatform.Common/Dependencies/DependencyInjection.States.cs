@@ -24,7 +24,7 @@ public static partial class DependencyInjection
 
         if (!result.CheckAny())
         {
-            throw new Exception("Нет состояний");
+            throw new("Нет состояний");
         }
 
         var stateInterfaceName = typeof(IState<UserBase>).Name;
@@ -38,7 +38,7 @@ public static partial class DependencyInjection
 
             if (!isIStateType)
             {
-                throw new Exception($"Класс {type.Name} содержит атрибут {nameof(StateActivatorBaseAttribute)} но не наследуется от {stateInterfaceName}");
+                throw new($"Класс {type.Name} содержит атрибут {nameof(StateActivatorBaseAttribute)} но не наследуется от {stateInterfaceName}");
             }
 
             var attr =
@@ -61,7 +61,7 @@ public static partial class DependencyInjection
 
                 if (checkButtons.CheckAny())
                 {
-                    throw new Exception($"В состоянии {type.Name} имеются дубли по ButtonsTypes с состояниями {string.Join(",", checkButtons)}");
+                    throw new($"В состоянии {type.Name} имеются дубли по ButtonsTypes с состояниями {string.Join(",", checkButtons)}");
                 }
             }
 
@@ -74,7 +74,7 @@ public static partial class DependencyInjection
 
                 if (checkTexts.CheckAny())
                 {
-                    throw new Exception($"В состоянии {type.Name} имеются дубли по TextsTypes с состояниями {string.Join(",", checkTexts)}");
+                    throw new($"В состоянии {type.Name} имеются дубли по TextsTypes с состояниями {string.Join(",", checkTexts)}");
                 }
             }
 
@@ -84,7 +84,7 @@ public static partial class DependencyInjection
 
                 if (!isIMenuButtonType)
                 {
-                    throw new Exception($"Класс {attr.MenuType.Name} находится в атрибуте {nameof(StateActivatorBaseAttribute)} но не наследуется от {menuButtonInterfaceName}");
+                    throw new($"Класс {attr.MenuType.Name} находится в атрибуте {nameof(StateActivatorBaseAttribute)} но не наследуется от {menuButtonInterfaceName}");
                 }
             }
 
@@ -92,11 +92,11 @@ public static partial class DependencyInjection
                 && attr.IsInlineState
                )
             {
-                throw new Exception($"Класс {type.Name} не должен определять атрибут {nameof(StateActivatorBaseAttribute)} в котором единовременно определены {nameof(attr.IsInlineState)} = true и {nameof(attr.MenuType)} != null");
+                throw new($"Класс {type.Name} не должен определять атрибут {nameof(StateActivatorBaseAttribute)} в котором единовременно определены {nameof(attr.IsInlineState)} = true и {nameof(attr.MenuType)} != null");
             }
 
             states.Add(
-                new StateFactoryData(
+                new(
                     type.Name,
                     attr.MenuType?.Name,
                     attr.IsInlineState,
@@ -117,10 +117,10 @@ public static partial class DependencyInjection
         switch (lockStates.Count)
         {
             case < 1:
-                throw new Exception($"Нет состояния определяющее параметр {nameof(StateActivatorBaseAttribute.IsLockUserState)} атрибута {nameof(StateActivatorBaseAttribute)}");
+                throw new($"Нет состояния определяющее параметр {nameof(StateActivatorBaseAttribute.IsLockUserState)} атрибута {nameof(StateActivatorBaseAttribute)}");
 
             case > 1:
-                throw new Exception($"Имеются дубли по параметру {nameof(StateActivatorBaseAttribute.IsLockUserState)} атрибута {nameof(StateActivatorBaseAttribute)}. Список состояний: {string.Join(",", lockStates)}");
+                throw new($"Имеются дубли по параметру {nameof(StateActivatorBaseAttribute.IsLockUserState)} атрибута {nameof(StateActivatorBaseAttribute)}. Список состояний: {string.Join(",", lockStates)}");
         }
 
         var stateStartCount = states
@@ -132,10 +132,10 @@ public static partial class DependencyInjection
         switch (stateStartCount)
         {
             case < 1:
-                throw new Exception("Нет состояний определяющих комманду /start");
+                throw new("Нет состояний определяющих комманду /start");
 
             case > 1:
-                throw new Exception("Состояний определяющих комманду /start больше одного");
+                throw new("Состояний определяющих комманду /start больше одного");
         }
 
         var statesCollection = new StateFactoryDataCollection(states);

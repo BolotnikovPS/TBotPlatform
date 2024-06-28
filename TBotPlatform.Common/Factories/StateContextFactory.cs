@@ -61,7 +61,7 @@ internal class StateContextFactory<T>(
 
         if (!isIStateType)
         {
-            throw new Exception($"Класс {stateType.Name} содержит атрибут {nameof(StateActivatorBaseAttribute)} но не наследуется от {nameof(IState<T>)}");
+            throw new($"Класс {stateType.Name} содержит атрибут {nameof(StateActivatorBaseAttribute)} но не наследуется от {nameof(IState<T>)}");
         }
 
         await using var scope = serviceScopeFactory.CreateAsyncScope();
@@ -69,7 +69,7 @@ internal class StateContextFactory<T>(
 
         if (!state.CheckAny())
         {
-            throw new Exception("Не смогли активировать состояние");
+            throw new("Не смогли активировать состояние");
         }
 
         await stateContext.SendChatActionAsync(ChatAction.Typing, cancellationToken);

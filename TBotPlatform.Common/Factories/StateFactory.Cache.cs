@@ -56,7 +56,7 @@ internal partial class StateFactory<T>
             await RemoveBindStateAsync(chatId, cancellationToken);
         }
 
-        value = new UserBindStateInCache
+        value = new()
         {
             ChatId = chatId.ToString(),
             StatesTypeName = statesTypeName,

@@ -34,7 +34,7 @@ internal class TelegramClientHostedService(
 
             if (settings.UpdateType.CheckAny())
             {
-                receiverOptions = new ReceiverOptions
+                receiverOptions = new()
                 {
                     AllowedUpdates = settings.UpdateType,
                 };
