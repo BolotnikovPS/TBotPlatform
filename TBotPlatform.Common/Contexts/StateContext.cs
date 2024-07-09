@@ -149,7 +149,7 @@ internal partial class StateContext<T>(
 
         if (text.Length > TextLength)
         {
-            throw new TextLengthException();
+            throw new TextLengthException(text.Length, TextLength);
         }
 
         var message = new StringBuilder(ChatMessage?.CallbackQueryMessageOrNull)

@@ -1,7 +1,7 @@
 ﻿namespace TBotPlatform.Contracts.Attributes;
 
 [AttributeUsage(AttributeTargets.Class)]
-public abstract class StateActivatorBaseAttribute : Attribute
+public class StateActivatorBaseAttribute(bool isInlineState, Type menuType) : Attribute
 {
     /// <summary>
     /// Перечень типов кнопок соответствующих состоянию
@@ -21,12 +21,12 @@ public abstract class StateActivatorBaseAttribute : Attribute
     /// <summary>
     /// Тип меню, которое отображается пользователю, для данного состояния
     /// </summary>
-    public Type MenuType { get; set; }
+    public Type MenuType { get; private set; } = menuType;
 
     /// <summary>
     /// Состояние вызывается только с инлайн кнопок
     /// </summary>
-    public bool IsInlineState { get; set; }
+    public bool IsInlineState { get; private set; } = isInlineState;
 
     /// <summary>
     /// Состояние вызывается только при наличии блокировки у пользователя

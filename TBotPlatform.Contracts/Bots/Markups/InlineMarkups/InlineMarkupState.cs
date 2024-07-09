@@ -2,6 +2,7 @@
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types.ReplyMarkups;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 
@@ -31,5 +32,10 @@ public class InlineMarkupState(
         return Encoding.Default.GetBytes(MarkupNextStateJson).Length > 64
             ? default
             : InlineKeyboardButton.WithCallbackData(ButtonName, MarkupNextStateJson);
+    }
+
+    public InlineMarkupState CreateDataWithDelimiter(params string[] datas)
+    {
+        return new(buttonName, state, string.Join(DelimiterConstant.DelimiterFirst, datas));
     }
 }

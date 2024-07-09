@@ -160,6 +160,17 @@ internal partial class StateFactory<T>(
 
     private async Task<StateHistory<T>> GetLastStateWithMenuOrMainAsync(List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)
     {
+        var lastStateToRemove = statesInMemoryOrEmpty.LastOrDefault();
+
+        if (!lastStateToRemove.CheckAny())
+        {
+            await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+
+            await UnBindStateAsync(chatId, cancellationToken);
+
+            return CreateContextFunc();
+        }
+
         while (true)
         {
             var lastState = statesInMemoryOrEmpty.LastOrDefault();

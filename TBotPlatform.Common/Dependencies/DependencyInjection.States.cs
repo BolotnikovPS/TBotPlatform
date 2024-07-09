@@ -13,7 +13,7 @@ public static partial class DependencyInjection
     public static IServiceCollection AddStates(
         this IServiceCollection services,
         Assembly executingAssembly,
-        string botType
+        string botType = ""
         )
     {
         var result = executingAssembly

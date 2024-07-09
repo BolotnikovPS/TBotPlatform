@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using TBotPlatform.Contracts.Bots.Constant;
+using TBotPlatform.Extension;
 
 namespace TBotPlatform.Contracts.Bots;
 
@@ -13,11 +15,16 @@ public class MarkupNextState(string state, string data = null)
     /// Состояние которое необходимо вызывать
     /// </summary>
     [JsonProperty("s", NullValueHandling = NullValueHandling.Ignore)]
-    public string State { get; set; } = state;
+    public string State { get; private set; } = state;
 
     /// <summary>
     /// Данные для состояния
     /// </summary>
     [JsonProperty("d", NullValueHandling = NullValueHandling.Ignore)]
-    public string Data { get; set; } = data;
+    public string Data { get; private set; } = data;
+    
+    public string[] GetDataWithoutDelimiter()
+    {
+        return Data.CheckAny() ? Data.Split(DelimiterConstant.DelimiterFirst) : default;
+    }
 }
