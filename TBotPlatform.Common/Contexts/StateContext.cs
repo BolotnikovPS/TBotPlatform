@@ -101,7 +101,7 @@ internal partial class StateContext<T>(
     }
 
     public Task<Message> UpdateMarkupAsync(
-        ButtonsRuleMassivList replyMarkup,
+        ButtonsRuleMassiveList replyMarkup,
         CancellationToken cancellationToken
         )
     {

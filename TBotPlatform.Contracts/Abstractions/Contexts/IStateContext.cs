@@ -95,12 +95,12 @@ where T : UserBase
     /// Кнопки располагаются по уровню
     /// </summary>
     /// <param name="text"></param>
-    /// <param name="inlineMarkupMassivList"></param>
+    /// <param name="inlineMarkupMassiveList"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<Message> SendOrUpdateTextMessageAsync(
         string text,
-        InlineMarkupMassivList inlineMarkupMassivList,
+        InlineMarkupMassiveList inlineMarkupMassiveList,
         CancellationToken cancellationToken
         );
 
@@ -167,7 +167,7 @@ where T : UserBase
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<Message> UpdateMarkupAsync(
-        ButtonsRuleMassivList replyMarkup,
+        ButtonsRuleMassiveList replyMarkup,
         CancellationToken cancellationToken
         );
 

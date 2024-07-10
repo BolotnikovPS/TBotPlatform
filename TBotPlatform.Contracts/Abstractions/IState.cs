@@ -15,6 +15,14 @@ where T : UserBase
     Task HandleAsync(IStateContext<T> context, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Запускает обработку логики состояния после HandleAsync
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task HandleCompleteAsync(IStateContext<T> context, CancellationToken cancellationToken);
+
+    /// <summary>
     /// Запускает обработку логики состояния в случая ошибки
     /// </summary>
     /// <param name="context"></param>

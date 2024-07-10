@@ -22,7 +22,7 @@ internal partial class StateContext<T>
         if (inlineMarkupList.CheckAny())
         {
             inlineKeyboard = Map(
-                new InlineMarkupMassivList
+                new InlineMarkupMassiveList
                 {
                     new()
                     {
@@ -46,7 +46,7 @@ internal partial class StateContext<T>
         if (inlineMarkupList.CheckAny())
         {
             inlineKeyboard = Map(
-                new InlineMarkupMassivList
+                new InlineMarkupMassiveList
                 {
                     new()
                     {
@@ -61,15 +61,15 @@ internal partial class StateContext<T>
 
     public Task<Message> SendOrUpdateTextMessageAsync(
         string text,
-        InlineMarkupMassivList inlineMarkupMassivList,
+        InlineMarkupMassiveList inlineMarkupMassiveList,
         CancellationToken cancellationToken
         )
     {
         InlineKeyboardMarkup inlineKeyboard = null;
 
-        if (inlineMarkupMassivList.CheckAny())
+        if (inlineMarkupMassiveList.CheckAny())
         {
-            inlineKeyboard = Map(inlineMarkupMassivList);
+            inlineKeyboard = Map(inlineMarkupMassiveList);
         }
 
         return SendOrUpdateTextMessageAsync(text, inlineKeyboard, null, cancellationToken);
@@ -80,7 +80,7 @@ internal partial class StateContext<T>
         CancellationToken cancellationToken
         ) => SendOrUpdateTextMessageAsync(
         text,
-        inlineMarkupMassivList: null,
+        inlineMarkupMassiveList: null,
         cancellationToken
         );
 

@@ -1,8 +1,8 @@
 ﻿namespace TBotPlatform.Contracts.Bots.Markups;
 
-public sealed class InlineMarkupMassivList : List<InlineMarkupMassiv>
+public sealed class InlineMarkupMassiveList : List<InlineMarkupMassive>
 {
-    public new void Add(InlineMarkupMassiv item)
+    public new void Add(InlineMarkupMassive item)
     {
         if (item.ButtonsPerRow <= 0)
         {

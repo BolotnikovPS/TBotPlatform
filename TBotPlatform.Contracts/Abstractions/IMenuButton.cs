@@ -10,5 +10,5 @@ public interface IMenuButton<in T>
     /// Получает список кнопок для состояния
     /// </summary>
     /// <returns></returns>
-    ButtonsRuleMassivList GetMarkUp(T user);
+    ButtonsRuleMassiveList GetMarkUp(T user);
 }

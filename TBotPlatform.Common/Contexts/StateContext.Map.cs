@@ -7,13 +7,13 @@ namespace TBotPlatform.Common.Contexts;
 
 internal partial class StateContext<T>
 {
-    private static ReplyKeyboardMarkup Map(ButtonsRuleMassivList cakes)
+    private static ReplyKeyboardMarkup Map(ButtonsRuleMassiveList cakes)
         => GenerateButtons(cakes);
 
-    private static InlineKeyboardButton[][] Map(InlineMarkupMassivList cakes)
+    private static InlineKeyboardButton[][] Map(InlineMarkupMassiveList cakes)
         => GenerateButtons(cakes);
 
-    private static ReplyKeyboardMarkup GenerateButtons(ButtonsRuleMassivList cakes)
+    private static ReplyKeyboardMarkup GenerateButtons(ButtonsRuleMassiveList cakes)
     {
         var result = cakes.Select(x => GenerateButtons(x.ButtonsRules)).ToArray();
 
@@ -31,7 +31,7 @@ internal partial class StateContext<T>
               .ToArray();
     }
 
-    private static InlineKeyboardButton[][] GenerateButtons(InlineMarkupMassivList cakes)
+    private static InlineKeyboardButton[][] GenerateButtons(InlineMarkupMassiveList cakes)
     {
         return cakes.SelectMany(x => GenerateButtons(x.InlineMarkups, x.ButtonsPerRow)).ToArray();
     }

@@ -1,6 +1,6 @@
 ﻿namespace TBotPlatform.Contracts.Bots.Markups;
 
-public sealed class InlineMarkupMassiv
+public sealed class InlineMarkupMassive
 {
     /// <summary>
     /// Коллекция кнопок inline

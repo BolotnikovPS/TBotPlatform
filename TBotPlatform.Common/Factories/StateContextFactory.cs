@@ -80,6 +80,11 @@ internal class StateContextFactory<T>(
                 stateContext,
                 cancellationToken
                 );
+
+            await state!.HandleCompleteAsync(
+                stateContext,
+                cancellationToken
+                );
         }
         catch (Exception ex)
         {
