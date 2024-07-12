@@ -54,7 +54,7 @@ internal partial class StateContext<T>
                 Selective = true,
             };
 
-        return await botClient.SendTextMessageAsync(
+        var task = botClient.SendTextMessageAsync(
             UserDb.ChatId,
             text,
             parseMode: ParseMode,
@@ -62,6 +62,8 @@ internal partial class StateContext<T>
             replyMarkup: replyMarkup,
             cancellationToken: cancellationToken
             );
+
+        return await ExecuteTaskAsync(task, cancellationToken);
     }
 
     public async Task SendLongTextMessageAsync(
@@ -83,24 +85,28 @@ internal partial class StateContext<T>
         {
             foreach (var tf in text.SplitByLength(TextLength))
             {
-                await botClient.SendTextMessageAsync(
+                var taskText = botClient.SendTextMessageAsync(
                     UserDb.ChatId,
                     tf,
                     parseMode: ParseMode,
                     protectContent: ProtectContent,
                     cancellationToken: cancellationToken
                     );
+
+                await ExecuteTaskAsync(taskText, cancellationToken);
             }
 
             return;
         }
 
-        await botClient.SendTextMessageAsync(
+        var task = botClient.SendTextMessageAsync(
             UserDb.ChatId,
             text,
             parseMode: ParseMode,
             protectContent: ProtectContent,
             cancellationToken: cancellationToken
             );
+
+        await ExecuteTaskAsync(task, cancellationToken);
     }
 }
