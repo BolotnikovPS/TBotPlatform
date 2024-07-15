@@ -1,21 +1,20 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Text;
+using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
 using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Contracts.Bots.StateContext;
 using TBotPlatform.Extension;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using PMode = Telegram.Bot.Types.Enums.ParseMode;
 
 namespace TBotPlatform.Common.Contexts;
 
 internal partial class StateContext<T>(
     ILogger logger,
-    ITelegramBotClient botClient
+    ITelegramContext botClient
     ) : IStateContext<T>
     where T : UserBase
 {
@@ -24,24 +23,18 @@ internal partial class StateContext<T>(
     public ChatMessage ChatMessage { get; private set; }
     public EBindStateType BindState { get; private set; }
     public bool IsForceReplyLastMenu { get; private set; }
-
-    private bool ProtectContent { get; set; }
-
+    
     private const string ChooseAction = "😊 Выберите действие";
-    private const PMode ParseMode = PMode.Html;
     private const int TextLength = 4096;
 
     public async Task CreateStateContextAsync(
         T user,
         Update update,
         MarkupNextState markupNextState,
-        bool protectContent,
         CancellationToken cancellationToken
         )
     {
         cancellationToken.ThrowIfCancellationRequested();
-
-        ProtectContent = protectContent;
 
         ChatMessage = new(
             update?.Message?.Text,
@@ -74,15 +67,11 @@ internal partial class StateContext<T>(
             throw new ChatIdArgException();
         }
 
-        var task = botClient.SendDocumentAsync(
+        return await botClient.SendDocumentAsync(
             UserDb.ChatId,
             inputFile,
-            parseMode: ParseMode,
-            protectContent: ProtectContent,
             cancellationToken: cancellationToken
             );
-
-        return await ExecuteTaskAsync(task, cancellationToken);
     }
 
     public async Task SendChatActionAsync(
@@ -95,13 +84,11 @@ internal partial class StateContext<T>(
             throw new ChatIdArgException();
         }
 
-        var task = botClient.SendChatActionAsync(
+        await botClient.SendChatActionAsync(
             UserDb.ChatId,
             chatAction,
             cancellationToken: cancellationToken
             );
-
-        await ExecuteTaskAsync(task, cancellationToken);
     }
 
     public async Task<Message> UpdateMarkupAsync(
@@ -121,16 +108,12 @@ internal partial class StateContext<T>(
             throw new ReplyKeyboardMarkupArgException();
         }
 
-        var task = botClient.SendTextMessageAsync(
+        return await botClient.SendTextMessageAsync(
             UserDb.ChatId,
             ChooseAction,
-            parseMode: ParseMode,
-            protectContent: ProtectContent,
             replyMarkup: newMarkup,
             cancellationToken: cancellationToken
             );
-
-        return await ExecuteTaskAsync(task, cancellationToken);
     }
 
     public async Task UpdateMarkupTextAndDropButtonAsync(
@@ -165,27 +148,22 @@ internal partial class StateContext<T>(
 
         if (ChatMessage!.CallbackQueryMessageWithCaption)
         {
-            var taskEdit = botClient.EditMessageCaptionAsync(
+            await botClient.EditMessageCaptionAsync(
                 UserDb.ChatId,
                 ChatMessage.CallbackQueryMessageIdOrNull.Value,
                 message,
-                ParseMode,
                 cancellationToken: cancellationToken
                 );
 
-            await ExecuteTaskAsync(taskEdit, cancellationToken);
             return;
         }
 
-        var task = botClient.EditMessageTextAsync(
+        await botClient.EditMessageTextAsync(
             UserDb.ChatId,
             ChatMessage.CallbackQueryMessageIdOrNull.Value,
             message,
-            ParseMode,
             cancellationToken: cancellationToken
             );
-
-        await ExecuteTaskAsync(task, cancellationToken);
     }
 
     public async Task UpdateMarkupTextAndDropButtonAsync(
@@ -210,13 +188,11 @@ internal partial class StateContext<T>(
             throw new CallbackQueryMessageIdOrNullArgException();
         }
 
-        var task = botClient.DeleteMessageAsync(
+        await botClient.DeleteMessageAsync(
             UserDb.ChatId,
             ChatMessage.CallbackQueryMessageIdOrNull.Value,
             cancellationToken
             );
-
-        await ExecuteTaskAsync(task, cancellationToken);
     }
 
     public ValueTask DisposeAsync()

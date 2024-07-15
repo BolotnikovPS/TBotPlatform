@@ -1,6 +1,5 @@
 ﻿using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Extension;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -54,16 +53,12 @@ internal partial class StateContext<T>
                 Selective = true,
             };
 
-        var task = botClient.SendTextMessageAsync(
+        return await botClient.SendTextMessageAsync(
             UserDb.ChatId,
             text,
-            parseMode: ParseMode,
-            protectContent: ProtectContent,
             replyMarkup: replyMarkup,
             cancellationToken: cancellationToken
             );
-
-        return await ExecuteTaskAsync(task, cancellationToken);
     }
 
     public async Task SendLongTextMessageAsync(
@@ -85,28 +80,20 @@ internal partial class StateContext<T>
         {
             foreach (var tf in text.SplitByLength(TextLength))
             {
-                var taskText = botClient.SendTextMessageAsync(
+                await botClient.SendTextMessageAsync(
                     UserDb.ChatId,
                     tf,
-                    parseMode: ParseMode,
-                    protectContent: ProtectContent,
                     cancellationToken: cancellationToken
                     );
-
-                await ExecuteTaskAsync(taskText, cancellationToken);
             }
 
             return;
         }
 
-        var task = botClient.SendTextMessageAsync(
+        await botClient.SendTextMessageAsync(
             UserDb.ChatId,
             text,
-            parseMode: ParseMode,
-            protectContent: ProtectContent,
             cancellationToken: cancellationToken
             );
-
-        await ExecuteTaskAsync(task, cancellationToken);
     }
 }

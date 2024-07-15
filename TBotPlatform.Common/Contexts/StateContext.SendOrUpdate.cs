@@ -2,7 +2,6 @@
 using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Extension;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -114,41 +113,31 @@ internal partial class StateContext<T>
         {
             if (checkToEdit)
             {
-                var taskDel = botClient.DeleteMessageAsync(
+                await botClient.DeleteMessageAsync(
                     UserDb.ChatId,
                     ChatMessage.CallbackQueryMessageIdOrNull!.Value,
                     cancellationToken
                     );
-
-                await ExecuteTaskAsync(taskDel, cancellationToken);
             }
 
             await using var fileStream = new MemoryStream(photoData.Byte);
-            var taskPhoto = botClient.SendPhotoAsync(
+            return await botClient.SendPhotoAsync(
                 UserDb.ChatId,
                 InputFile.FromStream(fileStream),
                 caption: text,
-                parseMode: ParseMode,
-                protectContent: ProtectContent,
                 replyMarkup: inlineKeyboard,
                 cancellationToken: cancellationToken
                 );
-
-            return await ExecuteTaskAsync(taskPhoto, cancellationToken);
         }
 
         if (!checkToEdit)
         {
-            var taskText = botClient.SendTextMessageAsync(
+            return await botClient.SendTextMessageAsync(
                 UserDb.ChatId,
                 text,
-                parseMode: ParseMode,
-                protectContent: ProtectContent,
                 replyMarkup: inlineKeyboard,
                 cancellationToken: cancellationToken
                 );
-
-            return await ExecuteTaskAsync(taskText, cancellationToken);
         }
 
         if (!ChatMessage.CallbackQueryMessageIdOrNull.HasValue)
@@ -158,27 +147,21 @@ internal partial class StateContext<T>
 
         if (ChatMessage.CallbackQueryMessageWithCaption)
         {
-            var taskEditCaption = botClient.EditMessageCaptionAsync(
+            return await botClient.EditMessageCaptionAsync(
                 UserDb.ChatId,
                 ChatMessage.CallbackQueryMessageIdOrNull.Value,
                 text,
-                ParseMode,
                 replyMarkup: inlineKeyboard,
                 cancellationToken: cancellationToken
                 );
-
-            return await ExecuteTaskAsync(taskEditCaption, cancellationToken);
         }
 
-        var taskEdit = botClient.EditMessageTextAsync(
+        return await botClient.EditMessageTextAsync(
             UserDb.ChatId,
             ChatMessage.CallbackQueryMessageIdOrNull.Value,
             text,
-            ParseMode,
             replyMarkup: inlineKeyboard,
             cancellationToken: cancellationToken
             );
-
-        return await ExecuteTaskAsync(taskEdit, cancellationToken);
     }
 }
