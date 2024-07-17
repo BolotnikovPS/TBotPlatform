@@ -1,4 +1,6 @@
-﻿namespace TBotPlatform.Common.Contexts;
+﻿using System.Diagnostics;
+
+namespace TBotPlatform.Common.Contexts;
 
 internal class TelegramContextTaskQueue
 {
@@ -6,25 +8,32 @@ internal class TelegramContextTaskQueue
 
     private static int _iteration = 1;
     private const int IterationWaitSecond = 1 * 1000;
+    private static readonly Stopwatch Timer = new();
 
     public async Task<T> Enqueue<T>(Func<Task<T>> taskGenerator, CancellationToken cancellationToken)
     {
         await _semaphore.WaitAsync(cancellationToken);
         try
         {
-            if (_iteration % 25 != 0)
+            Timer.Start();
+
+            if (_iteration % 25 != 0
+                && Timer.ElapsedMilliseconds <= IterationWaitSecond
+                )
             {
                 return await taskGenerator();
             }
 
             _iteration = 0;
             await Task.Delay(IterationWaitSecond, cancellationToken);
+            Timer.Restart();
 
             return await taskGenerator();
         }
         finally
         {
             _iteration++;
+            Timer.Stop();
             _semaphore.Release();
         }
     }
@@ -34,10 +43,15 @@ internal class TelegramContextTaskQueue
         await _semaphore.WaitAsync(cancellationToken);
         try
         {
-            if (_iteration % 25 == 0)
+            Timer.Start();
+
+            if (_iteration % 25 == 0
+                || Timer.ElapsedMilliseconds > IterationWaitSecond
+                )
             {
                 _iteration = 0;
                 await Task.Delay(IterationWaitSecond, cancellationToken);
+                Timer.Restart();
             }
 
             await taskGenerator();
@@ -45,6 +59,7 @@ internal class TelegramContextTaskQueue
         finally
         {
             _iteration++;
+            Timer.Stop();
             _semaphore.Release();
         }
     }
