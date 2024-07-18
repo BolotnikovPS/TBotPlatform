@@ -9,8 +9,8 @@ public static class PaginationExtensions
     {
         result = 0;
 
-        if (!markupNextState.CheckAny()
-            || !markupNextState.Data.CheckAny()
+        if (markupNextState.IsNull()
+            || markupNextState.Data.IsNull()
            )
         {
             return false;
@@ -29,17 +29,17 @@ public static class PaginationExtensions
         }
 
         var skip = (currentPosition - 1) * step;
-        var pag = values
-                 .Skip(skip)
-                 .Take(step)
-                 .ToList();
+        var data = values
+                  .Skip(skip)
+                  .Take(step)
+                  .ToList();
 
         var isNext = skip + step < values.Count;
         var isPrevious = currentPosition != 1;
 
         return new()
         {
-            Values = pag,
+            Values = data,
             IsNext = isNext,
             IsPrevious = isPrevious,
             NextValue = (currentPosition + 1).ToString(),

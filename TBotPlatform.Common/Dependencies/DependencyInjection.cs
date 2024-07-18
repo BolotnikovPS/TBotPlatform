@@ -12,7 +12,7 @@ public static partial class DependencyInjection
 {
     public static IServiceCollection AddTelegramClient(this IServiceCollection services, string token)
     {
-        if (!token.CheckAny())
+        if (token.IsNull())
         {
             throw new ArgumentNullException(nameof(token));
         }

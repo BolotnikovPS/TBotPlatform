@@ -39,7 +39,7 @@ public static partial class DependencyInjection
 
     private static void AddHealthCheckRedis(this IServiceCollection services, string redisConnectionString, string[] tags = null)
     {
-        if (!tags.CheckAny())
+        if (tags.IsNull())
         {
             return;
         }

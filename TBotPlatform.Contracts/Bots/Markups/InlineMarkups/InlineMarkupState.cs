@@ -2,7 +2,6 @@
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types.ReplyMarkups;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 
@@ -24,7 +23,7 @@ public class InlineMarkupState(
 
     public override InlineKeyboardButton Format()
     {
-        if (!MarkupNextStateJson.CheckAny())
+        if (MarkupNextStateJson.IsNull())
         {
             return default;
         }

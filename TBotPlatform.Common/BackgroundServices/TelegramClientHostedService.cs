@@ -32,7 +32,7 @@ internal class TelegramClientHostedService(
 
             ReceiverOptions receiverOptions = null;
 
-            if (settings.UpdateType.CheckAny())
+            if (settings.UpdateType.IsNotNull())
             {
                 receiverOptions = new()
                 {

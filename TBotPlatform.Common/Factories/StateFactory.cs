@@ -16,7 +16,7 @@ internal partial class StateFactory<T>(
 {
     public StateHistory<T> GetStateByNameOrDefault(string nameOfState = "")
     {
-        if (!nameOfState.CheckAny())
+        if (nameOfState.IsNull())
         {
             return CreateContextFunc();
         }
@@ -36,7 +36,7 @@ internal partial class StateFactory<T>(
 
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
 
-        var checkNewState = newState.CheckAny()
+        var checkNewState = newState.IsNotNull()
                             && !newState!.IsInlineState
                             && !newState.StateTypeName.In(statesInMemoryOrEmpty?.LastOrDefault());
 
@@ -63,7 +63,7 @@ internal partial class StateFactory<T>(
 
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
 
-        var checkNewState = newState.CheckAny()
+        var checkNewState = newState.IsNotNull()
                             && !newState!.IsInlineState
                             && !newState.StateTypeName.In(statesInMemoryOrEmpty?.LastOrDefault());
 
@@ -120,7 +120,7 @@ internal partial class StateFactory<T>(
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
         var result = await GetLastStateWithMenuOrMainAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
 
-        return result.CheckAny() ? result.MenuState : default;
+        return result.IsNotNull() ? result.MenuState : default;
     }
 
     public StateHistory<T> GetLockState()
@@ -145,7 +145,7 @@ internal partial class StateFactory<T>(
     {
         var value = stateFactoryDataCollection.FirstOrDefault(z => z.StateTypeName == state.StateType.Name);
 
-        if (!value.CheckAny())
+        if (value.IsNull())
         {
             throw new("Состояние не найдено");
         }
@@ -162,7 +162,7 @@ internal partial class StateFactory<T>(
     {
         var lastStateToRemove = statesInMemoryOrEmpty.LastOrDefault();
 
-        if (!lastStateToRemove.CheckAny())
+        if (lastStateToRemove.IsNull())
         {
             await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
 
@@ -175,7 +175,7 @@ internal partial class StateFactory<T>(
         {
             var lastState = statesInMemoryOrEmpty.LastOrDefault();
 
-            if (!lastState.CheckAny())
+            if (lastState.IsNull())
             {
                 await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
                 

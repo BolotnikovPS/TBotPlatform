@@ -13,7 +13,7 @@ internal partial class StateFactory<T>
     {
         var values = await cache.GetValueFromCollectionAsync<UserStateInCache>(CacheCollectionKeyName, chatId.ToString(), cancellationToken);
 
-        if (!values.CheckAny())
+        if (values.IsNull())
         {
             return [];
         }
@@ -42,7 +42,7 @@ internal partial class StateFactory<T>
     {
         var values = await cache.GetValueFromCollectionAsync<UserBindStateInCache>(CacheBindCollectionKeyName, chatId.ToString(), cancellationToken);
 
-        return values.CheckAny()
+        return values.IsNotNull()
             ? values.StatesTypeName
             : default;
     }
@@ -51,7 +51,7 @@ internal partial class StateFactory<T>
     {
         var value = await cache.GetValueFromCollectionAsync<UserBindStateInCache>(CacheBindCollectionKeyName, chatId.ToString(), cancellationToken);
 
-        if (value.CheckAny())
+        if (value.IsNotNull())
         {
             await RemoveBindStateAsync(chatId, cancellationToken);
         }

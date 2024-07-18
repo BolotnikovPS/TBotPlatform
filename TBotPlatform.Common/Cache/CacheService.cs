@@ -36,7 +36,7 @@ internal class CacheService(
 
         var redisValue = await DbCache.HashGetAllAsync(CreateCollectionName(collection));
 
-        return redisValue.CheckAny()
+        return redisValue.IsNotNull()
             ? redisValue.Select(item => DeserializeObject<T>(item.Value)).ToList()
             : default;
     }
@@ -94,7 +94,7 @@ internal class CacheService(
 
     private T DeserializeObject<T>(RedisValue? value)
     {
-        if (!value.CheckAny())
+        if (value.IsNull())
         {
             return default;
         }

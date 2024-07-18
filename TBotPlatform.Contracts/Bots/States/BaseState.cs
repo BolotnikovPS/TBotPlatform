@@ -17,7 +17,7 @@ public abstract class BaseState(ICacheService cacheService)
 
         var result = await CacheService.GetValueFromCollectionAsync<BaseStateInCache<T>>(GetCacheCollectionName(userId), GetCacheKeyName(), cancellationToken);
 
-        return result.CheckAny()
+        return result.IsNotNull()
             ? result.Value
             : default;
     }
@@ -51,7 +51,7 @@ public abstract class BaseState(ICacheService cacheService)
 
     private void CacheServiceCheck()
     {
-        if (CacheService.CheckAny())
+        if (CacheService.IsNotNull())
         {
             return;
         }

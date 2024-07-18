@@ -22,7 +22,7 @@ public static partial class DependencyInjection
                     .OrderBy(z => z.FullName)
                     .ToList();
 
-        if (!result.CheckAny())
+        if (result.IsNull())
         {
             throw new("Нет состояний");
         }
@@ -78,7 +78,7 @@ public static partial class DependencyInjection
                 }
             }
 
-            if (attr.MenuType.CheckAny())
+            if (attr.MenuType.IsNotNull())
             {
                 var isIMenuButtonType = attr.MenuType.GetInterfaces().Any(x => x.Name == menuButtonInterfaceName);
 
@@ -88,7 +88,7 @@ public static partial class DependencyInjection
                 }
             }
 
-            if (attr.MenuType.CheckAny()
+            if (attr.MenuType.IsNotNull()
                 && attr.IsInlineState
                )
             {

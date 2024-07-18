@@ -16,7 +16,7 @@ public class ButtonsRuleList : List<ButtonsRule>
 
     private static bool SizeJsonCheck(ButtonsRule item)
     {
-        if (!item.Button.CheckAny())
+        if (item.Button.IsNull())
         {
             return false;
         }

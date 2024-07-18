@@ -3,24 +3,6 @@
 public static partial class Extensions
 {
     /// <summary>
-    /// Проверяет структуры на != null
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="obj"></param>
-    /// <returns></returns>
-    public static bool CheckAny<T>(this T obj)
-        where T : struct
-        => !obj.Equals(default(T));
-
-    /// <summary>
-    /// Проверяет объект на != null
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
-    public static bool CheckAny(this object obj)
-        => obj != null;
-
-    /// <summary>
     /// Проверяет объект на != null
     /// </summary>
     /// <param name="s"></param>

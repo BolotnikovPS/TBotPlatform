@@ -37,7 +37,7 @@ internal class StateContextFactory<T>(
             cancellationToken
             );
 
-        if (stateHistory.CheckAny())
+        if (stateHistory.IsNotNull())
         {
             await RequestAsync(stateContext, stateHistory.StateType, cancellationToken);
         }
@@ -63,7 +63,7 @@ internal class StateContextFactory<T>(
         await using var scope = serviceScopeFactory.CreateAsyncScope();
         var state = scope.ServiceProvider.GetRequiredService(stateType) as IState<T>;
 
-        if (!state.CheckAny())
+        if (state.IsNull())
         {
             throw new("Не смогли активировать состояние");
         }

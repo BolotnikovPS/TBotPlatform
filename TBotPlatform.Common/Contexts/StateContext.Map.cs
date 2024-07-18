@@ -45,7 +45,7 @@ internal partial class StateContext<T>
 
         return cakes
               .Select(x => x.Format())
-              .Where(z => z.CheckAny())
+              .Where(z => z.IsNotNull())
               .Chunk(buttonsPerRow)
               .Select(c => c.ToArray())
               .ToList();

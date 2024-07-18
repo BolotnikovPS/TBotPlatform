@@ -31,12 +31,12 @@ internal partial class StateContext<T>
         CancellationToken cancellationToken
         )
     {
-        if (!UserDb.ChatId.CheckAny())
+        if (UserDb.ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
-        if (!text.CheckAny())
+        if (text.IsNull())
         {
             return default;
         }
@@ -66,12 +66,12 @@ internal partial class StateContext<T>
         CancellationToken cancellationToken
         )
     {
-        if (!UserDb.ChatId.CheckAny())
+        if (UserDb.ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
-        if (!text.CheckAny())
+        if (text.IsNull())
         {
             return;
         }

@@ -51,7 +51,7 @@ public static partial class Extensions
         }
 
         return value
-              .Where(x => x.CheckAny())
+              .Where(x => x.IsNotNull())
               .Select(
                    z => z.ToString()
                          .ToUpper()
@@ -102,7 +102,7 @@ public static partial class Extensions
     public static bool In<T>(this T input, params T[] value)
         where T : Enum
     {
-        if (!input.CheckAny()
+        if (input.IsNull()
             || value?.Length == 0)
         {
             return false;

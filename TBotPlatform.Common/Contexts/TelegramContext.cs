@@ -253,7 +253,7 @@ internal class TelegramContext(
         }
         catch (ApiRequestException ex)
         {
-            var delay = ex.Parameters.CheckAny()
+            var delay = ex.Parameters.IsNotNull()
                         && ex!.Parameters!.RetryAfter.HasValue
                 ? ex.Parameters.RetryAfter.Value
                 : 100;
@@ -274,7 +274,7 @@ internal class TelegramContext(
         }
         catch (ApiRequestException ex)
         {
-            var delay = ex.Parameters.CheckAny()
+            var delay = ex.Parameters.IsNotNull()
                         && ex!.Parameters!.RetryAfter.HasValue
                 ? ex.Parameters.RetryAfter.Value
                 : 100;

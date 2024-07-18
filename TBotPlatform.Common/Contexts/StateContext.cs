@@ -62,7 +62,7 @@ internal partial class StateContext<T>(
         CancellationToken cancellationToken
         )
     {
-        if (!UserDb.ChatId.CheckAny())
+        if (UserDb.ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -79,7 +79,7 @@ internal partial class StateContext<T>(
         CancellationToken cancellationToken
         )
     {
-        if (!UserDb.ChatId.CheckAny())
+        if (UserDb.ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -96,14 +96,14 @@ internal partial class StateContext<T>(
         CancellationToken cancellationToken
         )
     {
-        if (!UserDb.ChatId.CheckAny())
+        if (UserDb.ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
         var newMarkup = Map(replyMarkup);
 
-        if (!newMarkup.CheckAny())
+        if (newMarkup.IsNull())
         {
             throw new ReplyKeyboardMarkupArgException();
         }
@@ -121,12 +121,12 @@ internal partial class StateContext<T>(
         CancellationToken cancellationToken
         )
     {
-        if (!MarkupNextState.State.CheckAny())
+        if (MarkupNextState.State.IsNull())
         {
             return;
         }
 
-        if (!UserDb.ChatId.CheckAny())
+        if (UserDb.ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -178,7 +178,7 @@ internal partial class StateContext<T>(
 
     public async Task RemoveCurrentReplyMessageAsync(CancellationToken cancellationToken)
     {
-        if (!UserDb.ChatId.CheckAny())
+        if (UserDb.ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -215,7 +215,7 @@ internal partial class StateContext<T>(
         CancellationToken cancellationToken
         )
     {
-        if (message.CheckAny()
+        if (message.IsNotNull()
             && message.Photo.CheckAny()
            )
         {
@@ -223,8 +223,8 @@ internal partial class StateContext<T>(
             return await DownloadFileAsync(photo.FileId, cancellationToken);
         }
 
-        if (!message.CheckAny()
-            || !message.Document.CheckAny()
+        if (message.IsNull()
+            || message.Document.IsNull()
             || !message.Document!.MimeType!.Contains("image"))
         {
             return default;
@@ -239,7 +239,7 @@ internal partial class StateContext<T>(
         CancellationToken cancellationToken
         )
     {
-        if (!fileId.CheckAny())
+        if (fileId.IsNull())
         {
             return default;
         }
@@ -248,7 +248,7 @@ internal partial class StateContext<T>(
         {
             var file = await botClient.GetFileAsync(fileId, cancellationToken);
 
-            if (!file.CheckAny())
+            if (file.IsNull())
             {
                 return default;
             }

@@ -90,12 +90,12 @@ internal partial class StateContext<T>
         CancellationToken cancellationToken
         )
     {
-        if (!UserDb.ChatId.CheckAny())
+        if (UserDb.ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
-        if (!text.CheckAny())
+        if (text.IsNull())
         {
             return default;
         }
@@ -105,11 +105,11 @@ internal partial class StateContext<T>
             throw new TextLengthException(text.Length, TextLength);
         }
 
-        var checkToEdit = MarkupNextState.CheckAny()
-                          && ChatMessage.CallbackQueryDateIdOrNull.CheckAny()
+        var checkToEdit = MarkupNextState.IsNotNull()
+                          && ChatMessage.CallbackQueryDateIdOrNull.IsNotNull()
                           && (DateTime.UtcNow - ChatMessage.CallbackQueryDateIdOrNull!.Value).TotalDays < 1;
 
-        if (photoData.CheckAny())
+        if (photoData.IsNotNull())
         {
             if (checkToEdit)
             {

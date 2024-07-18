@@ -22,7 +22,7 @@ internal partial class StateFactory<T>
     {
         var stateType = FindType(stateData.StateTypeName);
 
-        if (!stateType.CheckAny())
+        if (stateType.IsNull())
         {
             throw new("Состояние не найдено");
         }
@@ -47,7 +47,7 @@ internal partial class StateFactory<T>
     }
 
     private StateHistory<T> ConvertStateFactoryData(StateFactoryData stateFactoryData = null)
-        => stateFactoryData.CheckAny()
+        => stateFactoryData.IsNotNull()
             ? Convert(stateFactoryData)
             : CreateContextFunc();
 }
