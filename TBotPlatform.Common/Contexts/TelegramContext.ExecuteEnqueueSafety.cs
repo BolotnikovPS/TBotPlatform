@@ -8,6 +8,13 @@ namespace TBotPlatform.Common.Contexts;
 
 internal partial class TelegramContext
 {
+    /// <summary>
+    /// Исполнение метода в очереди с сохранением статистики
+    /// </summary>
+    /// <param name="method"></param>
+    /// <param name="statisticMessage"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     private async Task ExecuteEnqueueSafety(Task method, StatisticMessage statisticMessage, CancellationToken cancellationToken)
     {
         try
@@ -22,6 +29,13 @@ internal partial class TelegramContext
         }
     }
 
+    /// <summary>
+    /// Исполнение метода в очереди с сохранением статистики
+    /// </summary>
+    /// <param name="method"></param>
+    /// <param name="statisticMessage"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     private async Task<Message> ExecuteEnqueueSafety(Task<Message> method, StatisticMessage statisticMessage, CancellationToken cancellationToken)
     {
         try
@@ -38,6 +52,12 @@ internal partial class TelegramContext
         }
     }
 
+    /// <summary>
+    /// Исполнение метода в очереди с задержкой при необходимости
+    /// </summary>
+    /// <param name="method"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     private async Task ExecuteEnqueueSafety(Task method, CancellationToken cancellationToken)
     {
         try
@@ -60,6 +80,13 @@ internal partial class TelegramContext
         await Enqueue(() => method, cancellationToken);
     }
 
+    /// <summary>
+    /// Исполнение метода в очереди с задержкой при необходимости
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="method"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     private async Task<T> ExecuteEnqueueSafety<T>(Task<T> method, CancellationToken cancellationToken)
     {
         try
