@@ -2,9 +2,7 @@
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Statistics;
-using TBotPlatform.Extension;
 using Telegram.Bot;
-using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -13,15 +11,13 @@ using PMode = Telegram.Bot.Types.Enums.ParseMode;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal class TelegramContext(
+internal partial class TelegramContext(
     ILogger<TelegramContext> logger,
     ITelegramBotClient botClient,
     TelegramSettings telegramSettings,
     ITelegramStatisticContext telegramStatisticContext
     ) : ITelegramContext
 {
-    private static readonly TelegramContextTaskQueue Queue = new();
-
     private const PMode ParseMode = PMode.Html;
 
     public Task DeleteMessageAsync(long chatId, int messageId, CancellationToken cancellationToken)
@@ -248,78 +244,5 @@ internal class TelegramContext(
             );
 
         return ExecuteEnqueueSafety(task, cancellationToken);
-    }
-
-    private async Task ExecuteEnqueueSafety(Task method, StatisticMessage statisticMessage, CancellationToken cancellationToken)
-    {
-        try
-        {
-            await ExecuteEnqueueSafety(method, cancellationToken);
-            await telegramStatisticContext.HandleStatisticAsync(statisticMessage, cancellationToken);
-        }
-        catch
-        {
-            await telegramStatisticContext.HandleErrorStatisticAsync(statisticMessage, cancellationToken);
-            throw;
-        }
-    }
-
-    private async Task<Message> ExecuteEnqueueSafety(Task<Message> method, StatisticMessage statisticMessage, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var result = await ExecuteEnqueueSafety(method, cancellationToken);
-            await telegramStatisticContext.HandleStatisticAsync(statisticMessage, cancellationToken);
-
-            return result;
-        }
-        catch
-        {
-            await telegramStatisticContext.HandleErrorStatisticAsync(statisticMessage, cancellationToken);
-            throw;
-        }
-    }
-
-    private async Task ExecuteEnqueueSafety(Task method, CancellationToken cancellationToken)
-    {
-        try
-        {
-            await Queue.Enqueue(() => method, cancellationToken);
-            return;
-        }
-        catch (ApiRequestException ex)
-        {
-            var delay = ex.Parameters.IsNotNull()
-                        && ex!.Parameters!.RetryAfter.HasValue
-                ? ex.Parameters.RetryAfter.Value
-                : 100;
-
-            logger.LogError(ex, "Ошибка. Задержка {delay}.", delay);
-
-            await Task.Delay(delay, cancellationToken);
-        }
-
-        await Queue.Enqueue(() => method, cancellationToken);
-    }
-
-    private async Task<T> ExecuteEnqueueSafety<T>(Task<T> method, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await Queue.Enqueue(() => method, cancellationToken);
-        }
-        catch (ApiRequestException ex)
-        {
-            var delay = ex.Parameters.IsNotNull()
-                        && ex!.Parameters!.RetryAfter.HasValue
-                ? ex.Parameters.RetryAfter.Value
-                : 100;
-
-            logger.LogError(ex, "Ошибка. Задержка {delay}.", delay);
-
-            await Task.Delay(delay, cancellationToken);
-        }
-
-        return await Queue.Enqueue(() => method, cancellationToken);
     }
 }

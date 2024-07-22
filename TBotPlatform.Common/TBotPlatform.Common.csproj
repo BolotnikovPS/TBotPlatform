@@ -15,6 +15,9 @@
 		<Compile Update="**\StateFactory.*.cs">
 			<DependentUpon>StateFactory.cs</DependentUpon>
 		</Compile>
+		<Compile Update="**\TelegramContext.*.cs">
+			<DependentUpon>TelegramContext.cs</DependentUpon>
+		</Compile>
 		<Compile Update="**\DependencyInjection.*.cs">
 			<DependentUpon>DependencyInjection.cs</DependentUpon>
 		</Compile>

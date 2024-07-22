@@ -193,25 +193,26 @@ internal partial class StateContext<T>(
         IsForceReplyLastMenu = false;
     }
 
-    private Task<FileData> DownloadMessagePhotoAsync(Message message, CancellationToken cancellationToken)
+    private async Task<FileData> DownloadMessagePhotoAsync(Message message, CancellationToken cancellationToken)
     {
         if (message.IsNotNull()
             && message.Photo.CheckAny()
            )
         {
             var photo = message.Photo![^1];
-            return DownloadFileAsync(photo.FileId, cancellationToken);
+            return await DownloadFileAsync(photo.FileId, cancellationToken);
         }
 
         if (message.IsNull()
             || message.Document.IsNull()
-            || !message.Document!.MimeType!.Contains("image"))
+            || !message.Document!.MimeType!.Contains("image")
+            )
         {
             return default;
         }
 
         var photoDocument = message.Document;
-        return DownloadFileAsync(photoDocument.FileId, cancellationToken);
+        return await DownloadFileAsync(photoDocument.FileId, cancellationToken);
     }
 
     private async Task<FileData> DownloadFileAsync(string fileId, CancellationToken cancellationToken)
