@@ -57,10 +57,7 @@ where T : UserBase
     /// <param name="inputFile"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> SendDocumentAsync(
-        InputFile inputFile,
-        CancellationToken cancellationToken
-        );
+    Task<Message> SendDocumentAsync(InputFile inputFile, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет сообщение прикрепленными кнопками в чат
@@ -70,12 +67,7 @@ where T : UserBase
     /// <param name="photoData"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> SendOrUpdateTextMessageAsync(
-        string text,
-        InlineMarkupList inlineMarkupList,
-        FileData photoData,
-        CancellationToken cancellationToken
-        );
+    Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileData photoData, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет сообщение прикрепленными кнопками в чат
@@ -84,11 +76,7 @@ where T : UserBase
     /// <param name="inlineMarkupList"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> SendOrUpdateTextMessageAsync(
-        string text,
-        InlineMarkupList inlineMarkupList,
-        CancellationToken cancellationToken
-        );
+    Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет сообщение прикрепленными кнопками в чат
@@ -98,11 +86,7 @@ where T : UserBase
     /// <param name="inlineMarkupMassiveList"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> SendOrUpdateTextMessageAsync(
-        string text,
-        InlineMarkupMassiveList inlineMarkupMassiveList,
-        CancellationToken cancellationToken
-        );
+    Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет сообщение прикрепленными кнопками в чат
@@ -111,10 +95,7 @@ where T : UserBase
     /// <param name="text"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> SendOrUpdateTextMessageAsync(
-        string text,
-        CancellationToken cancellationToken
-        );
+    Task<Message> SendOrUpdateTextMessageAsync(string text, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет сообщение в чат с ответом на сообщение
@@ -122,10 +103,7 @@ where T : UserBase
     /// <param name="text"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> SendTextMessageWithReplyAsync(
-        string text,
-        CancellationToken cancellationToken
-        );
+    Task<Message> SendTextMessageWithReplyAsync(string text, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет сообщение в чат с ответом на сообщение
@@ -133,10 +111,7 @@ where T : UserBase
     /// <param name="text"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> SendTextMessageAsync(
-        string text,
-        CancellationToken cancellationToken
-        );
+    Task<Message> SendTextMessageAsync(string text, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправка большого текста
@@ -144,10 +119,7 @@ where T : UserBase
     /// <param name="text"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task SendLongTextMessageAsync(
-        string text,
-        CancellationToken cancellationToken
-        );
+    Task SendLongTextMessageAsync(string text, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет экшн в чат
@@ -155,10 +127,7 @@ where T : UserBase
     /// <param name="chatAction"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task SendChatActionAsync(
-        ChatAction chatAction,
-        CancellationToken cancellationToken
-        );
+    Task SendChatActionAsync(ChatAction chatAction, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет кнопки в чат
@@ -166,10 +135,7 @@ where T : UserBase
     /// <param name="replyMarkup"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> UpdateMarkupAsync(
-        ButtonsRuleMassiveList replyMarkup,
-        CancellationToken cancellationToken
-        );
+    Task<Message> UpdateMarkupAsync(ButtonsRuleMassiveList replyMarkup, CancellationToken cancellationToken);
 
     /// <summary>
     /// Заменяет кнопки в сообщении на текст
@@ -177,19 +143,14 @@ where T : UserBase
     /// <param name="text"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task UpdateMarkupTextAndDropButtonAsync(
-        string text,
-        CancellationToken cancellationToken
-        );
+    Task UpdateMarkupTextAndDropButtonAsync(string text, CancellationToken cancellationToken);
 
     /// <summary>
     /// Заменяет кнопки в сообщении на текст
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task UpdateMarkupTextAndDropButtonAsync(
-        CancellationToken cancellationToken
-        );
+    Task UpdateMarkupTextAndDropButtonAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Удаляет сообщение с кнопкой от которого пришел запрос

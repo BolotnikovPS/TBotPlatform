@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Extension;
 using Telegram.Bot;
@@ -10,10 +10,10 @@ using Telegram.Bot.Types;
 
 namespace TBotPlatform.Common.BackgroundServices;
 
-internal class TelegramClientHostedService(
-    ILogger<TelegramClientHostedService> logger,
-    TelegramClientHostedServiceSettings settings,
-    ITelegramBotClient telegramBotClient,
+internal class TelegramContextHostedService(
+    ILogger<TelegramContextHostedService> logger,
+    TelegramContextHostedServiceSettings settings,
+    ITelegramBotClient telegramContext,
     IServiceProvider services
     ) : BackgroundService
 {
@@ -26,7 +26,7 @@ internal class TelegramClientHostedService(
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            var result = await telegramBotClient.GetMeAsync(stoppingToken);
+            var result = await telegramContext.GetMeAsync(stoppingToken);
 
             logger.LogInformation("Запущен бот {name}", result.FirstName);
 
@@ -39,8 +39,8 @@ internal class TelegramClientHostedService(
                     AllowedUpdates = settings.UpdateType,
                 };
             }
-
-            await telegramBotClient.ReceiveAsync(
+            
+            await telegramContext.ReceiveAsync(
                 HandleUpdateAsync,
                 HandleErrorAsync,
                 receiverOptions,

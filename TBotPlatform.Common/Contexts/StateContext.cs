@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Text;
-using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
@@ -57,44 +56,35 @@ internal partial class StateContext<T>(
         BindState = type;
     }
 
-    public async Task<Message> SendDocumentAsync(
-        InputFile inputFile,
-        CancellationToken cancellationToken
-        )
+    public Task<Message> SendDocumentAsync(InputFile inputFile, CancellationToken cancellationToken)
     {
         if (UserDb.ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
-        return await botClient.SendDocumentAsync(
+        return botClient.SendDocumentAsync(
             UserDb.ChatId,
             inputFile,
             cancellationToken: cancellationToken
             );
     }
 
-    public async Task SendChatActionAsync(
-        ChatAction chatAction,
-        CancellationToken cancellationToken
-        )
+    public Task SendChatActionAsync(ChatAction chatAction, CancellationToken cancellationToken)
     {
         if (UserDb.ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
-        await botClient.SendChatActionAsync(
+        return botClient.SendChatActionAsync(
             UserDb.ChatId,
             chatAction,
             cancellationToken: cancellationToken
             );
     }
 
-    public async Task<Message> UpdateMarkupAsync(
-        ButtonsRuleMassiveList replyMarkup,
-        CancellationToken cancellationToken
-        )
+    public Task<Message> UpdateMarkupAsync(ButtonsRuleMassiveList replyMarkup, CancellationToken cancellationToken)
     {
         if (UserDb.ChatId.IsDefault())
         {
@@ -108,7 +98,7 @@ internal partial class StateContext<T>(
             throw new ReplyKeyboardMarkupArgException();
         }
 
-        return await botClient.SendTextMessageAsync(
+        return botClient.SendTextMessageAsync(
             UserDb.ChatId,
             ChooseAction,
             replyMarkup: newMarkup,
@@ -116,14 +106,11 @@ internal partial class StateContext<T>(
             );
     }
 
-    public async Task UpdateMarkupTextAndDropButtonAsync(
-        string text,
-        CancellationToken cancellationToken
-        )
+    public Task UpdateMarkupTextAndDropButtonAsync(string text, CancellationToken cancellationToken)
     {
         if (MarkupNextState.State.IsNull())
         {
-            return;
+            return Task.CompletedTask;
         }
 
         if (UserDb.ChatId.IsDefault())
@@ -148,17 +135,15 @@ internal partial class StateContext<T>(
 
         if (ChatMessage!.CallbackQueryMessageWithCaption)
         {
-            await botClient.EditMessageCaptionAsync(
+            return botClient.EditMessageCaptionAsync(
                 UserDb.ChatId,
                 ChatMessage.CallbackQueryMessageIdOrNull.Value,
                 message,
                 cancellationToken: cancellationToken
                 );
-
-            return;
         }
 
-        await botClient.EditMessageTextAsync(
+        return botClient.EditMessageTextAsync(
             UserDb.ChatId,
             ChatMessage.CallbackQueryMessageIdOrNull.Value,
             message,
@@ -166,17 +151,15 @@ internal partial class StateContext<T>(
             );
     }
 
-    public async Task UpdateMarkupTextAndDropButtonAsync(
-        CancellationToken cancellationToken
-        )
+    public Task UpdateMarkupTextAndDropButtonAsync(CancellationToken cancellationToken)
     {
-        await UpdateMarkupTextAndDropButtonAsync(
+        return UpdateMarkupTextAndDropButtonAsync(
             "",
             cancellationToken
             );
     }
 
-    public async Task RemoveCurrentReplyMessageAsync(CancellationToken cancellationToken)
+    public Task RemoveCurrentReplyMessageAsync(CancellationToken cancellationToken)
     {
         if (UserDb.ChatId.IsDefault())
         {
@@ -188,7 +171,7 @@ internal partial class StateContext<T>(
             throw new CallbackQueryMessageIdOrNullArgException();
         }
 
-        await botClient.DeleteMessageAsync(
+        return botClient.DeleteMessageAsync(
             UserDb.ChatId,
             ChatMessage.CallbackQueryMessageIdOrNull.Value,
             cancellationToken
@@ -210,17 +193,14 @@ internal partial class StateContext<T>(
         IsForceReplyLastMenu = false;
     }
 
-    private async Task<FileData> DownloadMessagePhotoAsync(
-        Message message,
-        CancellationToken cancellationToken
-        )
+    private Task<FileData> DownloadMessagePhotoAsync(Message message, CancellationToken cancellationToken)
     {
         if (message.IsNotNull()
             && message.Photo.CheckAny()
            )
         {
             var photo = message.Photo![^1];
-            return await DownloadFileAsync(photo.FileId, cancellationToken);
+            return DownloadFileAsync(photo.FileId, cancellationToken);
         }
 
         if (message.IsNull()
@@ -231,13 +211,10 @@ internal partial class StateContext<T>(
         }
 
         var photoDocument = message.Document;
-        return await DownloadFileAsync(photoDocument.FileId, cancellationToken);
+        return DownloadFileAsync(photoDocument.FileId, cancellationToken);
     }
 
-    private async Task<FileData> DownloadFileAsync(
-        string fileId,
-        CancellationToken cancellationToken
-        )
+    private async Task<FileData> DownloadFileAsync(string fileId, CancellationToken cancellationToken)
     {
         if (fileId.IsNull())
         {

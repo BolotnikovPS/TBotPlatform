@@ -2,7 +2,7 @@
 
 namespace TBotPlatform.Common.BackgroundServices;
 
-internal class TelegramClientHostedServiceSettings
+internal class TelegramContextHostedServiceSettings
 {
     public UpdateType[] UpdateType { get; set; }
 }

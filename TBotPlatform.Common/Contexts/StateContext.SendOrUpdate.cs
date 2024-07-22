@@ -9,12 +9,7 @@ namespace TBotPlatform.Common.Contexts;
 
 internal partial class StateContext<T>
 {
-    public Task<Message> SendOrUpdateTextMessageAsync(
-        string text,
-        InlineMarkupList inlineMarkupList,
-        FileData photoData,
-        CancellationToken cancellationToken
-        )
+    public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileData photoData, CancellationToken cancellationToken)
     {
         InlineKeyboardMarkup inlineKeyboard = null;
 
@@ -34,11 +29,7 @@ internal partial class StateContext<T>
         return SendOrUpdateTextMessageAsync(text, inlineKeyboard, photoData, cancellationToken);
     }
 
-    public Task<Message> SendOrUpdateTextMessageAsync(
-        string text,
-        InlineMarkupList inlineMarkupList,
-        CancellationToken cancellationToken
-        )
+    public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, CancellationToken cancellationToken)
     {
         InlineKeyboardMarkup inlineKeyboard = null;
 
@@ -58,11 +49,7 @@ internal partial class StateContext<T>
         return SendOrUpdateTextMessageAsync(text, inlineKeyboard, null, cancellationToken);
     }
 
-    public Task<Message> SendOrUpdateTextMessageAsync(
-        string text,
-        InlineMarkupMassiveList inlineMarkupMassiveList,
-        CancellationToken cancellationToken
-        )
+    public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, CancellationToken cancellationToken)
     {
         InlineKeyboardMarkup inlineKeyboard = null;
 
@@ -74,21 +61,14 @@ internal partial class StateContext<T>
         return SendOrUpdateTextMessageAsync(text, inlineKeyboard, null, cancellationToken);
     }
 
-    public Task<Message> SendOrUpdateTextMessageAsync(
-        string text,
-        CancellationToken cancellationToken
-        ) => SendOrUpdateTextMessageAsync(
-        text,
-        inlineMarkupMassiveList: null,
-        cancellationToken
-        );
+    public Task<Message> SendOrUpdateTextMessageAsync(string text, CancellationToken cancellationToken)
+        => SendOrUpdateTextMessageAsync(
+            text,
+            inlineMarkupMassiveList: null,
+            cancellationToken
+            );
 
-    private async Task<Message> SendOrUpdateTextMessageAsync(
-        string text,
-        InlineKeyboardMarkup inlineKeyboard,
-        FileData photoData,
-        CancellationToken cancellationToken
-        )
+    private async Task<Message> SendOrUpdateTextMessageAsync(string text, InlineKeyboardMarkup inlineKeyboard, FileData photoData, CancellationToken cancellationToken)
     {
         if (UserDb.ChatId.IsDefault())
         {
@@ -124,9 +104,9 @@ internal partial class StateContext<T>
             return await botClient.SendPhotoAsync(
                 UserDb.ChatId,
                 InputFile.FromStream(fileStream),
-                caption: text,
-                replyMarkup: inlineKeyboard,
-                cancellationToken: cancellationToken
+                text,
+                inlineKeyboard,
+                cancellationToken
                 );
         }
 
@@ -135,8 +115,8 @@ internal partial class StateContext<T>
             return await botClient.SendTextMessageAsync(
                 UserDb.ChatId,
                 text,
-                replyMarkup: inlineKeyboard,
-                cancellationToken: cancellationToken
+                inlineKeyboard,
+                cancellationToken
                 );
         }
 
@@ -151,8 +131,8 @@ internal partial class StateContext<T>
                 UserDb.ChatId,
                 ChatMessage.CallbackQueryMessageIdOrNull.Value,
                 text,
-                replyMarkup: inlineKeyboard,
-                cancellationToken: cancellationToken
+                inlineKeyboard,
+                cancellationToken
                 );
         }
 
@@ -160,8 +140,8 @@ internal partial class StateContext<T>
             UserDb.ChatId,
             ChatMessage.CallbackQueryMessageIdOrNull.Value,
             text,
-            replyMarkup: inlineKeyboard,
-            cancellationToken: cancellationToken
+            inlineKeyboard,
+            cancellationToken
             );
     }
 }

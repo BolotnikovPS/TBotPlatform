@@ -7,29 +7,13 @@ namespace TBotPlatform.Common.Contexts;
 
 internal partial class StateContext<T>
 {
-    public async Task<Message> SendTextMessageWithReplyAsync(
-        string text,
-        CancellationToken cancellationToken
-        ) => await SendTextMessageAsync(
-        text,
-        true,
-        cancellationToken
-        );
+    public async Task<Message> SendTextMessageWithReplyAsync(string text, CancellationToken cancellationToken) 
+        => await SendTextMessageAsync(text, true, cancellationToken);
 
-    public Task<Message> SendTextMessageAsync(
-        string text,
-        CancellationToken cancellationToken
-        ) => SendTextMessageAsync(
-        text,
-        false,
-        cancellationToken
-        );
+    public Task<Message> SendTextMessageAsync(string text, CancellationToken cancellationToken) 
+        => SendTextMessageAsync(text, false, cancellationToken);
 
-    private async Task<Message> SendTextMessageAsync(
-        string text,
-        bool withReply,
-        CancellationToken cancellationToken
-        )
+    private Task<Message> SendTextMessageAsync(string text, bool withReply, CancellationToken cancellationToken)
     {
         if (UserDb.ChatId.IsDefault())
         {
@@ -53,7 +37,7 @@ internal partial class StateContext<T>
                 Selective = true,
             };
 
-        return await botClient.SendTextMessageAsync(
+        return botClient.SendTextMessageAsync(
             UserDb.ChatId,
             text,
             replyMarkup: replyMarkup,
@@ -61,10 +45,7 @@ internal partial class StateContext<T>
             );
     }
 
-    public async Task SendLongTextMessageAsync(
-        string text,
-        CancellationToken cancellationToken
-        )
+    public async Task SendLongTextMessageAsync(string text, CancellationToken cancellationToken)
     {
         if (UserDb.ChatId.IsDefault())
         {
