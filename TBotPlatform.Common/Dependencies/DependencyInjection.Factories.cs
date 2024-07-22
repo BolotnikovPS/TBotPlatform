@@ -21,7 +21,7 @@ public static partial class DependencyInjection
                     Assembly = executingAssembly,
                 })
            .AddScoped<IStateFactory<T>, StateFactory<T>>()
-           .AddScoped<IStateContextFactory<T>, StateContextFactory<T>>();
+           .AddScoped<IStateContextFactory, StateContextFactory>();
 
         return services;
     }

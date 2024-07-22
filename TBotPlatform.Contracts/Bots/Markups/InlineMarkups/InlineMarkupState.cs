@@ -35,6 +35,6 @@ public class InlineMarkupState(
 
     public InlineMarkupState CreateDataWithDelimiter(params string[] datas)
     {
-        return new(buttonName, state, string.Join(DelimiterConstant.DelimiterFirst, datas));
+        return new(ButtonName, state, string.Join(DelimiterConstant.DelimiterFirst, datas));
     }
 }

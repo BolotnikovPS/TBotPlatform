@@ -5,7 +5,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal partial class StateContext<T>
+internal partial class StateContext
 {
     private static ReplyKeyboardMarkup Map(ButtonsRuleMassiveList cakes)
         => GenerateButtons(cakes);

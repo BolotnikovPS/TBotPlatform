@@ -12,16 +12,15 @@ using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Factories;
 
-internal class StateContextFactory<T>(
-    ILogger<StateContextFactory<T>> logger,
+internal class StateContextFactory(
+    ILogger<StateContextFactory> logger,
     ITelegramContext botClient,
     IServiceScopeFactory serviceScopeFactory
-    ) : IStateContextFactory<T>
-    where T : UserBase
+    ) : IStateContextFactory
 {
     private const string ErrorText = "🆘 Произошла ошибка при обработке запроса";
 
-    async Task<IStateContext<T>> IStateContextFactory<T>.CreateStateContextAsync(
+    async Task<IStateContext> IStateContextFactory.CreateStateContextAsync<T>(
         T user,
         StateHistory<T> stateHistory,
         Update update,
@@ -29,7 +28,7 @@ internal class StateContextFactory<T>(
         CancellationToken cancellationToken
         )
     {
-        var stateContext = new StateContext<T>(logger, botClient);
+        var stateContext = new StateContext(logger, botClient);
         await stateContext.CreateStateContextAsync(
             user,
             update,
@@ -39,23 +38,20 @@ internal class StateContextFactory<T>(
 
         if (stateHistory.IsNotNull())
         {
-            await RequestAsync(stateContext, stateHistory.StateType, cancellationToken);
+            await RequestAsync(stateContext, user, stateHistory.StateType, cancellationToken);
         }
 
         return stateContext;
     }
 
-    private async Task RequestAsync(
-        IStateContext<T> stateContext,
-        Type stateType,
-        CancellationToken cancellationToken
-        )
+    private async Task RequestAsync<T>(IStateContext stateContext, T user, Type stateType, CancellationToken cancellationToken)
+        where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(stateContext);
 
-        var isIStateType = stateType.GetInterfaces().Any(x => x.Name == typeof(IState<T>).Name);
+        var isStateType = stateType.GetInterfaces().Any(x => x.Name == typeof(IState<T>).Name);
 
-        if (!isIStateType)
+        if (!isStateType)
         {
             throw new($"Класс {stateType.Name} содержит атрибут {nameof(StateActivatorBaseAttribute)} но не наследуется от {nameof(IState<T>)}");
         }
@@ -72,15 +68,9 @@ internal class StateContextFactory<T>(
 
         try
         {
-            await state!.HandleAsync(
-                stateContext,
-                cancellationToken
-                );
+            await state!.HandleAsync(stateContext, user, cancellationToken);
 
-            await state!.HandleCompleteAsync(
-                stateContext,
-                cancellationToken
-                );
+            await state!.HandleCompleteAsync(stateContext, user, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -90,7 +80,7 @@ internal class StateContextFactory<T>(
 
             try
             {
-                await state!.HandleErrorAsync(stateContext, ex, cancellationToken);
+                await state!.HandleErrorAsync(stateContext, user, ex, cancellationToken);
             }
             catch (Exception ex2)
             {

@@ -11,23 +11,23 @@ using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal partial class StateContext<T>(
+internal partial class StateContext(
     ILogger logger,
     ITelegramContext botClient
-    ) : IStateContext<T>
-    where T : UserBase
+    ) : IStateContext
 {
     public MarkupNextState MarkupNextState { get; private set; }
-    public T UserDb { get; private set; }
     public ChatMessage ChatMessage { get; private set; }
     public EBindStateType BindState { get; private set; }
     public bool IsForceReplyLastMenu { get; private set; }
-    
+
+    private UserBase UserDb { get; set; }
+
     private const string ChooseAction = "😊 Выберите действие";
     private const int TextLength = 4096;
 
     public async Task CreateStateContextAsync(
-        T user,
+        UserBase user,
         Update update,
         MarkupNextState markupNextState,
         CancellationToken cancellationToken
@@ -66,7 +66,7 @@ internal partial class StateContext<T>(
         return botClient.SendDocumentAsync(
             UserDb.ChatId,
             inputFile,
-            cancellationToken: cancellationToken
+            cancellationToken
             );
     }
 
@@ -80,7 +80,7 @@ internal partial class StateContext<T>(
         return botClient.SendChatActionAsync(
             UserDb.ChatId,
             chatAction,
-            cancellationToken: cancellationToken
+            cancellationToken
             );
     }
 
@@ -101,8 +101,8 @@ internal partial class StateContext<T>(
         return botClient.SendTextMessageAsync(
             UserDb.ChatId,
             ChooseAction,
-            replyMarkup: newMarkup,
-            cancellationToken: cancellationToken
+            newMarkup,
+            cancellationToken
             );
     }
 
@@ -139,7 +139,7 @@ internal partial class StateContext<T>(
                 UserDb.ChatId,
                 ChatMessage.CallbackQueryMessageIdOrNull.Value,
                 message,
-                cancellationToken: cancellationToken
+                cancellationToken
                 );
         }
 
@@ -147,17 +147,15 @@ internal partial class StateContext<T>(
             UserDb.ChatId,
             ChatMessage.CallbackQueryMessageIdOrNull.Value,
             message,
-            cancellationToken: cancellationToken
+            cancellationToken
             );
     }
 
     public Task UpdateMarkupTextAndDropButtonAsync(CancellationToken cancellationToken)
-    {
-        return UpdateMarkupTextAndDropButtonAsync(
+        => UpdateMarkupTextAndDropButtonAsync(
             "",
             cancellationToken
             );
-    }
 
     public Task RemoveCurrentReplyMessageAsync(CancellationToken cancellationToken)
     {
@@ -206,7 +204,7 @@ internal partial class StateContext<T>(
         if (message.IsNull()
             || message.Document.IsNull()
             || !message.Document!.MimeType!.Contains("image")
-            )
+           )
         {
             return default;
         }

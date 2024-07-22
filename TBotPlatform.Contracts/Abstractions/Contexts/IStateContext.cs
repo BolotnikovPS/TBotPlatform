@@ -7,8 +7,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Contracts.Abstractions.Contexts;
 
-public interface IStateContext<out T> : IAsyncDisposable
-where T : UserBase
+public interface IStateContext : IAsyncDisposable
 {
     /// <summary>
     /// Получает необходимость зафиксировать состояние
@@ -27,13 +26,7 @@ where T : UserBase
     /// </summary>
     /// <returns></returns>
     ChatMessage ChatMessage { get; }
-
-    /// <summary>
-    /// Получает информацию о пользователе
-    /// </summary>
-    /// <returns></returns>
-    T UserDb { get; }
-
+    
     /// <summary>
     /// Получает состояние входящей кнопки инлайн меню
     /// </summary>

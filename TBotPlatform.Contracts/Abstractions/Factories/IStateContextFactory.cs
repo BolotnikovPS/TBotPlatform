@@ -4,8 +4,7 @@ using Telegram.Bot.Types;
 
 namespace TBotPlatform.Contracts.Abstractions.Factories;
 
-public interface IStateContextFactory<T>
-where T : UserBase
+public interface IStateContextFactory
 {
     /// <summary>
     /// Создание контекста состояния и вызов самого состояния если оно имеется
@@ -16,11 +15,12 @@ where T : UserBase
     /// <param name="markupNextState"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IStateContext<T>> CreateStateContextAsync(
+    Task<IStateContext> CreateStateContextAsync<T>(
         T user,
         StateHistory<T> stateHistory,
         Update update,
         MarkupNextState markupNextState,
         CancellationToken cancellationToken
-        );
+        )
+        where T : UserBase;
 }

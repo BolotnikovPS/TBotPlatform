@@ -11,7 +11,7 @@ internal partial class TelegramContext
 
     private const int IterationWaitSecond = 1 * 1000;
 
-    public async Task<T> Enqueue<T>(Func<Task<T>> taskGenerator, CancellationToken cancellationToken)
+    public static async Task<T> Enqueue<T>(Func<Task<T>> taskGenerator, CancellationToken cancellationToken)
     {
         await Semaphore.WaitAsync(cancellationToken);
         try
@@ -39,7 +39,7 @@ internal partial class TelegramContext
         }
     }
 
-    public async Task Enqueue(Func<Task> taskGenerator, CancellationToken cancellationToken)
+    public static async Task Enqueue(Func<Task> taskGenerator, CancellationToken cancellationToken)
     {
         await Semaphore.WaitAsync(cancellationToken);
         try

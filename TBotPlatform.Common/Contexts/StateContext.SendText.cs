@@ -5,7 +5,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal partial class StateContext<T>
+internal partial class StateContext
 {
     public async Task<Message> SendTextMessageWithReplyAsync(string text, CancellationToken cancellationToken) 
         => await SendTextMessageAsync(text, true, cancellationToken);
