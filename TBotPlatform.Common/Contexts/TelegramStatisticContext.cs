@@ -14,9 +14,9 @@ internal class TelegramStatisticContext(ILogger<TelegramStatisticContext> logger
         return Task.CompletedTask;
     }
 
-    public Task HandleErrorStatisticAsync(StatisticMessage message, CancellationToken cancellationToken)
+    public Task HandleErrorStatisticAsync(StatisticMessage message, Exception exception, CancellationToken cancellationToken)
     {
-        logger.LogError("Ошибка отправки сообщения: {message}", message.ToJson());
+        logger.LogError(exception, "Ошибка отправки сообщения: {message}", message.ToJson());
 
         return Task.CompletedTask;
     }

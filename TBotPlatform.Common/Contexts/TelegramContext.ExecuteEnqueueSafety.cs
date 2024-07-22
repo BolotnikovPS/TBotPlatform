@@ -22,9 +22,9 @@ internal partial class TelegramContext
             await ExecuteEnqueueSafety(method, cancellationToken);
             await telegramStatisticContext.HandleStatisticAsync(statisticMessage, cancellationToken);
         }
-        catch
+        catch (Exception ex)
         {
-            await telegramStatisticContext.HandleErrorStatisticAsync(statisticMessage, cancellationToken);
+            await telegramStatisticContext.HandleErrorStatisticAsync(statisticMessage, ex, cancellationToken);
             throw;
         }
     }
@@ -45,9 +45,9 @@ internal partial class TelegramContext
 
             return result;
         }
-        catch
+        catch (Exception ex)
         {
-            await telegramStatisticContext.HandleErrorStatisticAsync(statisticMessage, cancellationToken);
+            await telegramStatisticContext.HandleErrorStatisticAsync(statisticMessage, ex, cancellationToken);
             throw;
         }
     }
@@ -76,6 +76,11 @@ internal partial class TelegramContext
 
             await Task.Delay(delay, cancellationToken);
         }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Исключение при работе с telegram");
+            throw;
+        }
 
         await Enqueue(() => method, cancellationToken);
     }
@@ -103,6 +108,11 @@ internal partial class TelegramContext
             logger.LogError(ex, "Ошибка. Задержка {delay}.", delay);
 
             await Task.Delay(delay, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Исключение при работе с telegram");
+            throw;
         }
 
         return await Enqueue(() => method, cancellationToken);

@@ -19,12 +19,14 @@ internal partial class TelegramContext
     /// <returns></returns>
     private static async Task DelayAsync(CancellationToken cancellationToken)
     {
-        if (_iteration > MaxCountIteration
-            || Timer.ElapsedMilliseconds > IterationWaitMilliSecond
-           )
+        if (_iteration > MaxCountIteration)
         {
+            if (Timer.ElapsedMilliseconds <= IterationWaitMilliSecond)
+            {
+                await Task.Delay(IterationWaitMilliSecond, cancellationToken);
+            }
+
             _iteration = 0;
-            await Task.Delay(IterationWaitMilliSecond, cancellationToken);
             Timer.Restart();
         }
     }
