@@ -23,7 +23,6 @@ public static partial class DependencyInjection
         }
 
         services
-           .AddScoped<ITelegramBotClient, TelegramBotClient>(_ => new(telegramSettings.Token))
            .AddSingleton(telegramSettings)
            .AddScoped(typeof(ITelegramStatisticContext), typeof(T))
            .AddScoped<ITelegramContext, TelegramContext>();

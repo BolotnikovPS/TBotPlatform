@@ -2,6 +2,7 @@
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Statistics;
+using TBotPlatform.Extension;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -13,12 +14,31 @@ namespace TBotPlatform.Common.Contexts;
 
 internal partial class TelegramContext(
     ILogger<TelegramContext> logger,
-    ITelegramBotClient botClient,
     TelegramSettings telegramSettings,
     ITelegramStatisticContext telegramStatisticContext
     ) : ITelegramContext
 {
     private const PMode ParseMode = PMode.Html;
+
+    private readonly TelegramBotClient _botClient = new(telegramSettings.Token);
+
+    public Task<Update[]> GetUpdatesAsync(int offset, UpdateType[] allowedUpdates, CancellationToken cancellationToken)
+    {
+        var task = _botClient.GetUpdatesAsync(
+            offset: offset,
+            allowedUpdates: allowedUpdates.IsNotNull() ? allowedUpdates : null,
+            cancellationToken: cancellationToken
+            );
+
+        return ExecuteEnqueueSafety(task, cancellationToken);
+    }
+
+    public Task<User> GetBotInfoAsync(CancellationToken cancellationToken)
+    {
+        var task = _botClient.GetMeAsync(cancellationToken);
+
+        return ExecuteEnqueueSafety(task, cancellationToken);
+    }
 
     public Task DeleteMessageAsync(long chatId, int messageId, CancellationToken cancellationToken)
     {
@@ -29,11 +49,7 @@ internal partial class TelegramContext(
             OperationType = nameof(DeleteMessageAsync),
         };
 
-        var task = botClient.DeleteMessageAsync(
-            chatId,
-            messageId,
-            cancellationToken
-            );
+        var task = _botClient.DeleteMessageAsync(chatId, messageId, cancellationToken);
 
         return ExecuteEnqueueSafety(task, statistic, cancellationToken);
     }
@@ -55,7 +71,7 @@ internal partial class TelegramContext(
             OperationType = nameof(EditMessageTextAsync),
         };
 
-        var task = botClient.EditMessageTextAsync(
+        var task = _botClient.EditMessageTextAsync(
             chatId,
             messageId,
             text,
@@ -87,7 +103,7 @@ internal partial class TelegramContext(
             OperationType = nameof(EditMessageCaptionAsync),
         };
 
-        var task = botClient.EditMessageCaptionAsync(
+        var task = _botClient.EditMessageCaptionAsync(
             chatId,
             messageId,
             caption,
@@ -118,7 +134,7 @@ internal partial class TelegramContext(
             OperationType = nameof(SendTextMessageAsync),
         };
 
-        var task = botClient.SendTextMessageAsync(
+        var task = _botClient.SendTextMessageAsync(
             chatId,
             text,
             parseMode: ParseMode,
@@ -147,11 +163,7 @@ internal partial class TelegramContext(
             OperationType = nameof(SendChatActionAsync),
         };
 
-        var task = botClient.SendChatActionAsync(
-            chatId,
-            chatAction,
-            cancellationToken: cancellationToken
-            );
+        var task = _botClient.SendChatActionAsync(chatId, chatAction, cancellationToken: cancellationToken);
 
         return ExecuteEnqueueSafety(task, statistic, cancellationToken);
     }
@@ -166,7 +178,7 @@ internal partial class TelegramContext(
             OperationType = nameof(SendDocumentAsync),
         };
 
-        var task = botClient.SendDocumentAsync(
+        var task = _botClient.SendDocumentAsync(
             chatId,
             document,
             parseMode: ParseMode,
@@ -203,7 +215,7 @@ internal partial class TelegramContext(
             OperationType = nameof(SendPhotoAsync),
         };
 
-        var task = botClient.SendPhotoAsync(
+        var task = _botClient.SendPhotoAsync(
             chatId,
             photo,
             caption: caption,
@@ -227,21 +239,14 @@ internal partial class TelegramContext(
 
     public Task DownloadFileAsync(string filePath, Stream destination, CancellationToken cancellationToken)
     {
-        var task = botClient.DownloadFileAsync(
-            filePath,
-            destination,
-            cancellationToken
-            );
+        var task = _botClient.DownloadFileAsync(filePath, destination, cancellationToken);
 
         return ExecuteEnqueueSafety(task, cancellationToken);
     }
 
     public Task<File> GetFileAsync(string fileId, CancellationToken cancellationToken)
     {
-        var task = botClient.GetFileAsync(
-            fileId,
-            cancellationToken
-            );
+        var task = _botClient.GetFileAsync(fileId, cancellationToken);
 
         return ExecuteEnqueueSafety(task, cancellationToken);
     }

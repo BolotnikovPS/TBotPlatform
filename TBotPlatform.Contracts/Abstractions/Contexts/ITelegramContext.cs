@@ -7,6 +7,10 @@ namespace TBotPlatform.Contracts.Abstractions.Contexts;
 
 public interface ITelegramContext
 {
+    Task<Update[]> GetUpdatesAsync(int offset, UpdateType[] allowedUpdates, CancellationToken cancellationToken);
+
+    Task<User> GetBotInfoAsync(CancellationToken cancellationToken);
+
     Task DeleteMessageAsync(long chatId, int messageId, CancellationToken cancellationToken);
 
     Task<Message> EditMessageTextAsync(

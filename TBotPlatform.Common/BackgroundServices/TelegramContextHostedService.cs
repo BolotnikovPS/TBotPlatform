@@ -2,21 +2,22 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Text;
 using TBotPlatform.Contracts.Abstractions;
+using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Extension;
-using Telegram.Bot;
-using Telegram.Bot.Polling;
-using Telegram.Bot.Types;
 
 namespace TBotPlatform.Common.BackgroundServices;
 
 internal class TelegramContextHostedService(
     ILogger<TelegramContextHostedService> logger,
     TelegramContextHostedServiceSettings settings,
-    ITelegramBotClient telegramContext,
+    ITelegramContext telegramContext,
     IServiceProvider services
     ) : BackgroundService
 {
+    private const int WaitMilliSecond = 1 * 1000;
+
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         await base.StartAsync(cancellationToken);
@@ -24,51 +25,66 @@ internal class TelegramContextHostedService(
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var result = await telegramContext.GetBotInfoAsync(stoppingToken);
+
+        logger.LogInformation("Запущен бот {name}", result.FirstName);
+
+        var offset = 0;
+
         while (!stoppingToken.IsCancellationRequested)
         {
-            var result = await telegramContext.GetMeAsync(stoppingToken);
-
-            logger.LogInformation("Запущен бот {name}", result.FirstName);
-
-            ReceiverOptions receiverOptions = null;
-
-            if (settings.UpdateType.IsNotNull())
+            try
             {
-                receiverOptions = new()
+                var updates = await telegramContext.GetUpdatesAsync(
+                    offset,
+                    settings.UpdateType.IsNotNull()
+                        ? settings.UpdateType
+                        : null,
+                    stoppingToken
+                    );
+
+                foreach (var update in updates)
                 {
-                    AllowedUpdates = settings.UpdateType,
-                };
+                    Exception exception = null;
+                    var sbLog = new StringBuilder();
+
+                    var timer = Stopwatch.StartNew();
+
+                    try
+                    {
+                        sbLog.AppendLine($"Поступило сообщение: {update.ToJson()}");
+
+                        await using var scope = services.CreateAsyncScope();
+                        var scopedProcessingService = scope.ServiceProvider.GetRequiredService<IStartReceivingHandler>();
+
+                        await scopedProcessingService.HandleUpdateAsync(update, stoppingToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        exception = ex;
+                    }
+                    finally
+                    {
+                        timer.Stop();
+
+                        sbLog.AppendLine($"Время выполнения: {timer.Elapsed}");
+
+                        var logLevel = exception.IsNotNull()
+                            ? LogLevel.Error
+                            : LogLevel.Information;
+
+                        logger.Log(logLevel, sbLog.ToString());
+
+                        offset = update.Id + 1;
+                    }
+                }
+
+                await Task.Delay(WaitMilliSecond, stoppingToken);
             }
-            
-            await telegramContext.ReceiveAsync(
-                HandleUpdateAsync,
-                HandleErrorAsync,
-                receiverOptions,
-                stoppingToken
-                );
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Неожиданное исключение при обработке обновлений");
+            }
         }
-    }
-
-    private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
-    {
-        logger.LogInformation("Поступило сообщение id = {updateId}: {update}", update.Id, update.ToJson());
-
-        var timer = Stopwatch.StartNew();
-
-        await using var scope = services.CreateAsyncScope();
-        var scopedProcessingService = scope.ServiceProvider.GetRequiredService<IStartReceivingHandler>();
-
-        await scopedProcessingService.HandleUpdateAsync(update, cancellationToken);
-
-        timer.Stop();
-
-        logger.LogInformation("Время выполнения для id = {updateId}: {elapsed}", update.Id, timer.Elapsed);
-    }
-
-    private Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
-    {
-        logger.LogError(exception, "Возникло исключение");
-
-        return Task.CompletedTask;
     }
 }
