@@ -12,11 +12,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Factories;
 
-internal class StateContextFactory(
-    ILogger<StateContextFactory> logger,
-    ITelegramContext botClient,
-    IServiceScopeFactory serviceScopeFactory
-    ) : IStateContextFactory
+internal class StateContextFactory(ILogger<StateContextFactory> logger, ITelegramContext botClient, IServiceScopeFactory serviceScopeFactory) : IStateContextFactory
 {
     private const string ErrorText = "🆘 Произошла ошибка при обработке запроса";
 

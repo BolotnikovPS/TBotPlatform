@@ -16,7 +16,7 @@ public class StateFactoryData
     public List<string> TextsTypes { get; set; }
 
     /// <summary>
-    /// Перечень типов комманд соответствующих состоянию
+    /// Перечень типов команд соответствующих состоянию
     /// </summary>
     public List<string> CommandsTypes { get; set; }
 
@@ -31,7 +31,7 @@ public class StateFactoryData
     public string MenuTypeName { get; set; }
 
     /// <summary>
-    /// Состояние вызывается только с инлайн кнопок
+    /// Состояние вызывается только с inline кнопок
     /// </summary>
     public bool IsInlineState { get; set; }
 

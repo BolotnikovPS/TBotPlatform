@@ -5,7 +5,6 @@ using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Extension;
-using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Dependencies;

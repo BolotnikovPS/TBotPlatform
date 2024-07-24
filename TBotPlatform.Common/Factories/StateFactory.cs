@@ -7,11 +7,7 @@ using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Factories;
 
-internal partial class StateFactory<T>(
-    ICacheService cache,
-    StateFactoryDataCollection stateFactoryDataCollection,
-    StateFactorySettings stateFactorySettings
-    ) : IStateFactory<T>
+internal partial class StateFactory<T>(ICacheService cache, StateFactoryDataCollection stateFactoryDataCollection, StateFactorySettings stateFactorySettings) : IStateFactory<T>
     where T : UserBase
 {
     public StateHistory<T> GetStateByNameOrDefault(string nameOfState = "")

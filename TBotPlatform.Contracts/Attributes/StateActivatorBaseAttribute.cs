@@ -14,7 +14,7 @@ public class StateActivatorBaseAttribute(bool isInlineState, Type menuType) : At
     public string[] TextsTypes { get; set; }
 
     /// <summary>
-    /// Перечень типов комманд соответствующих состоянию
+    /// Перечень типов команд соответствующих состоянию
     /// </summary>}
     public string[] CommandsTypes { get; set; }
 
@@ -24,7 +24,7 @@ public class StateActivatorBaseAttribute(bool isInlineState, Type menuType) : At
     public Type MenuType { get; private set; } = menuType;
 
     /// <summary>
-    /// Состояние вызывается только с инлайн кнопок
+    /// Состояние вызывается только с inline кнопок
     /// </summary>
     public bool IsInlineState { get; private set; } = isInlineState;
 

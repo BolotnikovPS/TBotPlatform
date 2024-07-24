@@ -5,7 +5,7 @@ using TBotPlatform.Extension;
 namespace TBotPlatform.Contracts.Bots;
 
 /// <summary>
-/// Данные которые будут передаваться по нажатию кнопки inline
+/// Данные с кнопки inline
 /// </summary>
 /// <param name="state"></param>
 /// <param name="data"></param>

@@ -132,10 +132,10 @@ public static partial class DependencyInjection
         switch (stateStartCount)
         {
             case < 1:
-                throw new("Нет состояний определяющих комманду /start");
+                throw new("Нет состояний определяющих команду /start");
 
             case > 1:
-                throw new("Состояний определяющих комманду /start больше одного");
+                throw new("Состояний определяющих команду /start больше одного");
         }
 
         var statesCollection = new StateFactoryDataCollection(states);

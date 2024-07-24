@@ -12,11 +12,7 @@ using PMode = Telegram.Bot.Types.Enums.ParseMode;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal partial class TelegramContext(
-    ILogger<TelegramContext> logger,
-    TelegramSettings telegramSettings,
-    ITelegramStatisticContext telegramStatisticContext
-    ) : ITelegramContext
+internal partial class TelegramContext(ILogger<TelegramContext> logger, TelegramSettings telegramSettings, ITelegramStatisticContext telegramStatisticContext) : ITelegramContext
 {
     private const PMode ParseMode = PMode.Html;
 

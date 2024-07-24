@@ -43,6 +43,12 @@ internal class TelegramContextHostedService(
                     stoppingToken
                     );
 
+                if (updates.IsNull())
+                {
+                    await Task.Delay(WaitMilliSecond, stoppingToken);
+                    continue;
+                }
+
                 foreach (var update in updates)
                 {
                     Exception exception = null;
@@ -73,7 +79,7 @@ internal class TelegramContextHostedService(
                             ? LogLevel.Error
                             : LogLevel.Information;
 
-                        logger.Log(logLevel, sbLog.ToString());
+                        logger.Log(logLevel, exception, "Ошибка обработки входящего сообщения {updateId} {log}", update.Id, sbLog.ToString());
 
                         offset = update.Id + 1;
                     }

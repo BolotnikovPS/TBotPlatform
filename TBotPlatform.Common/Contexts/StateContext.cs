@@ -11,10 +11,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal partial class StateContext(
-    ILogger logger,
-    ITelegramContext botClient
-    ) : IStateContext
+internal partial class StateContext(ILogger logger, ITelegramContext botClient) : IStateContext
 {
     public MarkupNextState MarkupNextState { get; private set; }
     public ChatMessage ChatMessage { get; private set; }

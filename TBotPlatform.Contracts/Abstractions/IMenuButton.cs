@@ -9,6 +9,7 @@ public interface IMenuButton<in T>
     /// <summary>
     /// Получает список кнопок для состояния
     /// </summary>
+    /// <param name="user">Пользователь</param>
     /// <returns></returns>
     ButtonsRuleMassiveList GetMarkUp(T user);
 }

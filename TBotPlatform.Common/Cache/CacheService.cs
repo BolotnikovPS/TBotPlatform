@@ -6,11 +6,7 @@ using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Cache;
 
-internal class CacheService(
-    ILogger<CacheService> logger,
-    Lazy<ConnectionMultiplexer> lazyMultiplexer,
-    CacheSettings cacheSettings
-    ) : ICacheService
+internal class CacheService(ILogger<CacheService> logger, Lazy<ConnectionMultiplexer> lazyMultiplexer, CacheSettings cacheSettings) : ICacheService
 {
     private IDatabase DbCache => lazyMultiplexer.Value.GetDatabase();
 

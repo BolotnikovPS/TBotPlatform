@@ -16,7 +16,7 @@ where T : UserBase
     public IMenuButton<T> MenuState { get; }
 
     /// <summary>
-    /// Состояние вызывается только с инлайн кнопок
+    /// Состояние вызывается только с inline кнопок
     /// </summary>
     public bool IsInlineState { get; }
 
