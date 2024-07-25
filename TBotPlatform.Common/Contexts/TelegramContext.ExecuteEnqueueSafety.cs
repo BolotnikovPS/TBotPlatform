@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using TBotPlatform.Contracts.Statistics;
-using TBotPlatform.Extension;
-using Telegram.Bot.Exceptions;
+﻿using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot.Types;
 
 namespace TBotPlatform.Common.Contexts;
@@ -19,7 +16,7 @@ internal partial class TelegramContext
     {
         try
         {
-            await ExecuteEnqueueSafety(method, cancellationToken);
+            await Enqueue(() => method, cancellationToken);
             await telegramStatisticContext.HandleStatisticAsync(statisticMessage, cancellationToken);
         }
         catch (Exception ex)
@@ -40,7 +37,7 @@ internal partial class TelegramContext
     {
         try
         {
-            var result = await ExecuteEnqueueSafety(method, cancellationToken);
+            var result = await Enqueue(() => method, cancellationToken);
             await telegramStatisticContext.HandleStatisticAsync(statisticMessage, cancellationToken);
 
             return result;
@@ -50,71 +47,5 @@ internal partial class TelegramContext
             await telegramStatisticContext.HandleErrorStatisticAsync(statisticMessage, ex, cancellationToken);
             throw;
         }
-    }
-
-    /// <summary>
-    /// Исполнение метода в очереди с задержкой при необходимости
-    /// </summary>
-    /// <param name="method"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    private async Task ExecuteEnqueueSafety(Task method, CancellationToken cancellationToken)
-    {
-        try
-        {
-            await Enqueue(() => method, cancellationToken);
-            return;
-        }
-        catch (ApiRequestException ex)
-        {
-            var delay = ex.Parameters.IsNotNull()
-                        && ex!.Parameters!.RetryAfter.HasValue
-                ? ex.Parameters.RetryAfter.Value
-                : 100;
-
-            logger.LogError(ex, "Ошибка. Задержка {delay}.", delay);
-
-            await Task.Delay(delay, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Исключение при работе с telegram");
-            throw;
-        }
-
-        await Enqueue(() => method, cancellationToken);
-    }
-
-    /// <summary>
-    /// Исполнение метода в очереди с задержкой при необходимости
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="method"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    private async Task<T> ExecuteEnqueueSafety<T>(Task<T> method, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await Enqueue(() => method, cancellationToken);
-        }
-        catch (ApiRequestException ex)
-        {
-            var delay = ex.Parameters.IsNotNull()
-                        && ex!.Parameters!.RetryAfter.HasValue
-                ? ex.Parameters.RetryAfter.Value
-                : 100;
-
-            logger.LogError(ex, "Ошибка. Задержка {delay}.", delay);
-
-            await Task.Delay(delay, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Исключение при работе с telegram");
-            throw;
-        }
-
-        return await Enqueue(() => method, cancellationToken);
     }
 }

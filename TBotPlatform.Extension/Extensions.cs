@@ -12,7 +12,7 @@ public static partial class Extensions
     public static string ToBoldString(this string expr) => $"<b>{expr}</b>";
 
     public static string ToJson<T>(this T obj)
-        where T : class => JsonConvert.SerializeObject(obj);
+        where T : class => JsonConvert.SerializeObject(obj, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore, });
 
     public static string ToJson(this object obj) => JsonConvert.SerializeObject(obj);
     

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace TBotPlatform.Common.Contexts;
 
@@ -38,7 +39,7 @@ internal partial class TelegramContext
     /// <param name="taskGenerator"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public static async Task<T> Enqueue<T>(Func<Task<T>> taskGenerator, CancellationToken cancellationToken)
+    public async Task<T> Enqueue<T>(Func<Task<T>> taskGenerator, CancellationToken cancellationToken)
     {
         await Semaphore.WaitAsync(cancellationToken);
         try
@@ -48,6 +49,11 @@ internal partial class TelegramContext
             await DelayAsync(cancellationToken);
 
             return await taskGenerator();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Исключение при работе с telegram");
+            throw;
         }
         finally
         {
@@ -63,7 +69,7 @@ internal partial class TelegramContext
     /// <param name="taskGenerator"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public static async Task Enqueue(Func<Task> taskGenerator, CancellationToken cancellationToken)
+    public async Task Enqueue(Func<Task> taskGenerator, CancellationToken cancellationToken)
     {
         await Semaphore.WaitAsync(cancellationToken);
         try
@@ -73,6 +79,11 @@ internal partial class TelegramContext
             await DelayAsync(cancellationToken);
 
             await taskGenerator();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Исключение при работе с telegram");
+            throw;
         }
         finally
         {

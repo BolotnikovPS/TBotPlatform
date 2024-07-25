@@ -12,11 +12,11 @@ using PMode = Telegram.Bot.Types.Enums.ParseMode;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal partial class TelegramContext(ILogger<TelegramContext> logger, TelegramSettings telegramSettings, ITelegramStatisticContext telegramStatisticContext) : ITelegramContext
+internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClient client, TelegramSettings telegramSettings, ITelegramStatisticContext telegramStatisticContext) : ITelegramContext
 {
     private const PMode ParseMode = PMode.Html;
 
-    private readonly TelegramBotClient _botClient = new(telegramSettings.Token);
+    private readonly TelegramBotClient _botClient = new(telegramSettings.Token, client);
 
     public Task<Update[]> GetUpdatesAsync(int offset, UpdateType[] allowedUpdates, CancellationToken cancellationToken)
     {
@@ -26,14 +26,14 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, Telegram
             cancellationToken: cancellationToken
             );
 
-        return ExecuteEnqueueSafety(task, cancellationToken);
+        return Enqueue(() => task, cancellationToken);
     }
 
     public Task<User> GetBotInfoAsync(CancellationToken cancellationToken)
     {
         var task = _botClient.GetMeAsync(cancellationToken);
 
-        return ExecuteEnqueueSafety(task, cancellationToken);
+        return Enqueue(() => task, cancellationToken);
     }
 
     public Task DeleteMessageAsync(long chatId, int messageId, CancellationToken cancellationToken)
@@ -237,13 +237,13 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, Telegram
     {
         var task = _botClient.DownloadFileAsync(filePath, destination, cancellationToken);
 
-        return ExecuteEnqueueSafety(task, cancellationToken);
+        return Enqueue(() => task, cancellationToken);
     }
 
     public Task<File> GetFileAsync(string fileId, CancellationToken cancellationToken)
     {
         var task = _botClient.GetFileAsync(fileId, cancellationToken);
 
-        return ExecuteEnqueueSafety(task, cancellationToken);
+        return Enqueue(() => task, cancellationToken);
     }
 }
