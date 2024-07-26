@@ -28,7 +28,7 @@ public class LoggingHttpHandler(ILogger<LoggingHttpHandler> logger)
                 && response.Headers.RetryAfter.IsNotNull()
                 )
             {
-                sbLog.AppendLine($"Delay: {response.Headers.RetryAfter.Delta.ToString()}");
+                sbLog.AppendLine($"Delay: {response!.Headers!.RetryAfter!.Delta.ToString()}");
             }
 
             if (response.Content.IsNull())

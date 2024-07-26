@@ -67,19 +67,16 @@ public static partial class DependencyInjection
     }
 
     private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
-    {
-        return HttpPolicyExtensions
-              .HandleTransientHttpError()
-              .OrResult(msg => msg.StatusCode == HttpStatusCode.TooManyRequests)
-              .OrResult(
-                   res =>
-                       res.Headers.IsNotNull()
-                       && res.Headers.RetryAfter.IsNotNull()
-                   )
-              .WaitAndRetryAsync(
-                   3,
-                   (_, response, _) => response.Result.Headers.RetryAfter.Delta.Value,
-                   (_, _, _, _) => Task.CompletedTask
-                   );
-    }
+        => HttpPolicyExtensions
+          .HandleTransientHttpError()
+          .OrResult(
+               res => res.StatusCode == HttpStatusCode.TooManyRequests
+                      && res.Headers.IsNotNull()
+                      && res.Headers.RetryAfter.IsNotNull()
+               )
+          .WaitAndRetryAsync(
+               3,
+               (_, response, _) => response!.Result!.Headers!.RetryAfter!.Delta!.Value,
+               (_, _, _, _) => Task.CompletedTask
+               );
 }
