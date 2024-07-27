@@ -12,11 +12,12 @@ using PMode = Telegram.Bot.Types.Enums.ParseMode;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClient client, TelegramSettings telegramSettings, ITelegramStatisticContext telegramStatisticContext) : ITelegramContext
+internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog) : ITelegramContext
 {
     private const PMode ParseMode = PMode.Html;
 
     private readonly TelegramBotClient _botClient = new(telegramSettings.Token, client);
+    private readonly Guid _operationGuid = Guid.NewGuid();
 
     public Task<Update[]> GetUpdatesAsync(int offset, UpdateType[] allowedUpdates, CancellationToken cancellationToken)
     {
@@ -31,23 +32,25 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
 
     public Task<User> GetBotInfoAsync(CancellationToken cancellationToken)
     {
-        var task = _botClient.GetMeAsync(cancellationToken);
-
-        return Enqueue(() => task, cancellationToken);
+        return Enqueue(
+            () => _botClient.GetMeAsync(cancellationToken),
+            cancellationToken
+            );
     }
 
     public Task DeleteMessageAsync(long chatId, int messageId, CancellationToken cancellationToken)
     {
-        var statistic = new StatisticMessage
+        var log = new TelegramContextLogMessage
         {
+            OperationGuid = _operationGuid,
+            OperationType = nameof(DeleteMessageAsync),
             ChatId = chatId,
             MessageId = messageId,
-            OperationType = nameof(DeleteMessageAsync),
         };
 
         var task = _botClient.DeleteMessageAsync(chatId, messageId, cancellationToken);
 
-        return ExecuteEnqueueSafety(task, statistic, cancellationToken);
+        return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
     public Task<Message> EditMessageTextAsync(
@@ -58,13 +61,14 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
         CancellationToken cancellationToken
         )
     {
-        var statistic = new StatisticMessage
+        var log = new TelegramContextLogMessage
         {
+            OperationGuid = _operationGuid,
+            OperationType = nameof(EditMessageTextAsync),
             ChatId = chatId,
             MessageId = messageId,
             Message = text,
             InlineKeyboardMarkup = replyMarkup,
-            OperationType = nameof(EditMessageTextAsync),
         };
 
         var task = _botClient.EditMessageTextAsync(
@@ -76,27 +80,22 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
             cancellationToken: cancellationToken
             );
 
-        return ExecuteEnqueueSafety(task, statistic, cancellationToken);
+        return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
     public Task<Message> EditMessageTextAsync(long chatId, int messageId, string text, CancellationToken cancellationToken)
-        => EditMessageTextAsync(
-            chatId,
-            messageId,
-            text,
-            null,
-            cancellationToken
-            );
+        => EditMessageTextAsync(chatId, messageId, text, null, cancellationToken);
 
     public Task<Message> EditMessageCaptionAsync(long chatId, int messageId, string caption, InlineKeyboardMarkup replyMarkup, CancellationToken cancellationToken)
     {
-        var statistic = new StatisticMessage
+        var log = new TelegramContextLogMessage
         {
+            OperationGuid = _operationGuid,
+            OperationType = nameof(EditMessageCaptionAsync),
             ChatId = chatId,
             MessageId = messageId,
             InlineKeyboardMarkup = replyMarkup,
             Caption = caption,
-            OperationType = nameof(EditMessageCaptionAsync),
         };
 
         var task = _botClient.EditMessageCaptionAsync(
@@ -108,26 +107,21 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
             cancellationToken: cancellationToken
             );
 
-        return ExecuteEnqueueSafety(task, statistic, cancellationToken);
+        return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
     public Task<Message> EditMessageCaptionAsync(long chatId, int messageId, string caption, CancellationToken cancellationToken)
-        => EditMessageCaptionAsync(
-            chatId,
-            messageId,
-            caption,
-            null,
-            cancellationToken
-            );
+        => EditMessageCaptionAsync(chatId, messageId, caption, null, cancellationToken);
 
     public Task<Message> SendTextMessageAsync(long chatId, string text, IReplyMarkup replyMarkup, CancellationToken cancellationToken)
     {
-        var statistic = new StatisticMessage
+        var log = new TelegramContextLogMessage
         {
+            OperationGuid = _operationGuid,
+            OperationType = nameof(SendTextMessageAsync),
             ChatId = chatId,
             Message = text,
             ReplyMarkup = replyMarkup,
-            OperationType = nameof(SendTextMessageAsync),
         };
 
         var task = _botClient.SendTextMessageAsync(
@@ -139,39 +133,36 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
             cancellationToken: cancellationToken
             );
 
-        return ExecuteEnqueueSafety(task, statistic, cancellationToken);
+        return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
     public Task<Message> SendTextMessageAsync(long chatId, string text, CancellationToken cancellationToken)
-        => SendTextMessageAsync(
-            chatId,
-            text,
-            null,
-            cancellationToken
-            );
+        => SendTextMessageAsync(chatId, text, null, cancellationToken);
 
     public Task SendChatActionAsync(long chatId, ChatAction chatAction, CancellationToken cancellationToken)
     {
-        var statistic = new StatisticMessage
+        var log = new TelegramContextLogMessage
         {
+            OperationGuid = _operationGuid,
+            OperationType = nameof(SendChatActionAsync),
             ChatId = chatId,
             ChatAction = chatAction,
-            OperationType = nameof(SendChatActionAsync),
         };
 
         var task = _botClient.SendChatActionAsync(chatId, chatAction, cancellationToken: cancellationToken);
 
-        return ExecuteEnqueueSafety(task, statistic, cancellationToken);
+        return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
     public Task<Message> SendDocumentAsync(long chatId, InputFile document, IReplyMarkup replyMarkup, CancellationToken cancellationToken)
     {
-        var statistic = new StatisticMessage
+        var log = new TelegramContextLogMessage
         {
+            OperationGuid = _operationGuid,
+            OperationType = nameof(SendDocumentAsync),
             ChatId = chatId,
             ReplyMarkup = replyMarkup,
             InputFile = document,
-            OperationType = nameof(SendDocumentAsync),
         };
 
         var task = _botClient.SendDocumentAsync(
@@ -183,16 +174,11 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
             cancellationToken: cancellationToken
             );
 
-        return ExecuteEnqueueSafety(task, statistic, cancellationToken);
+        return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
     public Task<Message> SendDocumentAsync(long chatId, InputFile document, CancellationToken cancellationToken)
-        => SendDocumentAsync(
-            chatId,
-            document,
-            null,
-            cancellationToken
-            );
+        => SendDocumentAsync(chatId, document, null, cancellationToken);
 
     public Task<Message> SendPhotoAsync(
         long chatId,
@@ -202,13 +188,14 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
         CancellationToken cancellationToken
         )
     {
-        var statistic = new StatisticMessage
+        var log = new TelegramContextLogMessage
         {
+            OperationGuid = _operationGuid,
+            OperationType = nameof(SendPhotoAsync),
             ChatId = chatId,
             ReplyMarkup = replyMarkup,
             Caption = caption,
             InputFile = photo,
-            OperationType = nameof(SendPhotoAsync),
         };
 
         var task = _botClient.SendPhotoAsync(
@@ -221,29 +208,37 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
             cancellationToken: cancellationToken
             );
 
-        return ExecuteEnqueueSafety(task, statistic, cancellationToken);
+        return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
     public Task<Message> SendPhotoAsync(long chatId, InputFile photo, CancellationToken cancellationToken)
-        => SendPhotoAsync(
-            chatId,
-            photo,
-            null,
-            null,
-            cancellationToken
-            );
+        => SendPhotoAsync(chatId, photo, null, null, cancellationToken);
 
-    public Task DownloadFileAsync(string filePath, Stream destination, CancellationToken cancellationToken)
+    public Task DownloadFileAsync(long chatId, string filePath, Stream destination, CancellationToken cancellationToken)
     {
+        var log = new TelegramContextLogMessage
+        {
+            OperationGuid = _operationGuid,
+            OperationType = nameof(DownloadFileAsync),
+            ChatId = chatId,
+        };
+
         var task = _botClient.DownloadFileAsync(filePath, destination, cancellationToken);
 
-        return Enqueue(() => task, cancellationToken);
+        return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
-    public Task<File> GetFileAsync(string fileId, CancellationToken cancellationToken)
+    public Task<File> GetFileAsync(long chatId, string fileId, CancellationToken cancellationToken)
     {
         var task = _botClient.GetFileAsync(fileId, cancellationToken);
 
-        return Enqueue(() => task, cancellationToken);
+        var log = new TelegramContextLogMessage
+        {
+            OperationGuid = _operationGuid,
+            OperationType = nameof(GetFileAsync),
+            ChatId = chatId,
+        };
+
+        return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 }

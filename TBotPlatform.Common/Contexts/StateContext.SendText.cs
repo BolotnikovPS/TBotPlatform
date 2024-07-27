@@ -15,7 +15,7 @@ internal partial class StateContext
 
     private Task<Message> SendTextMessageAsync(string text, bool withReply, CancellationToken cancellationToken)
     {
-        if (UserDb.ChatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -38,7 +38,7 @@ internal partial class StateContext
             };
 
         return botClient.SendTextMessageAsync(
-            UserDb.ChatId,
+            ChatId,
             text,
             replyMarkup: replyMarkup,
             cancellationToken: cancellationToken
@@ -47,7 +47,7 @@ internal partial class StateContext
 
     public async Task SendLongTextMessageAsync(string text, CancellationToken cancellationToken)
     {
-        if (UserDb.ChatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -62,7 +62,7 @@ internal partial class StateContext
             foreach (var tf in text.SplitByLength(TextLength))
             {
                 await botClient.SendTextMessageAsync(
-                    UserDb.ChatId,
+                    ChatId,
                     tf,
                     cancellationToken: cancellationToken
                     );
@@ -72,7 +72,7 @@ internal partial class StateContext
         }
 
         await botClient.SendTextMessageAsync(
-            UserDb.ChatId,
+            ChatId,
             text,
             cancellationToken: cancellationToken
             );

@@ -16,13 +16,22 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, ITelegra
 {
     private const string ErrorText = "🆘 Произошла ошибка при обработке запроса";
 
-    async Task<IStateContext> IStateContextFactory.CreateStateContextAsync<T>(
+    public Task<IStateContext> CreateStateContextAsync<T>(T user, CancellationToken cancellationToken)
+        where T : UserBase
+        => CreateStateContextAsync(user, null, null, null, cancellationToken);
+    
+    public Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory<T> stateHistory, Update update, CancellationToken cancellationToken)
+        where T : UserBase
+        => CreateStateContextAsync(user, stateHistory, update, null, cancellationToken);
+    
+    public async Task<IStateContext> CreateStateContextAsync<T>(
         T user,
         StateHistory<T> stateHistory,
         Update update,
         MarkupNextState markupNextState,
         CancellationToken cancellationToken
         )
+        where T : UserBase
     {
         var stateContext = new StateContext(logger, botClient);
         await stateContext.CreateStateContextAsync(

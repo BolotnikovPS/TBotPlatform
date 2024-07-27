@@ -1,5 +1,5 @@
 ﻿using TBotPlatform.Contracts.Statistics;
-using Telegram.Bot.Types;
+using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Contexts;
 
@@ -12,16 +12,16 @@ internal partial class TelegramContext
     /// <param name="statisticMessage"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    private async Task ExecuteEnqueueSafety(Task method, StatisticMessage statisticMessage, CancellationToken cancellationToken)
+    private async Task ExecuteEnqueueSafety(Task method, TelegramContextLogMessage statisticMessage, CancellationToken cancellationToken)
     {
         try
         {
             await Enqueue(() => method, cancellationToken);
-            await telegramStatisticContext.HandleStatisticAsync(statisticMessage, cancellationToken);
+            await telegramContextLog.HandleLogAsync(statisticMessage, cancellationToken);
         }
         catch (Exception ex)
         {
-            await telegramStatisticContext.HandleErrorStatisticAsync(statisticMessage, ex, cancellationToken);
+            await telegramContextLog.HandleErrorLogAsync(statisticMessage, ex, cancellationToken);
             throw;
         }
     }
@@ -33,18 +33,21 @@ internal partial class TelegramContext
     /// <param name="statisticMessage"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    private async Task<Message> ExecuteEnqueueSafety(Task<Message> method, StatisticMessage statisticMessage, CancellationToken cancellationToken)
+    private async Task<T> ExecuteEnqueueSafety<T>(Task<T> method, TelegramContextLogMessage statisticMessage, CancellationToken cancellationToken)
     {
         try
         {
             var result = await Enqueue(() => method, cancellationToken);
-            await telegramStatisticContext.HandleStatisticAsync(statisticMessage, cancellationToken);
+
+            statisticMessage.Result = result.ToJson();
+
+            await telegramContextLog.HandleLogAsync(statisticMessage, cancellationToken);
 
             return result;
         }
         catch (Exception ex)
         {
-            await telegramStatisticContext.HandleErrorStatisticAsync(statisticMessage, ex, cancellationToken);
+            await telegramContextLog.HandleErrorLogAsync(statisticMessage, ex, cancellationToken);
             throw;
         }
     }

@@ -27,7 +27,7 @@ internal class TelegramContextHostedService(
     {
         var result = await telegramContext.GetBotInfoAsync(stoppingToken);
 
-        logger.LogInformation("Запущен бот {name}", result.FirstName);
+        logger.LogDebug("Запущен бот {name}", result.FirstName);
 
         var offset = 0;
 
@@ -77,7 +77,7 @@ internal class TelegramContextHostedService(
 
                         var logLevel = exception.IsNotNull()
                             ? LogLevel.Error
-                            : LogLevel.Information;
+                            : LogLevel.Debug;
 
                         logger.Log(logLevel, exception, "Ошибка обработки входящего сообщения {updateId} {log}", update.Id, sbLog.ToString());
 

@@ -5,8 +5,12 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Contracts.Statistics;
 
-public class StatisticMessage
+public class TelegramContextLogMessage
 {
+    public required Guid OperationGuid { get; set; }
+
+    public required string OperationType { get; set; }
+
     public required long ChatId { get; set; }
 
     public string? Message { get; set; }
@@ -23,5 +27,5 @@ public class StatisticMessage
 
     public InputFile? InputFile { get; set; }
 
-    public required string OperationType { get; set; }
+    public string? Result { get; set; }
 }

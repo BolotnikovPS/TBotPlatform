@@ -18,7 +18,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
     public EBindStateType BindState { get; private set; }
     public bool IsForceReplyLastMenu { get; private set; }
 
-    private UserBase UserDb { get; set; }
+    private long ChatId { get; set; }
 
     private const string ChooseAction = "😊 Выберите действие";
     private const int TextLength = 4096;
@@ -32,6 +32,13 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
     {
         cancellationToken.ThrowIfCancellationRequested();
 
+        if (user.ChatId.IsDefault())
+        {
+            throw new ChatIdArgException();
+        }
+
+        ChatId = user.ChatId;
+
         ChatMessage = new(
             update?.Message?.Text,
             update?.Message?.ReplyToMessage?.Text,
@@ -39,7 +46,6 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
             await DownloadMessagePhotoAsync(update?.Message, cancellationToken)
             );
 
-        UserDb = user;
         MarkupNextState = markupNextState;
     }
 
@@ -55,13 +61,13 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
 
     public Task<Message> SendDocumentAsync(InputFile inputFile, CancellationToken cancellationToken)
     {
-        if (UserDb.ChatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
         return botClient.SendDocumentAsync(
-            UserDb.ChatId,
+            ChatId,
             inputFile,
             cancellationToken
             );
@@ -69,13 +75,13 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
 
     public Task SendChatActionAsync(ChatAction chatAction, CancellationToken cancellationToken)
     {
-        if (UserDb.ChatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
         return botClient.SendChatActionAsync(
-            UserDb.ChatId,
+            ChatId,
             chatAction,
             cancellationToken
             );
@@ -83,7 +89,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
 
     public Task<Message> UpdateMarkupAsync(ButtonsRuleMassiveList replyMarkup, CancellationToken cancellationToken)
     {
-        if (UserDb.ChatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -96,7 +102,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
         }
 
         return botClient.SendTextMessageAsync(
-            UserDb.ChatId,
+            ChatId,
             ChooseAction,
             newMarkup,
             cancellationToken
@@ -110,7 +116,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
             return Task.CompletedTask;
         }
 
-        if (UserDb.ChatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -133,7 +139,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
         if (ChatMessage!.CallbackQueryMessageWithCaption)
         {
             return botClient.EditMessageCaptionAsync(
-                UserDb.ChatId,
+                ChatId,
                 ChatMessage.CallbackQueryMessageIdOrNull.Value,
                 message,
                 cancellationToken
@@ -141,7 +147,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
         }
 
         return botClient.EditMessageTextAsync(
-            UserDb.ChatId,
+            ChatId,
             ChatMessage.CallbackQueryMessageIdOrNull.Value,
             message,
             cancellationToken
@@ -156,7 +162,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
 
     public Task RemoveCurrentReplyMessageAsync(CancellationToken cancellationToken)
     {
-        if (UserDb.ChatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -167,7 +173,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
         }
 
         return botClient.DeleteMessageAsync(
-            UserDb.ChatId,
+            ChatId,
             ChatMessage.CallbackQueryMessageIdOrNull.Value,
             cancellationToken
             );
@@ -183,7 +189,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
     private void CleanUp()
     {
         ChatMessage = null;
-        UserDb = null;
+        ChatId = 0;
         MarkupNextState = null;
         IsForceReplyLastMenu = false;
     }
@@ -212,6 +218,11 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
 
     private async Task<FileData> DownloadFileAsync(string fileId, CancellationToken cancellationToken)
     {
+        if (ChatId.IsDefault())
+        {
+            throw new ChatIdArgException();
+        }
+
         if (fileId.IsNull())
         {
             return default;
@@ -219,7 +230,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
 
         try
         {
-            var file = await botClient.GetFileAsync(fileId, cancellationToken);
+            var file = await botClient.GetFileAsync(ChatId, fileId, cancellationToken);
 
             if (file.IsNull())
             {
@@ -228,7 +239,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
 
             await using var fileStream = new MemoryStream();
 
-            await botClient.DownloadFileAsync(file.FilePath!, fileStream, cancellationToken);
+            await botClient.DownloadFileAsync(ChatId, file.FilePath!, fileStream, cancellationToken);
 
             return new()
             {

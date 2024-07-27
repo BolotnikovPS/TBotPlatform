@@ -18,10 +18,12 @@ internal partial class TelegramContext
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    private static async Task DelayAsync(CancellationToken cancellationToken)
+    private async Task DelayAsync(CancellationToken cancellationToken)
     {
         if (_iteration > MaxCountIteration)
         {
+            logger.LogDebug("Отправлено {count} запросов в telegram за {second} секунд", _iteration, Timer.Elapsed.Seconds);
+
             if (Timer.ElapsedMilliseconds <= IterationWaitMilliSecond)
             {
                 await Task.Delay(IterationWaitMilliSecond, cancellationToken);

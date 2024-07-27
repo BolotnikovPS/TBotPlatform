@@ -70,7 +70,7 @@ internal partial class StateContext
 
     private async Task<Message> SendOrUpdateTextMessageAsync(string text, InlineKeyboardMarkup inlineKeyboard, FileData photoData, CancellationToken cancellationToken)
     {
-        if (UserDb.ChatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -94,7 +94,7 @@ internal partial class StateContext
             if (checkToEdit)
             {
                 await botClient.DeleteMessageAsync(
-                    UserDb.ChatId,
+                    ChatId,
                     ChatMessage.CallbackQueryMessageIdOrNull!.Value,
                     cancellationToken
                     );
@@ -102,7 +102,7 @@ internal partial class StateContext
 
             await using var fileStream = new MemoryStream(photoData.Byte);
             return await botClient.SendPhotoAsync(
-                UserDb.ChatId,
+                ChatId,
                 InputFile.FromStream(fileStream),
                 text,
                 inlineKeyboard,
@@ -113,7 +113,7 @@ internal partial class StateContext
         if (!checkToEdit)
         {
             return await botClient.SendTextMessageAsync(
-                UserDb.ChatId,
+                ChatId,
                 text,
                 inlineKeyboard,
                 cancellationToken
@@ -128,7 +128,7 @@ internal partial class StateContext
         if (ChatMessage.CallbackQueryMessageWithCaption)
         {
             return await botClient.EditMessageCaptionAsync(
-                UserDb.ChatId,
+                ChatId,
                 ChatMessage.CallbackQueryMessageIdOrNull.Value,
                 text,
                 inlineKeyboard,
@@ -137,7 +137,7 @@ internal partial class StateContext
         }
 
         return await botClient.EditMessageTextAsync(
-            UserDb.ChatId,
+            ChatId,
             ChatMessage.CallbackQueryMessageIdOrNull.Value,
             text,
             inlineKeyboard,

@@ -16,7 +16,7 @@ namespace TBotPlatform.Common.Dependencies;
 public static partial class DependencyInjection
 {
     public static IServiceCollection AddTelegramContext<T>(this IServiceCollection services, TelegramSettings telegramSettings)
-        where T : ITelegramStatisticContext
+        where T : ITelegramContextLog
     {
         if (telegramSettings.IsNull()
             || telegramSettings.Token.IsNull()
@@ -28,7 +28,7 @@ public static partial class DependencyInjection
         services
            .AddScoped<LoggingHttpHandler>()
            .AddSingleton(telegramSettings)
-           .AddScoped(typeof(ITelegramStatisticContext), typeof(T))
+           .AddScoped(typeof(ITelegramContextLog), typeof(T))
            .AddHttpClient<ITelegramContext, TelegramContext>()
            .AddHttpMessageHandler<LoggingHttpHandler>()
            .AddPolicyHandler(GetRetryPolicy());
@@ -37,10 +37,10 @@ public static partial class DependencyInjection
     }
 
     public static IServiceCollection AddTelegramContext(this IServiceCollection services, TelegramSettings telegramSettings)
-        => services.AddTelegramContext<TelegramStatisticContext>(telegramSettings);
+        => services.AddTelegramContext<TelegramContextLog>(telegramSettings);
 
     public static IServiceCollection AddTelegramClientHostedService<T>(this IServiceCollection services, TelegramSettings telegramSettings, params UpdateType[] updateType)
-        where T : ITelegramStatisticContext
+        where T : ITelegramContextLog
     {
         services
            .AddSingleton(
@@ -55,7 +55,7 @@ public static partial class DependencyInjection
     }
 
     public static IServiceCollection AddTelegramContextHostedService(this IServiceCollection services, TelegramSettings telegramSettings, params UpdateType[] updateType)
-        => services.AddTelegramClientHostedService<TelegramStatisticContext>(telegramSettings, updateType);
+        => services.AddTelegramClientHostedService<TelegramContextLog>(telegramSettings, updateType);
 
     public static IServiceCollection AddReceivingHandler<T>(this IServiceCollection services)
         where T : IStartReceivingHandler

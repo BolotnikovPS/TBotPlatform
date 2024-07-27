@@ -153,17 +153,19 @@ public interface ITelegramContext
     /// <summary>
     /// Скачивает файл
     /// </summary>
+    /// <param name="chatId">Id чата</param>
     /// <param name="filePath">Путь до файла</param>
     /// <param name="destination">Стрим куда запишется файл</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task DownloadFileAsync(string filePath, Stream destination, CancellationToken cancellationToken);
+    Task DownloadFileAsync(long chatId, string filePath, Stream destination, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получает файл
     /// </summary>
+    /// <param name="chatId">Id чата</param>
     /// <param name="fileId">Id документа</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<File> GetFileAsync(string fileId, CancellationToken cancellationToken);
+    Task<File> GetFileAsync(long chatId, string fileId, CancellationToken cancellationToken);
 }
