@@ -27,7 +27,7 @@ internal partial class StateContext
     private static IEnumerable<KeyboardButton> GenerateButtons(ButtonsRuleList cakes)
     {
         return cakes
-              .Select(q => new KeyboardButton(q.Button))
+              .Select(q => new KeyboardButton(q.ButtonName))
               .ToArray();
     }
 

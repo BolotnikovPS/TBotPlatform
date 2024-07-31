@@ -5,11 +5,8 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 
-public class InlineMarkupState(
-    string buttonName,
-    string state = null,
-    string data = null
-    ) : InlineMarkupBase(buttonName)
+public class InlineMarkupState(string buttonName, string state, string data = null) 
+    : InlineMarkupBase(buttonName)
 {
     /// <summary>
     /// Данные на inline кнопке
@@ -23,6 +20,9 @@ public class InlineMarkupState(
 
     public override InlineKeyboardButton Format()
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(ButtonName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(state);
+
         if (MarkupNextStateJson.IsNull())
         {
             return default;

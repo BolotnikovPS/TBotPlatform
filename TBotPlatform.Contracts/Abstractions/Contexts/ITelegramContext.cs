@@ -8,6 +8,12 @@ namespace TBotPlatform.Contracts.Abstractions.Contexts;
 public interface ITelegramContext
 {
     /// <summary>
+    /// Получает OperationGuid лога текущих пулов запросов к telegram
+    /// </summary>
+    /// <returns></returns>
+    Guid GetCurrentOperation();
+
+    /// <summary>
     /// Получает сообщения от telegram
     /// </summary>
     /// <param name="offset">Значение последнего сообщения на единицу больше</param>

@@ -1,11 +1,17 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
+using TBotPlatform.Common.Factories;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts;
+using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Extension;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types;
 
 namespace TBotPlatform.Common.BackgroundServices;
 
@@ -63,7 +69,19 @@ internal class TelegramContextHostedService(
                         await using var scope = services.CreateAsyncScope();
                         var scopedProcessingService = scope.ServiceProvider.GetRequiredService<IStartReceivingHandler>();
 
-                        await scopedProcessingService.HandleUpdateAsync(update, stoppingToken);
+                        MarkupNextState markupNextState = null;
+
+                        if (update.Type == UpdateType.CallbackQuery)
+                        {
+                            var data = update.CallbackQuery?.Data;
+
+                            if (data.IsNotNull())
+                            {
+                                markupNextState = JsonConvert.DeserializeObject<MarkupNextState>(data!);
+                            }
+                        }
+
+                        await scopedProcessingService.HandleUpdateAsync(update, markupNextState, stoppingToken);
                     }
                     catch (Exception ex)
                     {

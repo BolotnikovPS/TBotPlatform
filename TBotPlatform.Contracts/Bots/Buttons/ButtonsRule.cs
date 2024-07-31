@@ -1,11 +1,13 @@
-﻿namespace TBotPlatform.Contracts.Bots.Buttons;
+﻿using TBotPlatform.Extension;
 
-public class ButtonsRule(
-    string button
-    )
+namespace TBotPlatform.Contracts.Bots.Buttons;
+
+public class ButtonsRule(string button)
 {
     /// <summary>
     /// Тип кнопки
     /// </summary>
-    public string Button { get; set; } = button;
+    public string ButtonName { get; set; } = button.IsNull() 
+        ? throw new ArgumentException("", button)
+        : button;
 }

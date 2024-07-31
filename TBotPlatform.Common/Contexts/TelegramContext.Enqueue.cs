@@ -22,7 +22,9 @@ internal partial class TelegramContext
     {
         if (_iteration > MaxCountIteration)
         {
-            logger.LogDebug("Отправлено {count} запросов в telegram за {second} секунд. OperationGuid: {operationGuid}", _iteration, Timer.Elapsed.Seconds, _operationGuid.ToString());
+            Timer.Stop();
+
+            await telegramContextLog.HandleEnqueueLogAsync(_iteration, Timer.Elapsed.Seconds, _operationGuid, cancellationToken);
 
             if (Timer.ElapsedMilliseconds <= IterationWaitMilliSecond)
             {

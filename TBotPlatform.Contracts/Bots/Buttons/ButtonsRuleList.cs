@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Extension;
+﻿using TBotPlatform.Contracts.Bots.Constant;
+using TBotPlatform.Extension;
 
 namespace TBotPlatform.Contracts.Bots.Buttons;
 
@@ -16,11 +17,11 @@ public class ButtonsRuleList : List<ButtonsRule>
 
     private static bool SizeJsonCheck(ButtonsRule item)
     {
-        if (item.Button.IsNull())
+        if (item.ButtonName.IsNull())
         {
             return false;
         }
 
-        return item.Button.Length > 64;
+        return item.ButtonName.Length > ButtonsRuleConstant.ButtonsRuleNameLength;
     }
 }

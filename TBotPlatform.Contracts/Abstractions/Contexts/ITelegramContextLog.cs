@@ -20,4 +20,14 @@ public interface ITelegramContextLog
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task HandleErrorLogAsync(TelegramContextLogMessage message, Exception exception, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Логирование данных по запросам к telegram
+    /// </summary>
+    /// <param name="requestCount">Число запросов</param>
+    /// <param name="elapsedSeconds">Общее время на все запросы</param>
+    /// <param name="operationGuid">Id текущих операций</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task HandleEnqueueLogAsync(int requestCount, int elapsedSeconds, Guid operationGuid, CancellationToken cancellationToken);
 }

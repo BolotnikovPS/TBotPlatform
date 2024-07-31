@@ -49,15 +49,11 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
         MarkupNextState = markupNextState;
     }
 
-    public void SetNeedIsForceReplyLastMenu()
-    {
-        IsForceReplyLastMenu = true;
-    }
+    public Guid GetCurrentOperation() => botClient.GetCurrentOperation();
 
-    public void SetBindState(EBindStateType type)
-    {
-        BindState = type;
-    }
+    public void SetNeedIsForceReplyLastMenu() => IsForceReplyLastMenu = true;
+
+    public void SetBindState(EBindStateType type) => BindState = type;
 
     public Task<Message> SendDocumentAsync(InputFile inputFile, CancellationToken cancellationToken)
     {

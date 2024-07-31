@@ -34,6 +34,12 @@ public interface IStateContext : IAsyncDisposable
     MarkupNextState MarkupNextState { get; }
 
     /// <summary>
+    /// Получает OperationGuid лога текущих пулов запросов к telegram
+    /// </summary>
+    /// <returns></returns>
+    Guid GetCurrentOperation();
+
+    /// <summary>
     /// Устанавливает необходимость отправки меню
     /// </summary>
     void SetNeedIsForceReplyLastMenu();

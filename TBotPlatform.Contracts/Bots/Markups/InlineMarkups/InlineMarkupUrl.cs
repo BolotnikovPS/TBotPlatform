@@ -2,10 +2,14 @@
 
 namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 
-public class InlineMarkupUrl(
-    string buttonName,
-    string url
-    ) : InlineMarkupBase(buttonName)
+public class InlineMarkupUrl(string buttonName, string url)
+    : InlineMarkupBase(buttonName)
 {
-    public override InlineKeyboardButton Format() => InlineKeyboardButton.WithUrl(ButtonName, url);
+    public override InlineKeyboardButton Format()
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(ButtonName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(url);
+
+        return InlineKeyboardButton.WithUrl(ButtonName, url);
+    }
 }

@@ -19,6 +19,8 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
     private readonly TelegramBotClient _botClient = new(telegramSettings.Token, client);
     private readonly Guid _operationGuid = Guid.NewGuid();
 
+    public Guid GetCurrentOperation() => _operationGuid;
+
     public Task<Update[]> GetUpdatesAsync(int offset, UpdateType[] allowedUpdates, CancellationToken cancellationToken)
     {
         var task = _botClient.GetUpdatesAsync(
