@@ -1,13 +1,12 @@
-﻿using TBotPlatform.Contracts.Abstractions;
-using TBotPlatform.Contracts.Bots;
+﻿using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.StateFactory;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Factories;
 
-internal partial class StateFactory<T>
+internal partial class StateFactory
 {
-    private StateHistory<T> CreateContextFunc()
+    private StateHistory CreateContextFunc()
     {
         var state = stateFactoryDataCollection
            .FirstOrDefault(
@@ -18,7 +17,7 @@ internal partial class StateFactory<T>
         return Convert(state!);
     }
 
-    private StateHistory<T> Convert(StateFactoryData stateData)
+    private StateHistory Convert(StateFactoryData stateData)
     {
         var stateType = FindType(stateData.StateTypeName);
 
@@ -29,8 +28,8 @@ internal partial class StateFactory<T>
 
         return new(
             stateType,
-            stateData.MenuTypeName.CheckAny()
-                ? Activator.CreateInstance(FindType(stateData.MenuTypeName)) as IMenuButton<T>
+            stateData.MenuTypeName.IsNotNull()
+                ? FindType(stateData.MenuTypeName)
                 : null,
             stateData.IsInlineState
             );
@@ -46,7 +45,7 @@ internal partial class StateFactory<T>
         }
     }
 
-    private StateHistory<T> ConvertStateFactoryData(StateFactoryData stateFactoryData = null)
+    private StateHistory ConvertStateFactoryData(StateFactoryData stateFactoryData = null)
         => stateFactoryData.IsNotNull()
             ? Convert(stateFactoryData)
             : CreateContextFunc();

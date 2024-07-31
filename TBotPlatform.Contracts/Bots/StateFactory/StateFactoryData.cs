@@ -40,11 +40,17 @@ public class StateFactoryData
     /// </summary>
     public bool IsLockUserState { get; set; }
 
+    /// <summary>
+    /// Показывает что состояние относится уровню регистрации пользователя
+    /// </summary>
+    public bool IsRegistrationState { get; set; }
+
     public StateFactoryData(
         string stateTypeName,
         string menuTypeName = null,
         bool? isInlineState = null,
         bool? isLockState = null,
+        bool? isRegistrationState = null,
         IEnumerable<string> buttonsTypes = null,
         IEnumerable<string> textsTypes = null,
         IEnumerable<string> commandsTypes = null
@@ -64,6 +70,11 @@ public class StateFactoryData
         if (isLockState.HasValue)
         {
             IsLockUserState = isLockState.Value;
+        }
+
+        if (isRegistrationState.HasValue)
+        {
+            IsLockUserState = isRegistrationState.Value;
         }
     }
 }

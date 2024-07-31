@@ -2,15 +2,14 @@
 
 namespace TBotPlatform.Contracts.Abstractions.Factories;
 
-public interface IStateFactory<T>
-where T : UserBase
+public interface IStateFactory
 {
     /// <summary>
     /// Получает состояние по его названию
     /// </summary>
     /// <param name="nameOfState">Название состояния</param>
     /// <returns></returns>
-    StateHistory<T> GetStateByNameOrDefault(string nameOfState = "");
+    StateHistory GetStateByNameOrDefault(string nameOfState = "");
 
     /// <summary>
     /// Получает состояние по типу кнопки
@@ -19,7 +18,7 @@ where T : UserBase
     /// <param name="buttonTypeValue">Тип кнопки</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<StateHistory<T>> GetStateByButtonsTypeOrDefaultAsync(long chatId, string buttonTypeValue, CancellationToken cancellationToken);
+    Task<StateHistory> GetStateByButtonsTypeOrDefaultAsync(long chatId, string buttonTypeValue, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получает состояние по типу команды
@@ -28,7 +27,7 @@ where T : UserBase
     /// <param name="commandTypeValue">Тип команды</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<StateHistory<T>> GetStateByCommandsTypeOrDefaultAsync(long chatId, string commandTypeValue, CancellationToken cancellationToken);
+    Task<StateHistory> GetStateByCommandsTypeOrDefaultAsync(long chatId, string commandTypeValue, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получает состояние по типу текста
@@ -36,7 +35,7 @@ where T : UserBase
     /// <param name="chatId">Id чата</param>
     /// <param name="textTypeValue">Тип текста</param>
     /// <returns></returns>
-    StateHistory<T> GetStateByTextsTypeOrDefault(long chatId, string textTypeValue);
+    StateHistory GetStateByTextsTypeOrDefault(long chatId, string textTypeValue);
 
     /// <summary>
     /// Получает первоначальное состояние
@@ -44,7 +43,7 @@ where T : UserBase
     /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<StateHistory<T>> GetStateMainAsync(long chatId, CancellationToken cancellationToken);
+    Task<StateHistory> GetStateMainAsync(long chatId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получает предыдущие или первоначальное состояние, у которого есть меню
@@ -52,21 +51,21 @@ where T : UserBase
     /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<StateHistory<T>> GetStatePreviousOrMainAsync(long chatId, CancellationToken cancellationToken);
+    Task<StateHistory> GetStatePreviousOrMainAsync(long chatId, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Получает последнее меню, которое было в истории состояний
+    /// Получает последнее состояние с меню, из истории состояний
     /// </summary>
     /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IMenuButton<T>> GetLastMenuAsync(long chatId, CancellationToken cancellationToken);
+    Task<StateHistory> GetLastStateWithMenuAsync(long chatId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получает состояние для заблокированных пользователей
     /// </summary>
     /// <returns></returns>
-    StateHistory<T> GetLockState();
+    StateHistory GetLockState();
 
     /// <summary>
     /// Получает забиндинное состояние или null
@@ -74,7 +73,7 @@ where T : UserBase
     /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<StateHistory<T>> GetBindStateOrNullAsync(long chatId, CancellationToken cancellationToken);
+    Task<StateHistory> GetBindStateOrNullAsync(long chatId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Добавляет бинд для состояния
@@ -83,7 +82,7 @@ where T : UserBase
     /// <param name="state">Состояние</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task BindStateAsync(long chatId, StateHistory<T> state, CancellationToken cancellationToken);
+    Task BindStateAsync(long chatId, StateHistory state, CancellationToken cancellationToken);
 
     /// <summary>
     /// Снимает бинд состояний для пользователя

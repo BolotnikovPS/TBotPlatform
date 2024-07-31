@@ -3,13 +3,13 @@ using TBotPlatform.Contracts.Bots.Buttons;
 
 namespace TBotPlatform.Contracts.Abstractions;
 
-public interface IMenuButton<in T>
-    where T : UserBase
+public interface IMenuButton
 {
     /// <summary>
     /// Получает список кнопок для состояния
     /// </summary>
     /// <param name="user">Пользователь</param>
     /// <returns></returns>
-    ButtonsRuleMassiveList GetMarkUp(T user);
+    Task<ButtonsRuleMassiveList> GetMarkUpAsync<T>(T user)
+        where T : UserBase;
 }

@@ -3,7 +3,7 @@ using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Factories;
 
-internal partial class StateFactory<T>
+internal partial class StateFactory
 {
     private const string CacheCollectionKeyName = "UserStates";
     private const string CacheBindCollectionKeyName = "UserStatesBind";
@@ -66,7 +66,5 @@ internal partial class StateFactory<T>
     }
 
     private Task RemoveBindStateAsync(long chatId, CancellationToken cancellationToken)
-    {
-        return cache.RemoveValueFromCollectionAsync(CacheBindCollectionKeyName, chatId.ToString(), cancellationToken);
-    }
+        => cache.RemoveValueFromCollectionAsync(CacheBindCollectionKeyName, chatId.ToString(), cancellationToken);
 }

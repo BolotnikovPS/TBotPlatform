@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Contracts.Bots.Exceptions;
+﻿using TBotPlatform.Contracts.Bots.Constant;
+using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -7,10 +8,10 @@ namespace TBotPlatform.Common.Contexts;
 
 internal partial class StateContext
 {
-    public async Task<Message> SendTextMessageWithReplyAsync(string text, CancellationToken cancellationToken) 
+    public async Task<Message> SendTextMessageWithReplyAsync(string text, CancellationToken cancellationToken)
         => await SendTextMessageAsync(text, true, cancellationToken);
 
-    public Task<Message> SendTextMessageAsync(string text, CancellationToken cancellationToken) 
+    public Task<Message> SendTextMessageAsync(string text, CancellationToken cancellationToken)
         => SendTextMessageAsync(text, false, cancellationToken);
 
     private Task<Message> SendTextMessageAsync(string text, bool withReply, CancellationToken cancellationToken)
@@ -25,9 +26,9 @@ internal partial class StateContext
             return default;
         }
 
-        if (text.Length > TextLength)
+        if (text.Length > StateContextConstant.TextLength)
         {
-            throw new TextLengthException(text.Length, TextLength);
+            throw new TextLengthException(text.Length, StateContextConstant.TextLength);
         }
 
         var replyMarkup = !withReply
@@ -40,8 +41,8 @@ internal partial class StateContext
         return botClient.SendTextMessageAsync(
             ChatId,
             text,
-            replyMarkup: replyMarkup,
-            cancellationToken: cancellationToken
+            replyMarkup,
+            cancellationToken
             );
     }
 
@@ -57,14 +58,14 @@ internal partial class StateContext
             return;
         }
 
-        if (text.Length >= TextLength)
+        if (text.Length >= StateContextConstant.TextLength)
         {
-            foreach (var tf in text.SplitByLength(TextLength))
+            foreach (var tf in text.SplitByLength(StateContextConstant.TextLength))
             {
                 await botClient.SendTextMessageAsync(
                     ChatId,
                     tf,
-                    cancellationToken: cancellationToken
+                    cancellationToken
                     );
             }
 
@@ -74,7 +75,7 @@ internal partial class StateContext
         await botClient.SendTextMessageAsync(
             ChatId,
             text,
-            cancellationToken: cancellationToken
+            cancellationToken
             );
     }
 }

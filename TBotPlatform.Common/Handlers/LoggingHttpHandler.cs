@@ -26,7 +26,7 @@ public class LoggingHttpHandler(ILogger<LoggingHttpHandler> logger)
 
             if (response.StatusCode == HttpStatusCode.TooManyRequests
                 && response.Headers.RetryAfter.IsNotNull()
-                )
+               )
             {
                 sbLog.AppendLine($"Delay: {response!.Headers!.RetryAfter!.Delta.ToString()}");
             }

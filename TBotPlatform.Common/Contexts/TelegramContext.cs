@@ -22,7 +22,7 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
     public Task<Update[]> GetUpdatesAsync(int offset, UpdateType[] allowedUpdates, CancellationToken cancellationToken)
     {
         var task = _botClient.GetUpdatesAsync(
-            offset: offset,
+            offset,
             allowedUpdates: allowedUpdates.IsNotNull() ? allowedUpdates : null,
             cancellationToken: cancellationToken
             );

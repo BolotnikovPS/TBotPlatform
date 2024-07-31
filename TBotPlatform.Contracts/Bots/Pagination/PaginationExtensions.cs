@@ -5,6 +5,19 @@ namespace TBotPlatform.Contracts.Bots.Pagination;
 
 public static class PaginationExtensions
 {
+    public static bool TryParsePagination(this string data, out int result)
+    {
+        result = 0;
+
+        if (data.IsNull())
+        {
+            return false;
+        }
+
+        return data.Contains(PaginationsConstant.PaginationIdentity)
+               && int.TryParse(data.Replace(PaginationsConstant.PaginationIdentity, ""), out result);
+    }
+
     public static bool TryParsePagination(this MarkupNextState markupNextState, out int result)
     {
         result = 0;

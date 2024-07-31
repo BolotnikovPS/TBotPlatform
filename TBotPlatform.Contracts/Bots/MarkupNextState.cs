@@ -22,9 +22,6 @@ public class MarkupNextState(string state, string data = null)
     /// </summary>
     [JsonProperty("d", NullValueHandling = NullValueHandling.Ignore)]
     public string Data { get; private set; } = data;
-    
-    public string[] GetDataWithoutDelimiter()
-    {
-        return Data.CheckAny() ? Data.Split(DelimiterConstant.DelimiterFirst) : default;
-    }
+
+    public string[] GetDataWithoutDelimiter() => Data.IsNotNull() ? Data.Split(DelimiterConstant.DelimiterFirst) : default;
 }

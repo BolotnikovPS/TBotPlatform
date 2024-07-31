@@ -9,7 +9,7 @@ namespace TBotPlatform.Common.Dependencies;
 public static partial class DependencyInjection
 {
     public static IServiceCollection AddCache<T>(this IServiceCollection services)
-    where T : ICacheService
+        where T : ICacheService
     {
         services
            .AddSingleton(typeof(ICacheService), typeof(T));

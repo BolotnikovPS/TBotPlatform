@@ -29,10 +29,7 @@ public static partial class Extensions
     /// <param name="input"></param>
     /// <param name="value"></param>
     /// <returns>bool</returns>
-    public static bool NotIn(this string input, params string[] value)
-    {
-        return !input.In(value);
-    }
+    public static bool NotIn(this string input, params string[] value) => !input.In(value);
 
     /// <summary>
     /// Проверяет наличие input в value без регистровой зависимости
@@ -53,8 +50,9 @@ public static partial class Extensions
         return value
               .Where(x => x.IsNotNull())
               .Select(
-                   z => z.ToString()
-                         .ToUpper()
+                   z => z
+                       .ToString()
+                       .ToUpper()
                    )
               .Contains(input.ToUpper());
     }
@@ -66,10 +64,7 @@ public static partial class Extensions
     /// <param name="value"></param>
     /// <returns>bool</returns>
     public static bool NotIn<T>(this string input, params T[] value)
-        where T : Enum
-    {
-        return !input.In(value);
-    }
+        where T : Enum => !input.In(value);
 
     /// <summary>
     /// Проверяет наличие input в value без регистровой зависимости
@@ -88,10 +83,7 @@ public static partial class Extensions
     /// <param name="input"></param>
     /// <param name="value"></param>
     /// <returns>bool</returns>
-    public static bool NotIn(this int input, params int[] value)
-    {
-        return !input.In(value);
-    }
+    public static bool NotIn(this int input, params int[] value) => !input.In(value);
 
     /// <summary>
     /// Проверяет наличие input в value без регистровой зависимости
@@ -118,8 +110,5 @@ public static partial class Extensions
     /// <param name="value"></param>
     /// <returns>bool</returns>
     public static bool NotIn<T>(this T input, params T[] value)
-        where T : Enum
-    {
-        return !input.In(value);
-    }
+        where T : Enum => !input.In(value);
 }

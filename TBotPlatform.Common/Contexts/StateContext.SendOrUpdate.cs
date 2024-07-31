@@ -1,4 +1,5 @@
 ﻿using TBotPlatform.Contracts.Bots;
+using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Extension;
@@ -80,9 +81,9 @@ internal partial class StateContext
             return default;
         }
 
-        if (text.Length > TextLength)
+        if (text.Length > StateContextConstant.TextLength)
         {
-            throw new TextLengthException(text.Length, TextLength);
+            throw new TextLengthException(text.Length, StateContextConstant.TextLength);
         }
 
         var checkToEdit = MarkupNextState.IsNotNull()

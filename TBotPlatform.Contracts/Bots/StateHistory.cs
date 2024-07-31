@@ -1,9 +1,6 @@
-﻿using TBotPlatform.Contracts.Abstractions;
+﻿namespace TBotPlatform.Contracts.Bots;
 
-namespace TBotPlatform.Contracts.Bots;
-
-public class StateHistory<T>
-where T : UserBase
+public class StateHistory
 {
     /// <summary>
     /// Тип состояния
@@ -11,9 +8,9 @@ where T : UserBase
     public Type StateType { get; }
 
     /// <summary>
-    /// Кнопки состояния
+    /// Тип кнопок состояния
     /// </summary>
-    public IMenuButton<T> MenuState { get; }
+    public Type MenuStateType { get; }
 
     /// <summary>
     /// Состояние вызывается только с inline кнопок
@@ -22,12 +19,12 @@ where T : UserBase
 
     public StateHistory(
         Type stateType,
-        IMenuButton<T> menuState = null,
+        Type menuStateType = null,
         bool? isInlineState = null
         )
     {
         StateType = stateType;
-        MenuState = menuState;
+        MenuStateType = menuStateType;
 
         if (isInlineState.HasValue)
         {

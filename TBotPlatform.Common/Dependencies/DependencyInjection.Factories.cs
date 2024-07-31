@@ -2,17 +2,12 @@
 using System.Reflection;
 using TBotPlatform.Common.Factories;
 using TBotPlatform.Contracts.Abstractions.Factories;
-using TBotPlatform.Contracts.Bots;
 
 namespace TBotPlatform.Common.Dependencies;
 
 public static partial class DependencyInjection
 {
-    public static IServiceCollection AddFactories<T>(
-        this IServiceCollection services,
-        Assembly executingAssembly
-        )
-        where T : UserBase
+    public static IServiceCollection AddFactories(this IServiceCollection services, Assembly executingAssembly)
     {
         services
            .AddSingleton(
@@ -20,7 +15,7 @@ public static partial class DependencyInjection
                 {
                     Assembly = executingAssembly,
                 })
-           .AddScoped<IStateFactory<T>, StateFactory<T>>()
+           .AddScoped<IStateFactory, StateFactory>()
            .AddScoped<IStateContextFactory, StateContextFactory>();
 
         return services;

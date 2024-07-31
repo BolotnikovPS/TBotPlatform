@@ -16,7 +16,7 @@ public class InlineMarkupState(
     /// </summary>
     private string MarkupNextStateJson { get; } = new MarkupNextState(
         state,
-        buttonName.In(PaginationsConstant.PreviosPage, PaginationsConstant.NextPage)
+        buttonName.In(PaginationsConstant.PreviousPage, PaginationsConstant.NextPage)
             ? $"{PaginationsConstant.PaginationIdentity}{data}"
             : data
         ).ToJson();
@@ -28,13 +28,10 @@ public class InlineMarkupState(
             return default;
         }
 
-        return Encoding.Default.GetBytes(MarkupNextStateJson).Length > 64
+        return Encoding.Default.GetBytes(MarkupNextStateJson).Length > InlineMarkupConstant.MarkupNextStateJsonLength
             ? default
             : InlineKeyboardButton.WithCallbackData(ButtonName, MarkupNextStateJson);
     }
 
-    public InlineMarkupState CreateDataWithDelimiter(params string[] datas)
-    {
-        return new(ButtonName, state, string.Join(DelimiterConstant.DelimiterFirst, datas));
-    }
+    public InlineMarkupState CreateDataWithDelimiter(params string[] datas) => new(ButtonName, state, string.Join(DelimiterConstant.DelimiterFirst, datas));
 }

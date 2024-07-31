@@ -34,6 +34,11 @@ public class StateActivatorBaseAttribute(bool isInlineState, Type menuType) : At
     public bool IsLockUserState { get; set; }
 
     /// <summary>
+    /// Показывает что состояние относится уровню регистрации пользователя
+    /// </summary>
+    public bool IsRegistrationState { get; set; }
+
+    /// <summary>
     /// Для какого бота доступно состояние
     /// </summary>
     public string OnlyForBot { get; set; }

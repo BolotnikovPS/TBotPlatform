@@ -3,6 +3,7 @@ using System.Text;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
+using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Contracts.Bots.StateContext;
 using TBotPlatform.Extension;
@@ -21,7 +22,6 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
     private long ChatId { get; set; }
 
     private const string ChooseAction = "😊 Выберите действие";
-    private const int TextLength = 4096;
 
     public async Task CreateStateContextAsync(
         UserBase user,
@@ -126,15 +126,20 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
             throw new CallbackQueryMessageIdOrNullArgException();
         }
 
-        if (text.Length > TextLength)
+        if (text.Length > StateContextConstant.TextLength)
         {
-            throw new TextLengthException(text.Length, TextLength);
+            throw new TextLengthException(text.Length, StateContextConstant.TextLength);
         }
 
         var message = new StringBuilder(ChatMessage?.CallbackQueryMessageOrNull)
                      .AppendLine()
                      .AppendLine(text)
                      .ToString();
+
+        if (message.Length > StateContextConstant.TextLength)
+        {
+            throw new TextLengthException(message.Length, StateContextConstant.TextLength);
+        }
 
         if (ChatMessage!.CallbackQueryMessageWithCaption)
         {
@@ -155,10 +160,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
     }
 
     public Task UpdateMarkupTextAndDropButtonAsync(CancellationToken cancellationToken)
-        => UpdateMarkupTextAndDropButtonAsync(
-            "",
-            cancellationToken
-            );
+        => UpdateMarkupTextAndDropButtonAsync("", cancellationToken);
 
     public Task RemoveCurrentReplyMessageAsync(CancellationToken cancellationToken)
     {

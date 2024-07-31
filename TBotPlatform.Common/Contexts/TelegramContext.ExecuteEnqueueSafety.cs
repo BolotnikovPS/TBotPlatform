@@ -9,19 +9,19 @@ internal partial class TelegramContext
     /// Исполнение метода в очереди с сохранением статистики
     /// </summary>
     /// <param name="method"></param>
-    /// <param name="statisticMessage"></param>
+    /// <param name="logMessage"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    private async Task ExecuteEnqueueSafety(Task method, TelegramContextLogMessage statisticMessage, CancellationToken cancellationToken)
+    private async Task ExecuteEnqueueSafety(Task method, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
     {
         try
         {
             await Enqueue(() => method, cancellationToken);
-            await telegramContextLog.HandleLogAsync(statisticMessage, cancellationToken);
+            await telegramContextLog.HandleLogAsync(logMessage, cancellationToken);
         }
         catch (Exception ex)
         {
-            await telegramContextLog.HandleErrorLogAsync(statisticMessage, ex, cancellationToken);
+            await telegramContextLog.HandleErrorLogAsync(logMessage, ex, cancellationToken);
             throw;
         }
     }
@@ -30,24 +30,27 @@ internal partial class TelegramContext
     /// Исполнение метода в очереди с сохранением статистики
     /// </summary>
     /// <param name="method"></param>
-    /// <param name="statisticMessage"></param>
+    /// <param name="logMessage"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    private async Task<T> ExecuteEnqueueSafety<T>(Task<T> method, TelegramContextLogMessage statisticMessage, CancellationToken cancellationToken)
+    private async Task<T> ExecuteEnqueueSafety<T>(Task<T> method, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
     {
         try
         {
             var result = await Enqueue(() => method, cancellationToken);
 
-            statisticMessage.Result = result.ToJson();
+            if (result.IsNotNull())
+            {
+                logMessage.Result = result.ToJson();
+            }
 
-            await telegramContextLog.HandleLogAsync(statisticMessage, cancellationToken);
+            await telegramContextLog.HandleLogAsync(logMessage, cancellationToken);
 
             return result;
         }
         catch (Exception ex)
         {
-            await telegramContextLog.HandleErrorLogAsync(statisticMessage, ex, cancellationToken);
+            await telegramContextLog.HandleErrorLogAsync(logMessage, ex, cancellationToken);
             throw;
         }
     }

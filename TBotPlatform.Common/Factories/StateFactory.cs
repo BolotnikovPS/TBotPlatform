@@ -1,5 +1,4 @@
-﻿using TBotPlatform.Contracts.Abstractions;
-using TBotPlatform.Contracts.Abstractions.Cache;
+﻿using TBotPlatform.Contracts.Abstractions.Cache;
 using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.StateFactory;
@@ -7,10 +6,9 @@ using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Factories;
 
-internal partial class StateFactory<T>(ICacheService cache, StateFactoryDataCollection stateFactoryDataCollection, StateFactorySettings stateFactorySettings) : IStateFactory<T>
-    where T : UserBase
+internal partial class StateFactory(ICacheService cache, StateFactoryDataCollection stateFactoryDataCollection, StateFactorySettings stateFactorySettings) : IStateFactory
 {
-    public StateHistory<T> GetStateByNameOrDefault(string nameOfState = "")
+    public StateHistory GetStateByNameOrDefault(string nameOfState = "")
     {
         if (nameOfState.IsNull())
         {
@@ -22,7 +20,7 @@ internal partial class StateFactory<T>(ICacheService cache, StateFactoryDataColl
         return ConvertStateFactoryData(newState);
     }
 
-    public async Task<StateHistory<T>> GetStateByButtonsTypeOrDefaultAsync(long chatId, string buttonTypeValue, CancellationToken cancellationToken)
+    public async Task<StateHistory> GetStateByButtonsTypeOrDefaultAsync(long chatId, string buttonTypeValue, CancellationToken cancellationToken)
     {
         var newState = stateFactoryDataCollection
            .FirstOrDefault(
@@ -49,7 +47,7 @@ internal partial class StateFactory<T>(ICacheService cache, StateFactoryDataColl
         return ConvertStateFactoryData(newState);
     }
 
-    public async Task<StateHistory<T>> GetStateByCommandsTypeOrDefaultAsync(long chatId, string commandTypeValue, CancellationToken cancellationToken)
+    public async Task<StateHistory> GetStateByCommandsTypeOrDefaultAsync(long chatId, string commandTypeValue, CancellationToken cancellationToken)
     {
         var newState = stateFactoryDataCollection
            .FirstOrDefault(
@@ -76,7 +74,7 @@ internal partial class StateFactory<T>(ICacheService cache, StateFactoryDataColl
         return ConvertStateFactoryData(newState);
     }
 
-    public StateHistory<T> GetStateByTextsTypeOrDefault(long chatId, string textTypeValue)
+    public StateHistory GetStateByTextsTypeOrDefault(long chatId, string textTypeValue)
     {
         var newState = stateFactoryDataCollection
            .FirstOrDefault(
@@ -87,7 +85,7 @@ internal partial class StateFactory<T>(ICacheService cache, StateFactoryDataColl
         return ConvertStateFactoryData(newState);
     }
 
-    public async Task<StateHistory<T>> GetStateMainAsync(long chatId, CancellationToken cancellationToken)
+    public async Task<StateHistory> GetStateMainAsync(long chatId, CancellationToken cancellationToken)
     {
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
         statesInMemoryOrEmpty.Clear();
@@ -98,7 +96,7 @@ internal partial class StateFactory<T>(ICacheService cache, StateFactoryDataColl
         return CreateContextFunc();
     }
 
-    public async Task<StateHistory<T>> GetStatePreviousOrMainAsync(long chatId, CancellationToken cancellationToken)
+    public async Task<StateHistory> GetStatePreviousOrMainAsync(long chatId, CancellationToken cancellationToken)
     {
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
         if (statesInMemoryOrEmpty.Count == 0)
@@ -111,33 +109,37 @@ internal partial class StateFactory<T>(ICacheService cache, StateFactoryDataColl
         return await GetLastStateWithMenuOrMainAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
     }
 
-    public async Task<IMenuButton<T>> GetLastMenuAsync(long chatId, CancellationToken cancellationToken)
+    public async Task<StateHistory> GetLastStateWithMenuAsync(long chatId, CancellationToken cancellationToken)
     {
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
         var result = await GetLastStateWithMenuOrMainAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
 
-        return result.IsNotNull() ? result.MenuState : default;
+        return result.IsNotNull() 
+            ? result 
+            : default;
     }
 
-    public StateHistory<T> GetLockState()
+    public StateHistory GetLockState()
     {
         var state = stateFactoryDataCollection.FirstOrDefault(z => z.IsLockUserState);
 
-        return Convert(state);
+        return state.IsNotNull()
+            ? Convert(state) 
+            : default;
     }
 
-    public async Task<StateHistory<T>> GetBindStateOrNullAsync(long chatId, CancellationToken cancellationToken)
+    public async Task<StateHistory> GetBindStateOrNullAsync(long chatId, CancellationToken cancellationToken)
     {
         var value = await GetBindStateNameAsync(chatId, cancellationToken);
 
         var state = stateFactoryDataCollection.FirstOrDefault(z => z.StateTypeName == value);
 
-        return value.CheckAny()
+        return value.IsNotNull()
             ? Convert(state)
             : null;
     }
 
-    public Task BindStateAsync(long chatId, StateHistory<T> state, CancellationToken cancellationToken)
+    public Task BindStateAsync(long chatId, StateHistory state, CancellationToken cancellationToken)
     {
         var value = stateFactoryDataCollection.FirstOrDefault(z => z.StateTypeName == state.StateType.Name);
 
@@ -149,12 +151,9 @@ internal partial class StateFactory<T>(ICacheService cache, StateFactoryDataColl
         return AddBindStateAsync(chatId, value?.StateTypeName, cancellationToken);
     }
 
-    public Task UnBindStateAsync(long chatId, CancellationToken cancellationToken)
-    {
-        return RemoveBindStateAsync(chatId, cancellationToken);
-    }
+    public Task UnBindStateAsync(long chatId, CancellationToken cancellationToken) => RemoveBindStateAsync(chatId, cancellationToken);
 
-    private async Task<StateHistory<T>> GetLastStateWithMenuOrMainAsync(List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)
+    private async Task<StateHistory> GetLastStateWithMenuOrMainAsync(List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)
     {
         var lastStateToRemove = statesInMemoryOrEmpty.LastOrDefault();
 
@@ -174,7 +173,7 @@ internal partial class StateFactory<T>(ICacheService cache, StateFactoryDataColl
             if (lastState.IsNull())
             {
                 await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
-                
+
                 await UnBindStateAsync(chatId, cancellationToken);
 
                 return CreateContextFunc();

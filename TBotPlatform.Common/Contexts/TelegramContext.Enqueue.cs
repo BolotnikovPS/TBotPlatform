@@ -22,7 +22,7 @@ internal partial class TelegramContext
     {
         if (_iteration > MaxCountIteration)
         {
-            logger.LogDebug("Отправлено {count} запросов в telegram за {second} секунд", _iteration, Timer.Elapsed.Seconds);
+            logger.LogDebug("Отправлено {count} запросов в telegram за {second} секунд. OperationGuid: {operationGuid}", _iteration, Timer.Elapsed.Seconds, _operationGuid.ToString());
 
             if (Timer.ElapsedMilliseconds <= IterationWaitMilliSecond)
             {
@@ -54,7 +54,7 @@ internal partial class TelegramContext
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Исключение при работе с telegram");
+            logger.LogError(ex, "Исключение при работе с telegram. OperationGuid: {operationGuid}", _operationGuid.ToString());
             throw;
         }
         finally
@@ -84,7 +84,7 @@ internal partial class TelegramContext
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Исключение при работе с telegram");
+            logger.LogError(ex, "Исключение при работе с telegram. OperationGuid: {operationGuid}", _operationGuid.ToString());
             throw;
         }
         finally

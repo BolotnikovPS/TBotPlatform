@@ -19,14 +19,14 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, ITelegra
     public Task<IStateContext> CreateStateContextAsync<T>(T user, CancellationToken cancellationToken)
         where T : UserBase
         => CreateStateContextAsync(user, null, null, null, cancellationToken);
-    
-    public Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory<T> stateHistory, Update update, CancellationToken cancellationToken)
+
+    public Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
         where T : UserBase
         => CreateStateContextAsync(user, stateHistory, update, null, cancellationToken);
-    
+
     public async Task<IStateContext> CreateStateContextAsync<T>(
         T user,
-        StateHistory<T> stateHistory,
+        StateHistory stateHistory,
         Update update,
         MarkupNextState markupNextState,
         CancellationToken cancellationToken
@@ -49,10 +49,39 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, ITelegra
         return stateContext;
     }
 
+    public async Task UpdateMarkupByStateAsync<T>(T user, IStateContext stateContext, StateHistory stateHistory, CancellationToken cancellationToken)
+        where T : UserBase
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        ArgumentNullException.ThrowIfNull(stateContext);
+        ArgumentNullException.ThrowIfNull(stateHistory);
+        ArgumentNullException.ThrowIfNull(stateHistory.MenuStateType);
+
+        var isMenuType = stateHistory.MenuStateType.GetInterfaces().Any(x => x.Name == nameof(IMenuButton));
+
+        if (!isMenuType)
+        {
+            throw new($"Класс {stateHistory.MenuStateType.Name} не наследуется от {nameof(IMenuButton)}");
+        }
+
+        await using var scope = serviceScopeFactory.CreateAsyncScope();
+        var menuButtons = scope.ServiceProvider.GetRequiredService(stateHistory.MenuStateType) as IMenuButton;
+
+        if (menuButtons.IsNull())
+        {
+            throw new("Не смогли активировать состояние");
+        }
+
+        var menu = await menuButtons!.GetMarkUpAsync(user);
+        await stateContext.UpdateMarkupAsync(menu, cancellationToken);
+    }
+
     private async Task RequestAsync<T>(IStateContext stateContext, T user, Type stateType, CancellationToken cancellationToken)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(stateContext);
+        ArgumentNullException.ThrowIfNull(user);
+        ArgumentNullException.ThrowIfNull(stateType);
 
         var isStateType = stateType.GetInterfaces().Any(x => x.Name == typeof(IState<T>).Name);
 

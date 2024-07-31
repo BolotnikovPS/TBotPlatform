@@ -16,34 +16,32 @@ public static partial class DependencyInjection
         string botType = ""
         )
     {
-        var result = executingAssembly
-                    .GetTypes()
-                    .Where(z => z.IsDefined(typeof(StateActivatorBaseAttribute), false))
-                    .OrderBy(z => z.FullName)
-                    .ToList();
+        var potentialStates = executingAssembly
+                             .GetTypes()
+                             .Where(z => z.IsDefined(typeof(StateActivatorBaseAttribute), false))
+                             .OrderBy(z => z.FullName)
+                             .ToList();
 
-        if (result.IsNull())
+        if (potentialStates.IsNull())
         {
             throw new("Нет состояний");
         }
 
         var stateInterfaceName = typeof(IState<UserBase>).Name;
-        var menuButtonInterfaceName = typeof(IMenuButton<UserBase>).Name;
+        const string menuButtonInterfaceName = nameof(IMenuButton);
 
         var states = new List<StateFactoryData>();
 
-        foreach (var type in result)
+        foreach (var stateType in potentialStates)
         {
-            var isIStateType = type.GetInterfaces().Any(x => x.Name == stateInterfaceName);
+            var isIStateType = stateType.GetInterfaces().Any(x => x.Name == stateInterfaceName);
 
             if (!isIStateType)
             {
-                throw new($"Класс {type.Name} содержит атрибут {nameof(StateActivatorBaseAttribute)} но не наследуется от {stateInterfaceName}");
+                throw new($"Класс {stateType.Name} содержит атрибут {nameof(StateActivatorBaseAttribute)} но не наследуется от {stateInterfaceName}");
             }
 
-            var attr =
-                type.GetCustomAttributes(typeof(StateActivatorBaseAttribute), true).FirstOrDefault() as
-                    StateActivatorBaseAttribute;
+            var attr = stateType.GetCustomAttributes(typeof(StateActivatorBaseAttribute), true).FirstOrDefault() as StateActivatorBaseAttribute;
 
             if (!attr!.OnlyForBot.In("None", botType)
                 && attr.OnlyForBot.CheckAny()
@@ -61,7 +59,7 @@ public static partial class DependencyInjection
 
                 if (checkButtons.CheckAny())
                 {
-                    throw new($"В состоянии {type.Name} имеются дубли по ButtonsTypes с состояниями {string.Join(",", checkButtons)}");
+                    throw new($"В состоянии {stateType.Name} имеются дубли по ButtonsTypes с состояниями {string.Join(",", checkButtons)}");
                 }
             }
 
@@ -74,7 +72,7 @@ public static partial class DependencyInjection
 
                 if (checkTexts.CheckAny())
                 {
-                    throw new($"В состоянии {type.Name} имеются дубли по TextsTypes с состояниями {string.Join(",", checkTexts)}");
+                    throw new($"В состоянии {stateType.Name} имеются дубли по TextsTypes с состояниями {string.Join(",", checkTexts)}");
                 }
             }
 
@@ -84,7 +82,7 @@ public static partial class DependencyInjection
 
                 if (!isIMenuButtonType)
                 {
-                    throw new($"Класс {attr.MenuType.Name} находится в атрибуте {nameof(StateActivatorBaseAttribute)} но не наследуется от {menuButtonInterfaceName}");
+                    throw new($"Класс {attr.MenuType.Name} не наследуется от {menuButtonInterfaceName}");
                 }
             }
 
@@ -92,35 +90,49 @@ public static partial class DependencyInjection
                 && attr.IsInlineState
                )
             {
-                throw new($"Класс {type.Name} не должен определять атрибут {nameof(StateActivatorBaseAttribute)} в котором единовременно определены {nameof(attr.IsInlineState)} = true и {nameof(attr.MenuType)} != null");
+                throw new(
+                    $"Класс {stateType.Name} не должен определять атрибут {nameof(StateActivatorBaseAttribute)} в котором единовременно определены {nameof(attr.IsInlineState)} = true и {nameof(attr.MenuType)} != null");
             }
 
             states.Add(
                 new(
-                    type.Name,
+                    stateType.Name,
                     attr.MenuType?.Name,
                     attr.IsInlineState,
                     attr.IsLockUserState,
+                    attr.IsRegistrationState,
                     attr.ButtonsTypes,
                     attr.TextsTypes,
                     attr.CommandsTypes
                     )
                 );
 
-            services.AddScoped(type);
+            services.AddScoped(stateType);
+
+            if (attr.MenuType.IsNotNull())
+            {
+                services.AddScoped(attr!.MenuType!);
+            }
         }
 
         var lockStates = states
                         .Where(x => x.IsLockUserState)
                         .ToList();
 
-        switch (lockStates.Count)
+        if (lockStates.Count > 1)
         {
-            case < 1:
-                throw new($"Нет состояния определяющее параметр {nameof(StateActivatorBaseAttribute.IsLockUserState)} атрибута {nameof(StateActivatorBaseAttribute)}");
+            throw new(
+                $"Имеются дубли по параметру {nameof(StateActivatorBaseAttribute.IsLockUserState)} атрибута {nameof(StateActivatorBaseAttribute)}. Список состояний: {string.Join(",", lockStates)}");
+        }
 
-            case > 1:
-                throw new($"Имеются дубли по параметру {nameof(StateActivatorBaseAttribute.IsLockUserState)} атрибута {nameof(StateActivatorBaseAttribute)}. Список состояний: {string.Join(",", lockStates)}");
+        var registrationStates = states
+                                .Where(x => x.IsRegistrationState)
+                                .ToList();
+
+        if (registrationStates.Count > 1)
+        {
+            throw new(
+                $"Имеются дубли по параметру {nameof(StateActivatorBaseAttribute.IsRegistrationState)} атрибута {nameof(StateActivatorBaseAttribute)}. Список состояний: {string.Join(",", registrationStates)}");
         }
 
         var stateStartCount = states
