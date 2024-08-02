@@ -14,6 +14,16 @@ internal partial class TelegramContext
     /// <returns></returns>
     private async Task ExecuteEnqueueSafety(Task method, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
     {
+        if (method.IsNull())
+        {
+            throw new ArgumentException(nameof(method));
+        }
+
+        if (logMessage.IsNull())
+        {
+            throw new ArgumentException(nameof(logMessage));
+        }
+
         var fullLogMessage = new TelegramContextFullLogMessage { Request = logMessage, };
 
         try
@@ -37,6 +47,16 @@ internal partial class TelegramContext
     /// <returns></returns>
     private async Task<T> ExecuteEnqueueSafety<T>(Task<T> method, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
     {
+        if (method.IsNull())
+        {
+            throw new ArgumentException(nameof(method));
+        }
+
+        if (logMessage.IsNull())
+        {
+            throw new ArgumentException(nameof(logMessage));
+        }
+
         var fullLogMessage = new TelegramContextFullLogMessage { Request = logMessage, };
 
         try

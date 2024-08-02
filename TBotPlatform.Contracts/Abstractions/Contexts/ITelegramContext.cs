@@ -22,7 +22,7 @@ public interface ITelegramContext
     /// <param name="request">Запрос</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task MakeRequestAsync<T>(Func<ITelegramBotClient, Task<T>> request, CancellationToken cancellationToken);
+    Task<T> MakeRequestAsync<T>(Func<ITelegramBotClient, Task<T>> request, CancellationToken cancellationToken);
 
     /// <summary>
     /// Осуществляет прямой запрос в telegram с очередью, без логирования
@@ -32,7 +32,7 @@ public interface ITelegramContext
     /// <param name="logMessage">Сообщение для логирования</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task MakeRequestAsync<T>(Func<ITelegramBotClient, Task<T>> request, TelegramContextLogMessage logMessage, CancellationToken cancellationToken);
+    Task<T> MakeRequestAsync<T>(Func<ITelegramBotClient, Task<T>> request, TelegramContextLogMessage logMessage, CancellationToken cancellationToken);
 
     /// <summary>
     /// Осуществляет прямой запрос в telegram с очередью, без логирования
@@ -50,22 +50,6 @@ public interface ITelegramContext
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task MakeRequestAsync(Func<ITelegramBotClient, Task> request, TelegramContextLogMessage logMessage, CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Получает сообщения от telegram
-    /// </summary>
-    /// <param name="offset">Значение последнего сообщения на единицу больше</param>
-    /// <param name="allowedUpdates">Какие типы сообщений принимаем</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task<Update[]> GetUpdatesAsync(int offset, UpdateType[] allowedUpdates, CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Получает информацию о боте
-    /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task<User> GetBotInfoAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Удаляет сообщение

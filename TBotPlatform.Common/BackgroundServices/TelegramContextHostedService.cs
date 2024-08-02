@@ -8,6 +8,7 @@ using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Extension;
+using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.BackgroundServices;
@@ -28,21 +29,22 @@ internal class TelegramContextHostedService(
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var result = await telegramContext.GetBotInfoAsync(stoppingToken);
+        var result = await telegramContext.MakeRequestAsync(request => request.GetMeAsync(stoppingToken), stoppingToken);
 
         logger.LogDebug("Запущен бот {name}", result.FirstName);
 
         var offset = 0;
 
+        var updateType = settings.UpdateType.IsNotNull()
+            ? settings.UpdateType
+            : null;
+
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                var updates = await telegramContext.GetUpdatesAsync(
-                    offset,
-                    settings.UpdateType.IsNotNull()
-                        ? settings.UpdateType
-                        : null,
+                var updates = await telegramContext.MakeRequestAsync(
+                    request => request.GetUpdatesAsync(offset, allowedUpdates: updateType, cancellationToken: stoppingToken),
                     stoppingToken
                     );
 

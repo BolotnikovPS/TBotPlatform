@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Contexts;
 
@@ -45,6 +46,11 @@ internal partial class TelegramContext
     /// <returns></returns>
     public async Task<T> Enqueue<T>(Func<Task<T>> taskGenerator, CancellationToken cancellationToken)
     {
+        if (taskGenerator.IsNull())
+        {
+            throw new ArgumentException(nameof(taskGenerator));
+        }
+
         await Semaphore.WaitAsync(cancellationToken);
         try
         {
@@ -75,6 +81,11 @@ internal partial class TelegramContext
     /// <returns></returns>
     public async Task Enqueue(Func<Task> taskGenerator, CancellationToken cancellationToken)
     {
+        if (taskGenerator.IsNull())
+        {
+            throw new ArgumentException(nameof(taskGenerator));
+        }
+
         await Semaphore.WaitAsync(cancellationToken);
         try
         {

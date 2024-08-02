@@ -2,9 +2,7 @@
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Statistics;
-using TBotPlatform.Extension;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using PMode = Telegram.Bot.Types.Enums.ParseMode;
 
@@ -19,10 +17,10 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
 
     public Guid GetCurrentOperation() => _operationGuid;
 
-    public Task MakeRequestAsync<T>(Func<ITelegramBotClient, Task<T>> request, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
+    public Task<T> MakeRequestAsync<T>(Func<ITelegramBotClient, Task<T>> request, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
         => ExecuteEnqueueSafety(request.Invoke(_botClient), logMessage, cancellationToken);
 
-    public Task MakeRequestAsync<T>(Func<ITelegramBotClient, Task<T>> request, CancellationToken cancellationToken)
+    public Task<T> MakeRequestAsync<T>(Func<ITelegramBotClient, Task<T>> request, CancellationToken cancellationToken)
         => Enqueue(() => request.Invoke(_botClient), cancellationToken);
 
     public Task MakeRequestAsync(Func<ITelegramBotClient, Task> request, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
@@ -30,26 +28,7 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
 
     public Task MakeRequestAsync(Func<ITelegramBotClient, Task> request, CancellationToken cancellationToken)
         => Enqueue(() => request.Invoke(_botClient), cancellationToken);
-
-    public Task<Update[]> GetUpdatesAsync(int offset, UpdateType[] allowedUpdates, CancellationToken cancellationToken)
-    {
-        var task = _botClient.GetUpdatesAsync(
-            offset,
-            allowedUpdates: allowedUpdates.IsNotNull() ? allowedUpdates : null,
-            cancellationToken: cancellationToken
-            );
-
-        return Enqueue(() => task, cancellationToken);
-    }
-
-    public Task<User> GetBotInfoAsync(CancellationToken cancellationToken)
-    {
-        return Enqueue(
-            () => _botClient.GetMeAsync(cancellationToken),
-            cancellationToken
-            );
-    }
-
+    
     public Task DeleteMessageAsync(long chatId, int messageId, CancellationToken cancellationToken)
     {
         var log = new TelegramContextLogMessage
