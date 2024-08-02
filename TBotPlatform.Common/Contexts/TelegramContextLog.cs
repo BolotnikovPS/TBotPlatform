@@ -7,14 +7,14 @@ namespace TBotPlatform.Common.Contexts;
 
 internal class TelegramContextLog(ILogger<TelegramContextLog> logger) : ITelegramContextLog
 {
-    public Task HandleLogAsync(TelegramContextLogMessage message, CancellationToken cancellationToken)
+    public Task HandleLogAsync(TelegramContextFullLogMessage message, CancellationToken cancellationToken)
     {
         logger.LogDebug("Отправка сообщения: {message}", message.ToJson());
 
         return Task.CompletedTask;
     }
 
-    public Task HandleErrorLogAsync(TelegramContextLogMessage message, Exception exception, CancellationToken cancellationToken)
+    public Task HandleErrorLogAsync(TelegramContextFullLogMessage message, Exception exception, CancellationToken cancellationToken)
     {
         logger.LogError(exception, "Ошибка отправки сообщения: {message}", message.ToJson());
 

@@ -14,14 +14,16 @@ internal partial class TelegramContext
     /// <returns></returns>
     private async Task ExecuteEnqueueSafety(Task method, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
     {
+        var fullLogMessage = new TelegramContextFullLogMessage { Request = logMessage, };
+
         try
         {
             await Enqueue(() => method, cancellationToken);
-            await telegramContextLog.HandleLogAsync(logMessage, cancellationToken);
+            await telegramContextLog.HandleLogAsync(fullLogMessage, cancellationToken);
         }
         catch (Exception ex)
         {
-            await telegramContextLog.HandleErrorLogAsync(logMessage, ex, cancellationToken);
+            await telegramContextLog.HandleErrorLogAsync(fullLogMessage, ex, cancellationToken);
             throw;
         }
     }
@@ -35,22 +37,24 @@ internal partial class TelegramContext
     /// <returns></returns>
     private async Task<T> ExecuteEnqueueSafety<T>(Task<T> method, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
     {
+        var fullLogMessage = new TelegramContextFullLogMessage { Request = logMessage, };
+
         try
         {
             var result = await Enqueue(() => method, cancellationToken);
 
             if (result.IsNotNull())
             {
-                logMessage.Result = result.ToJson();
+                fullLogMessage.Result = result.ToJson();
             }
 
-            await telegramContextLog.HandleLogAsync(logMessage, cancellationToken);
+            await telegramContextLog.HandleLogAsync(fullLogMessage, cancellationToken);
 
             return result;
         }
         catch (Exception ex)
         {
-            await telegramContextLog.HandleErrorLogAsync(logMessage, ex, cancellationToken);
+            await telegramContextLog.HandleErrorLogAsync(fullLogMessage, ex, cancellationToken);
             throw;
         }
     }

@@ -19,6 +19,18 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
 
     public Guid GetCurrentOperation() => _operationGuid;
 
+    public Task MakeRequestAsync<T>(Func<ITelegramBotClient, Task<T>> request, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
+        => ExecuteEnqueueSafety(request.Invoke(_botClient), logMessage, cancellationToken);
+
+    public Task MakeRequestAsync<T>(Func<ITelegramBotClient, Task<T>> request, CancellationToken cancellationToken)
+        => Enqueue(() => request.Invoke(_botClient), cancellationToken);
+
+    public Task MakeRequestAsync(Func<ITelegramBotClient, Task> request, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
+        => ExecuteEnqueueSafety(request.Invoke(_botClient), logMessage, cancellationToken);
+
+    public Task MakeRequestAsync(Func<ITelegramBotClient, Task> request, CancellationToken cancellationToken)
+        => Enqueue(() => request.Invoke(_botClient), cancellationToken);
+
     public Task<Update[]> GetUpdatesAsync(int offset, UpdateType[] allowedUpdates, CancellationToken cancellationToken)
     {
         var task = _botClient.GetUpdatesAsync(

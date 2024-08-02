@@ -1,4 +1,6 @@
-﻿using Telegram.Bot.Types;
+﻿using TBotPlatform.Contracts.Statistics;
+using Telegram.Bot;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using File = Telegram.Bot.Types.File;
@@ -12,6 +14,42 @@ public interface ITelegramContext
     /// </summary>
     /// <returns></returns>
     Guid GetCurrentOperation();
+
+    /// <summary>
+    /// Осуществляет прямой запрос в telegram с очередью, без логирования
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="request">Запрос</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task MakeRequestAsync<T>(Func<ITelegramBotClient, Task<T>> request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Осуществляет прямой запрос в telegram с очередью, без логирования
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="request">Запрос</param>
+    /// <param name="logMessage">Сообщение для логирования</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task MakeRequestAsync<T>(Func<ITelegramBotClient, Task<T>> request, TelegramContextLogMessage logMessage, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Осуществляет прямой запрос в telegram с очередью, без логирования
+    /// </summary>
+    /// <param name="request">Запрос</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task MakeRequestAsync(Func<ITelegramBotClient, Task> request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Осуществляет прямой запрос в telegram с очередью, без логирования
+    /// </summary>
+    /// <param name="request">Запрос</param>
+    /// <param name="logMessage">Сообщение для логирования</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task MakeRequestAsync(Func<ITelegramBotClient, Task> request, TelegramContextLogMessage logMessage, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получает сообщения от telegram
