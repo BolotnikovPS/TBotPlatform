@@ -4,14 +4,11 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Text;
-using System.Threading;
-using TBotPlatform.Common.Factories;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types;
 
 namespace TBotPlatform.Common.BackgroundServices;
 

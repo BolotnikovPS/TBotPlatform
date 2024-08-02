@@ -43,7 +43,8 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
             update?.Message?.Text,
             update?.Message?.ReplyToMessage?.Text,
             update?.CallbackQuery,
-            await DownloadMessagePhotoAsync(update?.Message, cancellationToken)
+            await DownloadMessagePhotoAsync(update?.Message, cancellationToken),
+            await DownloadMessageDocumentAsync(update?.Message, cancellationToken)
             );
 
         MarkupNextState = markupNextState;
@@ -55,7 +56,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
 
     public void SetBindState(EBindStateType type) => BindState = type;
 
-    public Task<Message> SendDocumentAsync(InputFile inputFile, CancellationToken cancellationToken)
+    public Task<Message> SendDocumentAsync(InputFile inputFile, bool disableNotification, CancellationToken cancellationToken)
     {
         if (ChatId.IsDefault())
         {
@@ -65,9 +66,13 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
         return botClient.SendDocumentAsync(
             ChatId,
             inputFile,
+            disableNotification,
             cancellationToken
             );
     }
+
+    public Task<Message> SendDocumentAsync(InputFile inputFile, CancellationToken cancellationToken)
+        => SendDocumentAsync(inputFile, false, cancellationToken);
 
     public Task SendChatActionAsync(ChatAction chatAction, CancellationToken cancellationToken)
     {
@@ -101,6 +106,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
             ChatId,
             ChooseAction,
             newMarkup,
+            false,
             cancellationToken
             );
     }
@@ -137,7 +143,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
             throw new TextLengthException(message.Length, StateContextConstant.TextLength);
         }
 
-        if (ChatMessage!.CallbackQueryMessageWithCaption)
+        if (ChatMessage!.CallbackQueryMessageWithImage)
         {
             return botClient.EditMessageCaptionAsync(
                 ChatId,
@@ -212,6 +218,19 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
 
         var photoDocument = message.Document;
         return await DownloadFileAsync(photoDocument.FileId, cancellationToken);
+    }
+
+    private async Task<FileData> DownloadMessageDocumentAsync(Message message, CancellationToken cancellationToken)
+    {
+        if (message.IsNull()
+            || message.Document.IsNull()
+           )
+        {
+            return default;
+        }
+
+        var document = message.Document!;
+        return await DownloadFileAsync(document.FileId, cancellationToken);
     }
 
     private async Task<FileData> DownloadFileAsync(string fileId, CancellationToken cancellationToken)

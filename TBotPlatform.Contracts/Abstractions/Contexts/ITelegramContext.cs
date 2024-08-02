@@ -56,6 +56,21 @@ public interface ITelegramContext
         );
 
     /// <summary>
+    /// Изменяет inline кнопки в сообщении
+    /// </summary>
+    /// <param name="chatId">Id чата</param>
+    /// <param name="messageId">Id сообщения</param>
+    /// <param name="replyMarkup">Кнопки</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Message> EditMessageReplyMarkupAsync(
+        long chatId,
+        int messageId,
+        InlineKeyboardMarkup replyMarkup,
+        CancellationToken cancellationToken
+        );
+
+    /// <summary>
     /// Изменяет сообщение
     /// </summary>
     /// <param name="chatId">Id чата</param>
@@ -89,18 +104,20 @@ public interface ITelegramContext
     /// <param name="chatId">Id чата</param>
     /// <param name="text">Текст сообщения</param>
     /// <param name="replyMarkup">Кнопки</param>
+    /// <param name="disableNotification">Отключить уведомление пользователю</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> SendTextMessageAsync(long chatId, string text, IReplyMarkup replyMarkup, CancellationToken cancellationToken);
+    Task<Message> SendTextMessageAsync(long chatId, string text, IReplyMarkup replyMarkup, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет сообщение
     /// </summary>
     /// <param name="chatId">Id чата</param>
     /// <param name="text">Текст сообщения</param>
+    /// <param name="disableNotification">Отключить уведомление пользователю</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> SendTextMessageAsync(long chatId, string text, CancellationToken cancellationToken);
+    Task<Message> SendTextMessageAsync(long chatId, string text, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет действие в чат
@@ -117,18 +134,20 @@ public interface ITelegramContext
     /// <param name="chatId">Id чата</param>
     /// <param name="document">Файл документа</param>
     /// <param name="replyMarkup">Кнопки</param>
+    /// <param name="disableNotification">Отключить уведомление пользователю</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> SendDocumentAsync(long chatId, InputFile document, IReplyMarkup replyMarkup, CancellationToken cancellationToken);
+    Task<Message> SendDocumentAsync(long chatId, InputFile document, IReplyMarkup replyMarkup, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет документ
     /// </summary>
     /// <param name="chatId">Id чата</param>
     /// <param name="document">Файл документа</param>
+    /// <param name="disableNotification">Отключить уведомление пользователю</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> SendDocumentAsync(long chatId, InputFile document, CancellationToken cancellationToken);
+    Task<Message> SendDocumentAsync(long chatId, InputFile document, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет изображение с основными кнопками
@@ -137,6 +156,7 @@ public interface ITelegramContext
     /// <param name="photo">Файл изображения</param>
     /// <param name="caption">Подпись/текст к изображению</param>
     /// <param name="replyMarkup">Кнопки</param>
+    /// <param name="disableNotification">Отключить уведомление пользователю</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<Message> SendPhotoAsync(
@@ -144,6 +164,7 @@ public interface ITelegramContext
         InputFile photo,
         string caption,
         IReplyMarkup replyMarkup,
+        bool disableNotification,
         CancellationToken cancellationToken
         );
 
@@ -152,9 +173,10 @@ public interface ITelegramContext
     /// </summary>
     /// <param name="chatId">Id чата</param>
     /// <param name="photo">Файл изображения</param>
+    /// <param name="disableNotification">Отключить уведомление пользователю</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> SendPhotoAsync(long chatId, InputFile photo, CancellationToken cancellationToken);
+    Task<Message> SendPhotoAsync(long chatId, InputFile photo, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Скачивает файл
@@ -174,4 +196,77 @@ public interface ITelegramContext
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<File> GetFileAsync(long chatId, string fileId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Скачивает файл
+    /// </summary>
+    /// <param name="chatId">Id чата</param>
+    /// <param name="fileId">Id документа</param>
+    /// <param name="destination">Стрим куда запишется файл</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<File> GetInfoAndDownloadFileAsync(long chatId, string fileId, Stream destination, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Пересылает сообщение
+    /// </summary>
+    /// <param name="chatId">Id чата</param>
+    /// <param name="fromChatId">Id чата откуда берутся данные</param>
+    /// <param name="messageId">Id сообщения</param>
+    /// <param name="disableNotification">Отключить уведомление пользователю</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Message> ForwardMessageAsync(long chatId, long fromChatId, int messageId, bool disableNotification, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Копирует сообщение
+    /// </summary>
+    /// <param name="chatId">Id чата</param>
+    /// <param name="fromChatId">Id чата откуда берутся данные</param>
+    /// <param name="messageId">Id сообщения</param>
+    /// <param name="caption">Подпись/текст к изображению</param>
+    /// <param name="replyToMessageId">Id сообщение на которое ответить</param>
+    /// <param name="allowSendingWithoutReply">Разрешить отправку без ответа на сообщение</param>
+    /// <param name="replyMarkup">Кнопки</param>
+    /// <param name="disableNotification">Отключить уведомление пользователю</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<MessageId> CopyMessageAsync(
+        long chatId,
+        long fromChatId,
+        int messageId,
+        string caption,
+        int replyToMessageId,
+        bool allowSendingWithoutReply,
+        IReplyMarkup replyMarkup,
+        bool disableNotification,
+        CancellationToken cancellationToken
+        );
+
+    /// <summary>
+    /// Фиксирует сообщение
+    /// </summary>
+    /// <param name="chatId">Id чата</param>
+    /// <param name="messageId">Id сообщения</param>
+    /// <param name="disableNotification">Отключить уведомление пользователю</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task PinChatMessageAsync(long chatId, int messageId, bool disableNotification, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Снимает фиксацию с сообщения
+    /// </summary>
+    /// <param name="chatId">Id чата</param>
+    /// <param name="messageId">Id сообщения</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task UnpinChatMessageAsync(long chatId, int messageId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Снимает фиксацию всех сообщений
+    /// </summary>
+    /// <param name="chatId">Id чата</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task UnpinAllChatMessages(long chatId, CancellationToken cancellationToken);
 }

@@ -98,8 +98,16 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, ITelegra
             throw new("Не смогли активировать состояние");
         }
 
-        await stateContext.SendChatActionAsync(ChatAction.Typing, cancellationToken);
+        try
+        {
+            await stateContext.SendChatActionAsync(ChatAction.Typing, cancellationToken);
+        }
+        catch
+        {
+            // ignored
+        }
 
+        Exception exception = null;
         try
         {
             await state!.HandleAsync(stateContext, user, cancellationToken);
@@ -109,17 +117,30 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, ITelegra
         catch (Exception ex)
         {
             logger.LogError(ex, ErrorText);
+            exception = ex;
+        }
 
+        if (exception.IsNull())
+        {
+            return;
+        }
+
+        try
+        {
             await stateContext.SendTextMessageAsync(ErrorText, cancellationToken);
+        }
+        catch
+        {
+            // ignored
+        }
 
-            try
-            {
-                await state!.HandleErrorAsync(stateContext, user, ex, cancellationToken);
-            }
-            catch (Exception ex2)
-            {
-                logger.LogError(ex2, ErrorText);
-            }
+        try
+        {
+            await state!.HandleErrorAsync(stateContext, user, exception, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ErrorText);
         }
     }
 }

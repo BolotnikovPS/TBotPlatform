@@ -10,7 +10,7 @@ namespace TBotPlatform.Common.Contexts;
 
 internal partial class StateContext
 {
-    public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileData photoData, CancellationToken cancellationToken)
+    public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileData photoData, bool disableNotification, CancellationToken cancellationToken)
     {
         InlineKeyboardMarkup inlineKeyboard = null;
 
@@ -27,30 +27,36 @@ internal partial class StateContext
                 });
         }
 
-        return SendOrUpdateTextMessageAsync(text, inlineKeyboard, photoData, cancellationToken);
+        return SendOrUpdateTextMessageAsync(text, inlineKeyboard, photoData, disableNotification, cancellationToken);
+    }
+
+    public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileData photoData, CancellationToken cancellationToken)
+        => SendOrUpdateTextMessageAsync(text, inlineMarkupList, photoData, false, cancellationToken);
+
+    public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, bool disableNotification, CancellationToken cancellationToken)
+    {
+        InlineKeyboardMarkup inlineKeyboard = null;
+
+        if (inlineMarkupList.CheckAny())
+        {
+            inlineKeyboard = Map(
+                new InlineMarkupMassiveList
+                {
+                    new()
+                    {
+                        InlineMarkups = inlineMarkupList,
+                        ButtonsPerRow = 1,
+                    },
+                });
+        }
+
+        return SendOrUpdateTextMessageAsync(text, inlineKeyboard, null, disableNotification, cancellationToken);
     }
 
     public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, CancellationToken cancellationToken)
-    {
-        InlineKeyboardMarkup inlineKeyboard = null;
+        => SendOrUpdateTextMessageAsync(text, inlineMarkupList, false, cancellationToken);
 
-        if (inlineMarkupList.CheckAny())
-        {
-            inlineKeyboard = Map(
-                new InlineMarkupMassiveList
-                {
-                    new()
-                    {
-                        InlineMarkups = inlineMarkupList,
-                        ButtonsPerRow = 1,
-                    },
-                });
-        }
-
-        return SendOrUpdateTextMessageAsync(text, inlineKeyboard, null, cancellationToken);
-    }
-
-    public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, CancellationToken cancellationToken)
+    public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, bool disableNotification, CancellationToken cancellationToken)
     {
         InlineKeyboardMarkup inlineKeyboard = null;
 
@@ -59,17 +65,29 @@ internal partial class StateContext
             inlineKeyboard = Map(inlineMarkupMassiveList);
         }
 
-        return SendOrUpdateTextMessageAsync(text, inlineKeyboard, null, cancellationToken);
+        return SendOrUpdateTextMessageAsync(text, inlineKeyboard, null, disableNotification, cancellationToken);
     }
+
+    public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, CancellationToken cancellationToken)
+        => SendOrUpdateTextMessageAsync(text, inlineMarkupMassiveList, false, cancellationToken);
+
+    public Task<Message> SendOrUpdateTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)
+        => SendOrUpdateTextMessageAsync(
+            text,
+            inlineMarkupMassiveList: null,
+            disableNotification,
+            cancellationToken
+            );
 
     public Task<Message> SendOrUpdateTextMessageAsync(string text, CancellationToken cancellationToken)
         => SendOrUpdateTextMessageAsync(
             text,
             inlineMarkupMassiveList: null,
+            false,
             cancellationToken
             );
 
-    private async Task<Message> SendOrUpdateTextMessageAsync(string text, InlineKeyboardMarkup inlineKeyboard, FileData photoData, CancellationToken cancellationToken)
+    private async Task<Message> SendOrUpdateTextMessageAsync(string text, InlineKeyboardMarkup inlineKeyboard, FileData photoData, bool disableNotification, CancellationToken cancellationToken)
     {
         if (ChatId.IsDefault())
         {
@@ -86,19 +104,19 @@ internal partial class StateContext
             throw new TextLengthException(text.Length, StateContextConstant.TextLength);
         }
 
-        var checkToEdit = MarkupNextState.IsNotNull()
-                          && ChatMessage.CallbackQueryDateIdOrNull.IsNotNull()
-                          && (DateTime.UtcNow - ChatMessage.CallbackQueryDateIdOrNull!.Value).TotalDays < 1;
-
         if (photoData.IsNotNull())
         {
-            if (checkToEdit)
+            var checkToDelete = ChatMessage.CallbackQueryDateIdOrNull.IsNotNull()
+                                && (DateTime.UtcNow - ChatMessage.CallbackQueryDateIdOrNull!.Value).TotalDays < 1;
+
+            if (checkToDelete)
             {
-                await botClient.DeleteMessageAsync(
-                    ChatId,
-                    ChatMessage.CallbackQueryMessageIdOrNull!.Value,
-                    cancellationToken
-                    );
+                if (!ChatMessage.CallbackQueryMessageIdOrNull.HasValue)
+                {
+                    throw new CallbackQueryMessageIdOrNullArgException();
+                }
+
+                await botClient.DeleteMessageAsync(ChatId, ChatMessage.CallbackQueryMessageIdOrNull!.Value, cancellationToken);
             }
 
             await using var fileStream = new MemoryStream(photoData.Byte);
@@ -107,16 +125,7 @@ internal partial class StateContext
                 InputFile.FromStream(fileStream),
                 text,
                 inlineKeyboard,
-                cancellationToken
-                );
-        }
-
-        if (!checkToEdit)
-        {
-            return await botClient.SendTextMessageAsync(
-                ChatId,
-                text,
-                inlineKeyboard,
+                disableNotification,
                 cancellationToken
                 );
         }
@@ -126,23 +135,12 @@ internal partial class StateContext
             throw new CallbackQueryMessageIdOrNullArgException();
         }
 
-        if (ChatMessage.CallbackQueryMessageWithCaption)
-        {
-            return await botClient.EditMessageCaptionAsync(
-                ChatId,
-                ChatMessage.CallbackQueryMessageIdOrNull.Value,
-                text,
-                inlineKeyboard,
-                cancellationToken
-                );
-        }
+        var taskEdit = ChatMessage.CallbackQueryMessageWithImage
+            ? botClient.EditMessageCaptionAsync(ChatId, ChatMessage.CallbackQueryMessageIdOrNull.Value, text, cancellationToken)
+            : botClient.EditMessageTextAsync(ChatId, ChatMessage.CallbackQueryMessageIdOrNull.Value, text, cancellationToken);
 
-        return await botClient.EditMessageTextAsync(
-            ChatId,
-            ChatMessage.CallbackQueryMessageIdOrNull.Value,
-            text,
-            inlineKeyboard,
-            cancellationToken
-            );
+        await taskEdit;
+
+        return await botClient.EditMessageReplyMarkupAsync(ChatId, ChatMessage.CallbackQueryMessageIdOrNull.Value, inlineKeyboard, cancellationToken);
     }
 }

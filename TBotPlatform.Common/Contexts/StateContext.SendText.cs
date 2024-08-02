@@ -8,13 +8,19 @@ namespace TBotPlatform.Common.Contexts;
 
 internal partial class StateContext
 {
-    public async Task<Message> SendTextMessageWithReplyAsync(string text, CancellationToken cancellationToken)
-        => await SendTextMessageAsync(text, true, cancellationToken);
+    public Task<Message> SendTextMessageWithReplyAsync(string text, bool disableNotification, CancellationToken cancellationToken)
+        => SendTextMessageAsync(text, true, disableNotification, cancellationToken);
+
+    public Task<Message> SendTextMessageWithReplyAsync(string text, CancellationToken cancellationToken)
+        => SendTextMessageAsync(text, true, false, cancellationToken);
+
+    public Task<Message> SendTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)
+        => SendTextMessageAsync(text, false, disableNotification, cancellationToken);
 
     public Task<Message> SendTextMessageAsync(string text, CancellationToken cancellationToken)
-        => SendTextMessageAsync(text, false, cancellationToken);
+        => SendTextMessageAsync(text, false, false, cancellationToken);
 
-    private Task<Message> SendTextMessageAsync(string text, bool withReply, CancellationToken cancellationToken)
+    private Task<Message> SendTextMessageAsync(string text, bool withReply, bool disableNotification, CancellationToken cancellationToken)
     {
         if (ChatId.IsDefault())
         {
@@ -42,11 +48,12 @@ internal partial class StateContext
             ChatId,
             text,
             replyMarkup,
+            disableNotification,
             cancellationToken
             );
     }
 
-    public async Task SendLongTextMessageAsync(string text, CancellationToken cancellationToken)
+    public async Task SendLongTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)
     {
         if (ChatId.IsDefault())
         {
@@ -65,6 +72,7 @@ internal partial class StateContext
                 await botClient.SendTextMessageAsync(
                     ChatId,
                     tf,
+                    disableNotification,
                     cancellationToken
                     );
             }
@@ -75,7 +83,11 @@ internal partial class StateContext
         await botClient.SendTextMessageAsync(
             ChatId,
             text,
+            disableNotification,
             cancellationToken
             );
     }
+
+    public Task SendLongTextMessageAsync(string text, CancellationToken cancellationToken)
+        => SendLongTextMessageAsync(text, false, cancellationToken);
 }

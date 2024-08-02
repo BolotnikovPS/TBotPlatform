@@ -13,6 +13,8 @@ public class TelegramContextLogMessage
 
     public required long ChatId { get; set; }
 
+    public long FromChatId { get; set; }
+
     public string? Message { get; set; }
 
     public int? MessageId { get; set; }
@@ -26,6 +28,12 @@ public class TelegramContextLogMessage
     public ChatAction? ChatAction { get; set; }
 
     public InputFile? InputFile { get; set; }
+
+    public bool? DisableNotification { get; set; }
+
+    public int ReplyToMessageId { get; set; }
+
+    public bool AllowSendingWithoutReply { get; set; }
 
     public string? Result { get; set; }
 }

@@ -4,6 +4,7 @@ using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Contracts.Bots.StateContext;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Contracts.Abstractions.Contexts;
 
@@ -54,9 +55,29 @@ public interface IStateContext : IAsyncDisposable
     /// Отправляет документы в чат
     /// </summary>
     /// <param name="inputFile">Файл документа</param>
+    /// <param name="disableNotification"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Message> SendDocumentAsync(InputFile inputFile, bool disableNotification, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отправляет документы в чат
+    /// </summary>
+    /// <param name="inputFile">Файл документа</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<Message> SendDocumentAsync(InputFile inputFile, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
+    /// </summary>
+    /// <param name="text">Текст сообщения</param>
+    /// <param name="inlineMarkupList">Кнопки</param>
+    /// <param name="photoData">Файл изображения</param>
+    /// <param name="disableNotification"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileData photoData, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
@@ -73,9 +94,29 @@ public interface IStateContext : IAsyncDisposable
     /// </summary>
     /// <param name="text">Текст сообщения</param>
     /// <param name="inlineMarkupList">Кнопки</param>
+    /// <param name="disableNotification"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, bool disableNotification, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
+    /// </summary>
+    /// <param name="text">Текст сообщения</param>
+    /// <param name="inlineMarkupList">Кнопки</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
+    /// </summary>
+    /// <param name="text">Текст сообщения</param>
+    /// <param name="inlineMarkupMassiveList">Кнопки</param>
+    /// <param name="disableNotification"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
@@ -90,9 +131,27 @@ public interface IStateContext : IAsyncDisposable
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
     /// </summary>
     /// <param name="text">Текст сообщения</param>
+    /// <param name="disableNotification"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Message> SendOrUpdateTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
+    /// </summary>
+    /// <param name="text">Текст сообщения</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<Message> SendOrUpdateTextMessageAsync(string text, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отправляет сообщение в чат с ответом на сообщение
+    /// </summary>
+    /// <param name="text">Текст сообщения</param>
+    /// <param name="disableNotification"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Message> SendTextMessageWithReplyAsync(string text, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет сообщение в чат с ответом на сообщение
@@ -106,9 +165,27 @@ public interface IStateContext : IAsyncDisposable
     /// Отправляет сообщение в чат с ответом на сообщение
     /// </summary>
     /// <param name="text">Текст сообщения</param>
+    /// <param name="disableNotification"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Message> SendTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отправляет сообщение в чат с ответом на сообщение
+    /// </summary>
+    /// <param name="text">Текст сообщения</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<Message> SendTextMessageAsync(string text, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отправляет большой текст
+    /// </summary>
+    /// <param name="text">Текст сообщения</param>
+    /// <param name="disableNotification"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task SendLongTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет большой текст
@@ -155,4 +232,61 @@ public interface IStateContext : IAsyncDisposable
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task RemoveCurrentReplyMessageAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Пересылает сообщение
+    /// </summary>
+    /// <param name="fromChatId">Id чата откуда берутся данные</param>
+    /// <param name="messageId">Id сообщения</param>
+    /// <param name="disableNotification">Отключить уведомление пользователю</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Message> ForwardMessageAsync(long fromChatId, int messageId, bool disableNotification, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Копирует сообщения
+    /// </summary>
+    /// <param name="fromChatId">Id чата откуда берутся данные</param>
+    /// <param name="messageId">Id сообщения</param>
+    /// <param name="caption">Подпись/текст к изображению</param>
+    /// <param name="replyToMessageId">Id сообщение на которое ответить</param>
+    /// <param name="allowSendingWithoutReply">Разрешить отправку без ответа на сообщение</param>
+    /// <param name="replyMarkup">Кнопки</param>
+    /// <param name="disableNotification">Отключить уведомление пользователю</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<MessageId> CopyMessageAsync(
+        long fromChatId,
+        int messageId,
+        string caption,
+        int replyToMessageId,
+        bool allowSendingWithoutReply,
+        IReplyMarkup replyMarkup,
+        bool disableNotification,
+        CancellationToken cancellationToken
+        );
+
+    /// <summary>
+    /// Фиксирует сообщение
+    /// </summary>
+    /// <param name="messageId">Id сообщения</param>
+    /// <param name="disableNotification">Отключить уведомление пользователю</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task PinChatMessageAsync(int messageId, bool disableNotification, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Снимает фиксацию с сообщения
+    /// </summary>
+    /// <param name="messageId">Id сообщения</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task UnpinChatMessageAsync(int messageId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Снимает фиксацию всех сообщений
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task UnpinAllChatMessages(CancellationToken cancellationToken);
 }
