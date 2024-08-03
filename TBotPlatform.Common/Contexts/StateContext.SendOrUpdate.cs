@@ -130,6 +130,17 @@ internal partial class StateContext
                 );
         }
 
+        if (MarkupNextState.IsNull())
+        {
+            return await botClient.SendTextMessageAsync(
+                ChatId,
+                text,
+                inlineKeyboard,
+                disableNotification,
+                cancellationToken
+                );
+        }
+
         if (!ChatMessage.CallbackQueryMessageIdOrNull.HasValue)
         {
             throw new CallbackQueryMessageIdOrNullArgException();
