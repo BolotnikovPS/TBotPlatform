@@ -1,5 +1,5 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Contexts;
-using TBotPlatform.Contracts.Bots;
+using TBotPlatform.Contracts.Bots.UserBases;
 
 namespace TBotPlatform.Contracts.Abstractions;
 

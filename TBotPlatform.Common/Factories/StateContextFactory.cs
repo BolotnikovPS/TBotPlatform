@@ -6,23 +6,59 @@ using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Attributes;
 using TBotPlatform.Contracts.Bots;
+using TBotPlatform.Contracts.Bots.ChatMessages;
+using TBotPlatform.Contracts.Bots.UserBases;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Factories;
 
-internal class StateContextFactory(ILogger<StateContextFactory> logger, ITelegramContext botClient, IServiceScopeFactory serviceScopeFactory) : IStateContextFactory
+internal class StateContextFactory(
+    ILogger<StateContextFactory> logger,
+    ITelegramContext botClient,
+    IServiceScopeFactory serviceScopeFactory,
+    ITelegramUpdateHandler telegramUpdateHandler
+    ) : IStateContextFactory
 {
     private const string ErrorText = "🆘 Произошла ошибка при обработке запроса";
 
-    public Task<IStateContext> CreateStateContextAsync<T>(T user, CancellationToken cancellationToken)
-        where T : UserBase
-        => CreateStateContextAsync(user, null, null, null, cancellationToken);
+    public IStateContext CreateStateContext<T>(T user) where T : UserBase
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        return new StateContext(botClient, user.ChatId);
+    }
 
     public Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
         where T : UserBase
         => CreateStateContextAsync(user, stateHistory, update, null, cancellationToken);
+
+    public Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory stateHistory, ChatMessage chatMessage, CancellationToken cancellationToken)
+        where T : UserBase
+        => CreateStateContextAsync(user, stateHistory, chatMessage, null, cancellationToken);
+
+    public async Task<IStateContext> CreateStateContextAsync<T>(
+        T user,
+        StateHistory stateHistory,
+        ChatMessage chatMessage,
+        MarkupNextState markupNextState,
+        CancellationToken cancellationToken
+        )
+        where T : UserBase
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        var stateContext = new StateContext(botClient, user.ChatId);
+        stateContext.CreateStateContext(chatMessage, markupNextState);
+
+        if (stateHistory.IsNotNull())
+        {
+            await RequestAsync(stateContext, user, stateHistory.StateType, cancellationToken);
+        }
+
+        return stateContext;
+    }
 
     public async Task<IStateContext> CreateStateContextAsync<T>(
         T user,
@@ -33,20 +69,11 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, ITelegra
         )
         where T : UserBase
     {
-        var stateContext = new StateContext(logger, botClient);
-        await stateContext.CreateStateContextAsync(
-            user,
-            update,
-            markupNextState,
-            cancellationToken
-            );
+        ArgumentNullException.ThrowIfNull(user);
 
-        if (stateHistory.IsNotNull())
-        {
-            await RequestAsync(stateContext, user, stateHistory.StateType, cancellationToken);
-        }
+        var chatMessage = await telegramUpdateHandler.GetChatMessageAsync(user.ChatId, update, cancellationToken);
 
-        return stateContext;
+        return await CreateStateContextAsync(user, stateHistory, chatMessage, markupNextState, cancellationToken);
     }
 
     public async Task UpdateMarkupByStateAsync<T>(T user, IStateContext stateContext, StateHistory stateHistory, CancellationToken cancellationToken)
@@ -75,6 +102,7 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, ITelegra
         var menu = await menuButtons!.GetMarkUpAsync(user);
         await stateContext.UpdateMarkupAsync(menu, cancellationToken);
     }
+
 
     private async Task RequestAsync<T>(IStateContext stateContext, T user, Type stateType, CancellationToken cancellationToken)
         where T : UserBase

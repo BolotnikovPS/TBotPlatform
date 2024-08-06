@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Text;
+﻿using System.Text;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
+using TBotPlatform.Contracts.Bots.ChatMessages;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Contracts.Bots.StateContext;
@@ -12,41 +12,25 @@ using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal partial class StateContext(ILogger logger, ITelegramContext botClient) : IStateContext
+internal partial class StateContext(ITelegramContext botClient, long chatId) : IStateContext
 {
     public MarkupNextState MarkupNextState { get; private set; }
     public ChatMessage ChatMessage { get; private set; }
     public EBindStateType BindState { get; private set; }
     public bool IsForceReplyLastMenu { get; private set; }
 
-    private long ChatId { get; set; }
+    private long ChatId { get; } = chatId;
 
     private const string ChooseAction = "😊 Выберите действие";
 
-    public async Task CreateStateContextAsync(
-        UserBase user,
-        Update update,
-        MarkupNextState markupNextState,
-        CancellationToken cancellationToken
-        )
+    public void CreateStateContext(ChatMessage chatMessage, MarkupNextState markupNextState)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        if (user.ChatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
-        ChatId = user.ChatId;
-
-        ChatMessage = new(
-            update?.Message?.Text,
-            update?.Message?.ReplyToMessage?.Text,
-            update?.CallbackQuery,
-            await DownloadMessagePhotoAsync(update?.Message, cancellationToken),
-            await DownloadMessageDocumentAsync(update?.Message, cancellationToken)
-            );
-
+        ChatMessage = chatMessage;
         MarkupNextState = markupNextState;
     }
 
@@ -123,7 +107,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
             throw new ChatIdArgException();
         }
 
-        if (!ChatMessage.CallbackQueryMessageIdOrNull.HasValue)
+        if (ChatMessage.CallbackQueryOrNull.IsNull())
         {
             throw new CallbackQueryMessageIdOrNullArgException();
         }
@@ -133,7 +117,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
             throw new TextLengthException(text.Length, StateContextConstant.TextLength);
         }
 
-        var message = new StringBuilder(ChatMessage?.CallbackQueryMessageOrNull)
+        var message = new StringBuilder(ChatMessage.CallbackQueryOrNull!.CallbackQueryMessage)
                      .AppendLine()
                      .AppendLine(text)
                      .ToString();
@@ -143,11 +127,11 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
             throw new TextLengthException(message.Length, StateContextConstant.TextLength);
         }
 
-        if (ChatMessage!.CallbackQueryMessageWithImage)
+        if (ChatMessage.CallbackQueryOrNull!.CallbackQueryMessageWithImage)
         {
             return botClient.EditMessageCaptionAsync(
                 ChatId,
-                ChatMessage.CallbackQueryMessageIdOrNull.Value,
+                ChatMessage.CallbackQueryOrNull!.CallbackQueryMessageId,
                 message,
                 cancellationToken
                 );
@@ -155,7 +139,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
 
         return botClient.EditMessageTextAsync(
             ChatId,
-            ChatMessage.CallbackQueryMessageIdOrNull.Value,
+            ChatMessage.CallbackQueryOrNull!.CallbackQueryMessageId,
             message,
             cancellationToken
             );
@@ -171,14 +155,14 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
             throw new ChatIdArgException();
         }
 
-        if (!ChatMessage.CallbackQueryMessageIdOrNull.HasValue)
+        if (ChatMessage.CallbackQueryOrNull.IsNull())
         {
             throw new CallbackQueryMessageIdOrNullArgException();
         }
 
         return botClient.DeleteMessageAsync(
             ChatId,
-            ChatMessage.CallbackQueryMessageIdOrNull.Value,
+            ChatMessage.CallbackQueryOrNull!.CallbackQueryMessageId,
             cancellationToken
             );
     }
@@ -193,83 +177,7 @@ internal partial class StateContext(ILogger logger, ITelegramContext botClient) 
     private void CleanUp()
     {
         ChatMessage = null;
-        ChatId = 0;
         MarkupNextState = null;
         IsForceReplyLastMenu = false;
-    }
-
-    private async Task<FileData> DownloadMessagePhotoAsync(Message message, CancellationToken cancellationToken)
-    {
-        if (message.IsNotNull()
-            && message.Photo.CheckAny()
-           )
-        {
-            var photo = message.Photo![^1];
-            return await DownloadFileAsync(photo.FileId, cancellationToken);
-        }
-
-        if (message.IsNull()
-            || message.Document.IsNull()
-            || !message.Document!.MimeType!.Contains("image")
-           )
-        {
-            return default;
-        }
-
-        var photoDocument = message.Document;
-        return await DownloadFileAsync(photoDocument.FileId, cancellationToken);
-    }
-
-    private async Task<FileData> DownloadMessageDocumentAsync(Message message, CancellationToken cancellationToken)
-    {
-        if (message.IsNull()
-            || message.Document.IsNull()
-           )
-        {
-            return default;
-        }
-
-        var document = message.Document!;
-        return await DownloadFileAsync(document.FileId, cancellationToken);
-    }
-
-    private async Task<FileData> DownloadFileAsync(string fileId, CancellationToken cancellationToken)
-    {
-        if (ChatId.IsDefault())
-        {
-            throw new ChatIdArgException();
-        }
-
-        if (fileId.IsNull())
-        {
-            return default;
-        }
-
-        try
-        {
-            var file = await botClient.GetFileAsync(ChatId, fileId, cancellationToken);
-
-            if (file.IsNull())
-            {
-                return default;
-            }
-
-            await using var fileStream = new MemoryStream();
-
-            await botClient.DownloadFileAsync(ChatId, file.FilePath!, fileStream, cancellationToken);
-
-            return new()
-            {
-                Byte = fileStream.ToArray(),
-                Name = file.FilePath,
-                Size = file.FileSize!.Value,
-            };
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Ошибка скачивания {fileId}", fileId);
-        }
-
-        return default;
     }
 }

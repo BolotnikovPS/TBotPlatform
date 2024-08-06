@@ -15,8 +15,8 @@ namespace TBotPlatform.Common.Dependencies;
 
 public static partial class DependencyInjection
 {
-    public static IServiceCollection AddTelegramContext<T>(this IServiceCollection services, TelegramSettings telegramSettings)
-        where T : ITelegramContextLog
+    public static IServiceCollection AddTelegramContext<TLog>(this IServiceCollection services, TelegramSettings telegramSettings)
+        where TLog : ITelegramContextLog
     {
         if (telegramSettings.IsNull()
             || telegramSettings.Token.IsNull()
@@ -28,10 +28,13 @@ public static partial class DependencyInjection
         services
            .AddScoped<LoggingHttpHandler>()
            .AddSingleton(telegramSettings)
-           .AddScoped(typeof(ITelegramContextLog), typeof(T))
+           .AddScoped(typeof(ITelegramContextLog), typeof(TLog))
            .AddHttpClient<ITelegramContext, TelegramContext>()
            .AddHttpMessageHandler<LoggingHttpHandler>()
            .AddPolicyHandler(GetRetryPolicy());
+
+        services
+           .AddScoped<ITelegramUpdateHandler, TelegramUpdateHandler>();
 
         return services;
     }
@@ -39,8 +42,8 @@ public static partial class DependencyInjection
     public static IServiceCollection AddTelegramContext(this IServiceCollection services, TelegramSettings telegramSettings)
         => services.AddTelegramContext<TelegramContextLog>(telegramSettings);
 
-    public static IServiceCollection AddTelegramClientHostedService<T>(this IServiceCollection services, TelegramSettings telegramSettings, params UpdateType[] updateType)
-        where T : ITelegramContextLog
+    public static IServiceCollection AddTelegramClientHostedService<TLog>(this IServiceCollection services, TelegramSettings telegramSettings, params UpdateType[] updateType)
+        where TLog : ITelegramContextLog
     {
         services
            .AddSingleton(
@@ -48,7 +51,7 @@ public static partial class DependencyInjection
                 {
                     UpdateType = updateType,
                 })
-           .AddTelegramContext<T>(telegramSettings)
+           .AddTelegramContext<TLog>(telegramSettings)
            .AddHostedService<TelegramContextHostedService>();
 
         return services;
@@ -76,7 +79,7 @@ public static partial class DependencyInjection
                )
           .WaitAndRetryAsync(
                3,
-               (_, response, _) => response!.Result!.Headers!.RetryAfter!.Delta!.Value,
+               (_, response, _) => response.Result.Headers.RetryAfter?.Delta ?? TimeSpan.FromSeconds(1),
                (_, _, _, _) => Task.CompletedTask
                );
 }

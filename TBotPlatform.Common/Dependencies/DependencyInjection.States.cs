@@ -2,8 +2,8 @@
 using System.Reflection;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Attributes;
-using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.StateFactory;
+using TBotPlatform.Contracts.Bots.UserBases;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Dependencies;

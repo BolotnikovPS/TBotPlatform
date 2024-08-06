@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 using TBotPlatform.Contracts.Abstractions.Cache;
 using TBotPlatform.Extension;
@@ -89,6 +88,7 @@ internal class CacheService(ILogger<CacheService> logger, Lazy<ConnectionMultipl
     }
 
     private T DeserializeObject<T>(RedisValue? value)
+        where T : IKeyInCache
     {
         if (value.IsNull())
         {
@@ -97,7 +97,7 @@ internal class CacheService(ILogger<CacheService> logger, Lazy<ConnectionMultipl
 
         try
         {
-            return JsonConvert.DeserializeObject<T>(value);
+            return value.ToString().FromJson<T>();
         }
         catch (Exception ex)
         {

@@ -22,6 +22,9 @@ internal partial class StateContext
         return botClient.ForwardMessageAsync(ChatId, fromChatId, messageId, disableNotification, cancellationToken);
     }
 
+    public Task<Message> ForwardMessageAsync(long fromChatId, int messageId, CancellationToken cancellationToken)
+        => ForwardMessageAsync(fromChatId, messageId, false, cancellationToken);
+
     public Task<MessageId> CopyMessageAsync(
         long fromChatId,
         int messageId,

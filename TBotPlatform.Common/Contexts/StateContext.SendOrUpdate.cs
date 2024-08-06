@@ -106,17 +106,17 @@ internal partial class StateContext
 
         if (photoData.IsNotNull())
         {
-            var checkToDelete = ChatMessage.CallbackQueryDateIdOrNull.IsNotNull()
-                                && (DateTime.UtcNow - ChatMessage.CallbackQueryDateIdOrNull!.Value).TotalDays < 1;
+            var checkToDelete = ChatMessage.CallbackQueryOrNull.IsNotNull()
+                                && (DateTime.UtcNow - ChatMessage.CallbackQueryOrNull!.CallbackQueryDateId).TotalDays < 1;
 
             if (checkToDelete)
             {
-                if (!ChatMessage.CallbackQueryMessageIdOrNull.HasValue)
+                if (ChatMessage.CallbackQueryOrNull.IsNull())
                 {
                     throw new CallbackQueryMessageIdOrNullArgException();
                 }
 
-                await botClient.DeleteMessageAsync(ChatId, ChatMessage.CallbackQueryMessageIdOrNull!.Value, cancellationToken);
+                await botClient.DeleteMessageAsync(ChatId, ChatMessage.CallbackQueryOrNull.CallbackQueryMessageId, cancellationToken);
             }
 
             await using var fileStream = new MemoryStream(photoData.Byte);
@@ -141,17 +141,13 @@ internal partial class StateContext
                 );
         }
 
-        if (!ChatMessage.CallbackQueryMessageIdOrNull.HasValue)
+        if (ChatMessage.CallbackQueryOrNull.IsNull())
         {
             throw new CallbackQueryMessageIdOrNullArgException();
         }
 
-        var taskEdit = ChatMessage.CallbackQueryMessageWithImage
-            ? botClient.EditMessageCaptionAsync(ChatId, ChatMessage.CallbackQueryMessageIdOrNull.Value, text, cancellationToken)
-            : botClient.EditMessageTextAsync(ChatId, ChatMessage.CallbackQueryMessageIdOrNull.Value, text, cancellationToken);
-
-        await taskEdit;
-
-        return await botClient.EditMessageReplyMarkupAsync(ChatId, ChatMessage.CallbackQueryMessageIdOrNull.Value, inlineKeyboard, cancellationToken);
+        return ChatMessage.CallbackQueryOrNull!.CallbackQueryMessageWithImage
+            ? await botClient.EditMessageCaptionAsync(ChatId, ChatMessage.CallbackQueryOrNull.CallbackQueryMessageId, text, inlineKeyboard, cancellationToken)
+            : await botClient.EditMessageTextAsync(ChatId, ChatMessage.CallbackQueryOrNull.CallbackQueryMessageId, text, inlineKeyboard, cancellationToken);
     }
 }

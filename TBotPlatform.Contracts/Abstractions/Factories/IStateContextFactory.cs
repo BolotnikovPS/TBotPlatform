@@ -1,5 +1,7 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots;
+using TBotPlatform.Contracts.Bots.ChatMessages;
+using TBotPlatform.Contracts.Bots.UserBases;
 using Telegram.Bot.Types;
 
 namespace TBotPlatform.Contracts.Abstractions.Factories;
@@ -10,10 +12,8 @@ public interface IStateContextFactory
     /// Создание контекста состояния
     /// </summary>
     /// <param name="user">Пользователь</param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IStateContext> CreateStateContextAsync<T>(T user, CancellationToken cancellationToken)
-        where T : UserBase;
+    IStateContext CreateStateContext<T>(T user) where T : UserBase;
 
     /// <summary>
     /// Создание контекста состояния и вызов состояния
@@ -24,6 +24,37 @@ public interface IStateContextFactory
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
+        where T : UserBase;
+
+    /// <summary>
+    /// Создание контекста состояния и вызов состояния
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="user">Пользователь</param>
+    /// <param name="stateHistory">Вызываемое состояние</param>
+    /// <param name="chatMessage"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory stateHistory, ChatMessage chatMessage, CancellationToken cancellationToken)
+        where T : UserBase;
+
+    /// <summary>
+    /// Создание контекста состояния и вызов состояния
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="user">Пользователь</param>
+    /// <param name="stateHistory">Вызываемое состояние</param>
+    /// <param name="chatMessage">Сообщение для состояния</param>
+    /// <param name="markupNextState">Данные с кнопки inline</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public Task<IStateContext> CreateStateContextAsync<T>(
+        T user,
+        StateHistory stateHistory,
+        ChatMessage chatMessage,
+        MarkupNextState markupNextState,
+        CancellationToken cancellationToken
+        )
         where T : UserBase;
 
     /// <summary>

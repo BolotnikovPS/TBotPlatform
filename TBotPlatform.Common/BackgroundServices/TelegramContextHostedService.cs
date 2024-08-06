@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Text;
 using TBotPlatform.Contracts.Abstractions;
@@ -17,7 +16,8 @@ internal class TelegramContextHostedService(
     ILogger<TelegramContextHostedService> logger,
     TelegramContextHostedServiceSettings settings,
     ITelegramContext telegramContext,
-    IServiceProvider services
+    IServiceProvider services,
+    ITelegramUpdateHandler telegramUpdateHandler
     ) : BackgroundService
 {
     private const int WaitMilliSecond = 1 * 1000;
@@ -76,11 +76,13 @@ internal class TelegramContextHostedService(
 
                             if (data.IsNotNull())
                             {
-                                markupNextState = JsonConvert.DeserializeObject<MarkupNextState>(data!);
+                                data!.TryParseJson(out markupNextState);
                             }
                         }
 
-                        await scopedProcessingService.HandleUpdateAsync(update, markupNextState, stoppingToken);
+                        var user = telegramUpdateHandler.GetTelegramUser(update);
+                        var chatMessage = await telegramUpdateHandler.GetChatMessageAsync(user, update, stoppingToken);
+                        await scopedProcessingService.HandleUpdateAsync(chatMessage, markupNextState, user, stoppingToken);
                     }
                     catch (Exception ex)
                     {

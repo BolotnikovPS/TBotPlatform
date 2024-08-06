@@ -17,7 +17,7 @@ public static partial class Extensions
             return false;
         }
 
-        return value
+        return value!
               .Where(x => x.CheckAny())
               .Select(z => z.ToUpper())
               .Contains(input.ToUpper());
@@ -47,7 +47,7 @@ public static partial class Extensions
             return false;
         }
 
-        return value
+        return value!
               .Where(x => x.IsNotNull())
               .Select(
                    z => z
@@ -100,7 +100,7 @@ public static partial class Extensions
             return false;
         }
 
-        return value.Contains(input);
+        return value!.Contains(input);
     }
 
     /// <summary>

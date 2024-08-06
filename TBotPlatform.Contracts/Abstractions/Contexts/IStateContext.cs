@@ -1,5 +1,6 @@
 ﻿using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
+using TBotPlatform.Contracts.Bots.ChatMessages;
 using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Contracts.Bots.StateContext;
 using Telegram.Bot.Types;
@@ -242,6 +243,15 @@ public interface IStateContext : IAsyncDisposable
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<Message> ForwardMessageAsync(long fromChatId, int messageId, bool disableNotification, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Пересылает сообщение
+    /// </summary>
+    /// <param name="fromChatId">Id чата откуда берутся данные</param>
+    /// <param name="messageId">Id сообщения</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Message> ForwardMessageAsync(long fromChatId, int messageId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Копирует сообщения
