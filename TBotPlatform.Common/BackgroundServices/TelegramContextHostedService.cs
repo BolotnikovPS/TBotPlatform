@@ -81,8 +81,8 @@ internal class TelegramContextHostedService(
                         }
 
                         var user = telegramUpdateHandler.GetTelegramUser(update);
-                        var chatMessage = await telegramUpdateHandler.GetChatMessageAsync(user, update, stoppingToken);
-                        await scopedProcessingService.HandleUpdateAsync(chatMessage, markupNextState, user, stoppingToken);
+                        var chatUpdate = await telegramUpdateHandler.GetChatUpdateAsync(user, update, stoppingToken);
+                        await scopedProcessingService.HandleUpdateAsync(chatUpdate, markupNextState, user, stoppingToken);
                     }
                     catch (Exception ex)
                     {

@@ -28,7 +28,6 @@ internal class TelegramUpdateHandler(ILogger<TelegramUpdateHandler> logger, ITel
             UpdateType.PreCheckoutQuery => update.PreCheckoutQuery?.From,
             UpdateType.ChatMember => update.ChatMember?.From,
             UpdateType.ChatJoinRequest => update.ChatJoinRequest?.From,
-            _ => throw new ArgumentOutOfRangeException(),
         };
 
         var chat = update.Type switch
@@ -46,19 +45,20 @@ internal class TelegramUpdateHandler(ILogger<TelegramUpdateHandler> logger, ITel
         return new(tgUser, chat);
     }
 
-    public Task<ChatMessage> GetChatMessageAsync(TelegramUser telegramUser, Update update, CancellationToken cancellationToken)
+    public Task<ChatUpdate> GetChatUpdateAsync(TelegramUser telegramUser, Update update, CancellationToken cancellationToken)
         => GetChatMessageAsync(telegramUser.Chat.Id, update, cancellationToken);
 
-    public async Task<ChatMessage> GetChatMessageAsync(long chatId, Update update, CancellationToken cancellationToken)
+    public async Task<ChatUpdate> GetChatMessageAsync(long chatId, Update update, CancellationToken cancellationToken)
     {
         if (update.IsNull())
         {
             return default;
         }
 
-        ChatMessageCallbackQuery callbackQueryOrNull = null;
-        ChatMessageForwardFromUser forwardFromUserOrNull = null;
-        ChatMessageMemberUpdate chatMessageMemberUpdate = null;
+        ChatUpdateCallbackQuery callbackQueryOrNull = null;
+        ChatUpdateForwardFromUser forwardFromUserOrNull = null;
+        ChatUpdateMemberUpdate myChatMemberUpdate = null;
+        ChatUpdateMemberUpdate chatMemberUpdate = null;
 
         if (update.CallbackQuery.IsNotNull()
             && update.CallbackQuery!.Message.IsNotNull()
@@ -120,7 +120,7 @@ internal class TelegramUpdateHandler(ILogger<TelegramUpdateHandler> logger, ITel
             var myChatMember = update.MyChatMember;
             var chatMemberUser = CreateUser(myChatMember!.From);
 
-            chatMessageMemberUpdate = new(
+            myChatMemberUpdate = new(
                 myChatMember.Chat.IsNotNull() ? myChatMember.Chat.Id : default,
                 chatMemberUser,
                 myChatMember.Date,
@@ -129,16 +129,35 @@ internal class TelegramUpdateHandler(ILogger<TelegramUpdateHandler> logger, ITel
                 );
         }
 
-        return new(
-            update.Type,
+        if (update.ChatMember.IsNotNull())
+        {
+            var chatMember = update.ChatMember;
+            var chatMemberUser = CreateUser(chatMember!.From);
+
+            chatMemberUpdate = new(
+                chatMember.Chat.IsNotNull() ? chatMember.Chat.Id : default,
+                chatMemberUser,
+                chatMember.Date,
+                CreateChatMessageMember(chatMember.OldChatMember),
+                CreateChatMessageMember(chatMember.NewChatMember)
+                );
+        }
+
+        var message = new ChatUpdateMessage(
             update.Message?.MessageId,
             update.Message?.Text,
             update.Message?.ReplyToMessage?.Text,
-            forwardFromUserOrNull,
-            callbackQueryOrNull,
-            chatMessageMemberUpdate,
             await DownloadMessagePhotoAsync(chatId, update.Message, cancellationToken),
             await DownloadMessageDocumentAsync(chatId, update.Message, cancellationToken)
+            );
+
+        return new(
+            update.Type,
+            message,
+            forwardFromUserOrNull,
+            callbackQueryOrNull,
+            myChatMemberUpdate,
+            chatMemberUpdate
             );
     }
 

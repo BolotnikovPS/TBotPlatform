@@ -2,5 +2,5 @@
 
 public class MessageIdArgException() : ArgumentNullException(ErrorCode)
 {
-    private const string ErrorCode = "MessageId";
+    private const string ErrorCode = "FromMessageId";
 }

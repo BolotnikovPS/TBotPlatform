@@ -3,7 +3,7 @@ using TBotPlatform.Contracts.Bots.UserBases;
 
 namespace TBotPlatform.Contracts.Bots.ChatMessages;
 
-public class ChatMessageForwardFromUser(UserMinimal? user, UserMinimal? bot, int? forwardFromMessageId, string? forwardFromSignature, string? forwardFromSenderName, DateTime? forwardFromDate)
+public class ChatUpdateForwardFromUser(UserMinimal? user, UserMinimal? bot, int? forwardFromMessageId, string? forwardFromSignature, string? forwardFromSenderName, DateTime? forwardFromDate)
 {
     /// <summary>
     /// Данные пользователя
@@ -18,7 +18,7 @@ public class ChatMessageForwardFromUser(UserMinimal? user, UserMinimal? bot, int
     /// <summary>
     /// Id пересылаемого сообщения
     /// </summary>
-    public int? MessageId { get; } = forwardFromMessageId;
+    public int? FromMessageId { get; } = forwardFromMessageId;
 
     /// <summary>
     /// Сигнатура пересылаемого сообщения

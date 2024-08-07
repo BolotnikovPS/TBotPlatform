@@ -27,7 +27,7 @@ public interface IStateContext : IAsyncDisposable
     /// Информация о сообщении из чата
     /// </summary>
     /// <returns></returns>
-    ChatMessage ChatMessage { get; }
+    ChatUpdate ChatUpdate { get; }
 
     /// <summary>
     /// Информация о состоянии входящей кнопки inline меню

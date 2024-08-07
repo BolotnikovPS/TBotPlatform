@@ -2,7 +2,7 @@
 
 namespace TBotPlatform.Contracts.Bots.ChatMessages;
 
-public class ChatMessageMemberUpdate(long? chatId, UserMinimal user, DateTime date, ChatMessageMember oldChatMember, ChatMessageMember newChatMember)
+public class ChatUpdateMemberUpdate(long? chatId, UserMinimal user, DateTime date, ChatMessageMember oldChatMember, ChatMessageMember newChatMember)
 {
     public long? ChatId { get; } = chatId;
 

@@ -15,7 +15,7 @@ namespace TBotPlatform.Common.Contexts;
 internal partial class StateContext(ITelegramContext botClient, long chatId) : IStateContext
 {
     public MarkupNextState MarkupNextState { get; private set; }
-    public ChatMessage ChatMessage { get; private set; }
+    public ChatUpdate ChatUpdate { get; private set; }
     public EBindStateType BindState { get; private set; }
     public bool IsForceReplyLastMenu { get; private set; }
 
@@ -23,14 +23,14 @@ internal partial class StateContext(ITelegramContext botClient, long chatId) : I
 
     private const string ChooseAction = "😊 Выберите действие";
 
-    public void CreateStateContext(ChatMessage chatMessage, MarkupNextState markupNextState)
+    public void CreateStateContext(ChatUpdate chatUpdate, MarkupNextState markupNextState)
     {
         if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
-        ChatMessage = chatMessage;
+        ChatUpdate = chatUpdate;
         MarkupNextState = markupNextState;
     }
 
@@ -107,7 +107,7 @@ internal partial class StateContext(ITelegramContext botClient, long chatId) : I
             throw new ChatIdArgException();
         }
 
-        if (ChatMessage.CallbackQueryOrNull.IsNull())
+        if (ChatUpdate.CallbackQueryOrNull.IsNull())
         {
             throw new CallbackQueryMessageIdOrNullArgException();
         }
@@ -117,7 +117,7 @@ internal partial class StateContext(ITelegramContext botClient, long chatId) : I
             throw new TextLengthException(text.Length, StateContextConstant.TextLength);
         }
 
-        var message = new StringBuilder(ChatMessage.CallbackQueryOrNull!.CallbackQueryMessage)
+        var message = new StringBuilder(ChatUpdate.CallbackQueryOrNull!.CallbackQueryText)
                      .AppendLine()
                      .AppendLine(text)
                      .ToString();
@@ -127,11 +127,11 @@ internal partial class StateContext(ITelegramContext botClient, long chatId) : I
             throw new TextLengthException(message.Length, StateContextConstant.TextLength);
         }
 
-        if (ChatMessage.CallbackQueryOrNull!.CallbackQueryMessageWithImage)
+        if (ChatUpdate.CallbackQueryOrNull!.CallbackQueryMessageWithImage)
         {
             return botClient.EditMessageCaptionAsync(
                 ChatId,
-                ChatMessage.CallbackQueryOrNull!.CallbackQueryMessageId,
+                ChatUpdate.CallbackQueryOrNull!.CallbackQueryMessageId,
                 message,
                 cancellationToken
                 );
@@ -139,7 +139,7 @@ internal partial class StateContext(ITelegramContext botClient, long chatId) : I
 
         return botClient.EditMessageTextAsync(
             ChatId,
-            ChatMessage.CallbackQueryOrNull!.CallbackQueryMessageId,
+            ChatUpdate.CallbackQueryOrNull!.CallbackQueryMessageId,
             message,
             cancellationToken
             );
@@ -155,14 +155,14 @@ internal partial class StateContext(ITelegramContext botClient, long chatId) : I
             throw new ChatIdArgException();
         }
 
-        if (ChatMessage.CallbackQueryOrNull.IsNull())
+        if (ChatUpdate.CallbackQueryOrNull.IsNull())
         {
             throw new CallbackQueryMessageIdOrNullArgException();
         }
 
         return botClient.DeleteMessageAsync(
             ChatId,
-            ChatMessage.CallbackQueryOrNull!.CallbackQueryMessageId,
+            ChatUpdate.CallbackQueryOrNull!.CallbackQueryMessageId,
             cancellationToken
             );
     }
@@ -176,7 +176,7 @@ internal partial class StateContext(ITelegramContext botClient, long chatId) : I
 
     private void CleanUp()
     {
-        ChatMessage = null;
+        ChatUpdate = null;
         MarkupNextState = null;
         IsForceReplyLastMenu = false;
     }

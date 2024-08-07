@@ -9,10 +9,10 @@ public interface IStartReceivingHandler
     /// <summary>
     /// Обрабатывает данные при поступлении сообщения
     /// </summary>
-    /// <param name="chatMessage">Сообщение с telegram</param>
-    /// <param name="markupNextState"></param>
-    /// <param name="telegramUser"></param>
+    /// <param name="chatUpdate">Форматированное сообщение с telegram</param>
+    /// <param name="markupNextState">Данные с inline кнопки</param>
+    /// <param name="telegramUser">Пользователь telegram</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task HandleUpdateAsync(ChatMessage chatMessage, MarkupNextState? markupNextState, TelegramUser telegramUser, CancellationToken cancellationToken);
+    Task HandleUpdateAsync(ChatUpdate chatUpdate, MarkupNextState? markupNextState, TelegramUser telegramUser, CancellationToken cancellationToken);
 }

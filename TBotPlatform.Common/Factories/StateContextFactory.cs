@@ -22,26 +22,29 @@ internal class StateContextFactory(
     ) : IStateContextFactory
 {
     private const string ErrorText = "🆘 Произошла ошибка при обработке запроса";
-
+    
     public IStateContext CreateStateContext<T>(T user) where T : UserBase
-    {
-        ArgumentNullException.ThrowIfNull(user);
+        => CreateStateContext(user.ChatId);
 
-        return new StateContext(botClient, user.ChatId);
+    public IStateContext CreateStateContext(long chatId)
+    {
+        ArgumentNullException.ThrowIfNull(chatId);
+
+        return new StateContext(botClient, chatId);
     }
 
     public Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
         where T : UserBase
         => CreateStateContextAsync(user, stateHistory, update, null, cancellationToken);
 
-    public Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory stateHistory, ChatMessage chatMessage, CancellationToken cancellationToken)
+    public Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory stateHistory, ChatUpdate chatUpdate, CancellationToken cancellationToken)
         where T : UserBase
-        => CreateStateContextAsync(user, stateHistory, chatMessage, null, cancellationToken);
+        => CreateStateContextAsync(user, stateHistory, chatUpdate, null, cancellationToken);
 
     public async Task<IStateContext> CreateStateContextAsync<T>(
         T user,
         StateHistory stateHistory,
-        ChatMessage chatMessage,
+        ChatUpdate chatUpdate,
         MarkupNextState markupNextState,
         CancellationToken cancellationToken
         )
@@ -50,7 +53,7 @@ internal class StateContextFactory(
         ArgumentNullException.ThrowIfNull(user);
 
         var stateContext = new StateContext(botClient, user.ChatId);
-        stateContext.CreateStateContext(chatMessage, markupNextState);
+        stateContext.CreateStateContext(chatUpdate, markupNextState);
 
         if (stateHistory.IsNotNull())
         {
