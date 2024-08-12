@@ -9,7 +9,6 @@ using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Extension;
-using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Dependencies;
 
@@ -42,23 +41,18 @@ public static partial class DependencyInjection
     public static IServiceCollection AddTelegramContext(this IServiceCollection services, TelegramSettings telegramSettings)
         => services.AddTelegramContext<TelegramContextLog>(telegramSettings);
 
-    public static IServiceCollection AddTelegramClientHostedService<TLog>(this IServiceCollection services, TelegramSettings telegramSettings, params UpdateType[] updateType)
+    public static IServiceCollection AddTelegramClientHostedService<TLog>(this IServiceCollection services, TelegramSettings telegramSettings)
         where TLog : ITelegramContextLog
     {
         services
-           .AddSingleton(
-                new TelegramContextHostedServiceSettings
-                {
-                    UpdateType = updateType,
-                })
            .AddTelegramContext<TLog>(telegramSettings)
            .AddHostedService<TelegramContextHostedService>();
 
         return services;
     }
 
-    public static IServiceCollection AddTelegramContextHostedService(this IServiceCollection services, TelegramSettings telegramSettings, params UpdateType[] updateType)
-        => services.AddTelegramClientHostedService<TelegramContextLog>(telegramSettings, updateType);
+    public static IServiceCollection AddTelegramContextHostedService(this IServiceCollection services, TelegramSettings telegramSettings)
+        => services.AddTelegramClientHostedService<TelegramContextLog>(telegramSettings);
 
     public static IServiceCollection AddReceivingHandler<T>(this IServiceCollection services)
         where T : IStartReceivingHandler

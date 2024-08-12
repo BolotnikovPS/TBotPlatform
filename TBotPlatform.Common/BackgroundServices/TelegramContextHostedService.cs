@@ -6,6 +6,7 @@ using System.Text;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots;
+using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Extension;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
@@ -14,14 +15,12 @@ namespace TBotPlatform.Common.BackgroundServices;
 
 internal class TelegramContextHostedService(
     ILogger<TelegramContextHostedService> logger,
-    TelegramContextHostedServiceSettings settings,
+    TelegramSettings settings,
     ITelegramContext telegramContext,
     IServiceProvider services,
     ITelegramUpdateHandler telegramUpdateHandler
     ) : BackgroundService
 {
-    private const int WaitMilliSecond = 1 * 1000;
-
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         await base.StartAsync(cancellationToken);
@@ -50,7 +49,7 @@ internal class TelegramContextHostedService(
 
                 if (updates.IsNull())
                 {
-                    await Task.Delay(WaitMilliSecond, stoppingToken);
+                    await Task.Delay(settings.HostWaitMilliSecond, stoppingToken);
                     continue;
                 }
 
@@ -76,13 +75,16 @@ internal class TelegramContextHostedService(
 
                             if (data.IsNotNull())
                             {
-                                data!.TryParseJson(out markupNextState);
+                                if (data!.TryParseJson<MarkupNextState>(out var newMarkupNextState))
+                                {
+                                    markupNextState = newMarkupNextState;
+                                }
                             }
                         }
 
-                        var user = telegramUpdateHandler.GetTelegramUser(update);
-                        var chatUpdate = await telegramUpdateHandler.GetChatUpdateAsync(user, update, stoppingToken);
-                        await scopedProcessingService.HandleUpdateAsync(chatUpdate, markupNextState, user, stoppingToken);
+                        var telegramMessageUserData = telegramUpdateHandler.GetTelegramMessageUserData(update);
+                        var chatUpdate = await telegramUpdateHandler.GetChatUpdateAsync(telegramMessageUserData, update, stoppingToken);
+                        await scopedProcessingService.HandleUpdateAsync(chatUpdate, markupNextState, telegramMessageUserData, stoppingToken);
                     }
                     catch (Exception ex)
                     {
@@ -104,7 +106,7 @@ internal class TelegramContextHostedService(
                     }
                 }
 
-                await Task.Delay(WaitMilliSecond, stoppingToken);
+                await Task.Delay(settings.HostWaitMilliSecond, stoppingToken);
             }
             catch (Exception ex)
             {

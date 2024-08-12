@@ -5,7 +5,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 
-public class InlineMarkupState(string buttonName, string state, string data = null) 
+public class InlineMarkupState(string buttonName, string state, string data = null)
     : InlineMarkupBase(buttonName)
 {
     /// <summary>

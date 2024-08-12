@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Contracts.Bots.ChatMessages;
+﻿using TBotPlatform.Contracts.Bots.ChatUpdate;
 using Telegram.Bot.Types;
 
 namespace TBotPlatform.Contracts.Abstractions;
@@ -10,7 +10,7 @@ public interface ITelegramUpdateHandler
     /// </summary>
     /// <param name="update">Сообщение с telegram</param>
     /// <returns></returns>
-    TelegramUser GetTelegramUser(Update update);
+    TelegramMessageUserData GetTelegramMessageUserData(Update update);
 
     /// <summary>
     /// Получает форматированное сообщение с telegram
@@ -19,7 +19,7 @@ public interface ITelegramUpdateHandler
     /// <param name="update">Сообщение с telegram</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatUpdate> GetChatUpdateAsync(TelegramUser telegramUser, Update update, CancellationToken cancellationToken);
+    Task<ChatUpdate> GetChatUpdateAsync(TelegramMessageUserData telegramUser, Update update, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получает форматированное сообщение с telegram

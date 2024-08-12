@@ -2,7 +2,7 @@
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
-using TBotPlatform.Contracts.Bots.ChatMessages;
+using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Contracts.Bots.StateContext;
@@ -117,7 +117,7 @@ internal partial class StateContext(ITelegramContext botClient, long chatId) : I
             throw new TextLengthException(text.Length, StateContextConstant.TextLength);
         }
 
-        var message = new StringBuilder(ChatUpdate.CallbackQueryOrNull!.CallbackQueryText)
+        var message = new StringBuilder(ChatUpdate.CallbackQueryOrNull!.Text)
                      .AppendLine()
                      .AppendLine(text)
                      .ToString();
@@ -127,11 +127,11 @@ internal partial class StateContext(ITelegramContext botClient, long chatId) : I
             throw new TextLengthException(message.Length, StateContextConstant.TextLength);
         }
 
-        if (ChatUpdate.CallbackQueryOrNull!.CallbackQueryMessageWithImage)
+        if (ChatUpdate.CallbackQueryOrNull!.MessageWithImage)
         {
             return botClient.EditMessageCaptionAsync(
                 ChatId,
-                ChatUpdate.CallbackQueryOrNull!.CallbackQueryMessageId,
+                ChatUpdate.CallbackQueryOrNull!.MessageId,
                 message,
                 cancellationToken
                 );
@@ -139,7 +139,7 @@ internal partial class StateContext(ITelegramContext botClient, long chatId) : I
 
         return botClient.EditMessageTextAsync(
             ChatId,
-            ChatUpdate.CallbackQueryOrNull!.CallbackQueryMessageId,
+            ChatUpdate.CallbackQueryOrNull!.MessageId,
             message,
             cancellationToken
             );
@@ -148,23 +148,21 @@ internal partial class StateContext(ITelegramContext botClient, long chatId) : I
     public Task UpdateMarkupTextAndDropButtonAsync(CancellationToken cancellationToken)
         => UpdateMarkupTextAndDropButtonAsync("", cancellationToken);
 
-    public Task RemoveCurrentReplyMessageAsync(CancellationToken cancellationToken)
+    public Task RemoveMessageAsync(int messageId, CancellationToken cancellationToken)
     {
         if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
-        if (ChatUpdate.CallbackQueryOrNull.IsNull())
+        if (messageId.IsNull())
         {
-            throw new CallbackQueryMessageIdOrNullArgException();
+            throw new MessageIdArgException();
         }
 
-        return botClient.DeleteMessageAsync(
-            ChatId,
-            ChatUpdate.CallbackQueryOrNull!.CallbackQueryMessageId,
-            cancellationToken
-            );
+
+
+        return botClient.DeleteMessageAsync(ChatId, messageId, cancellationToken);
     }
 
     public ValueTask DisposeAsync()

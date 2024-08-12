@@ -1,7 +1,7 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots;
-using TBotPlatform.Contracts.Bots.ChatMessages;
-using TBotPlatform.Contracts.Bots.UserBases;
+using TBotPlatform.Contracts.Bots.ChatUpdate;
+using TBotPlatform.Contracts.Bots.Users;
 using Telegram.Bot.Types;
 
 namespace TBotPlatform.Contracts.Abstractions.Factories;
@@ -21,7 +21,7 @@ public interface IStateContextFactory
     /// <param name="chatId">Id чата с которым будем взаимодействовать</param>
     /// <returns></returns>
     IStateContext CreateStateContext(long chatId);
-    
+
     /// <summary>
     /// Создание контекста состояния и вызов состояния
     /// </summary>

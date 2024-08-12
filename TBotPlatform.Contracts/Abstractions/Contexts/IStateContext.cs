@@ -1,6 +1,6 @@
 ﻿using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
-using TBotPlatform.Contracts.Bots.ChatMessages;
+using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Contracts.Bots.StateContext;
 using Telegram.Bot.Types;
@@ -230,9 +230,10 @@ public interface IStateContext : IAsyncDisposable
     /// <summary>
     /// Удаляет сообщение с кнопкой от которого пришел запрос
     /// </summary>
+    /// <param name="messageId">Id сообщения</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task RemoveCurrentReplyMessageAsync(CancellationToken cancellationToken);
+    public Task RemoveMessageAsync(int messageId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Пересылает сообщение

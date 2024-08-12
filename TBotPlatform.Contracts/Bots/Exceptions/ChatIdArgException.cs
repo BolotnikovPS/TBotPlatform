@@ -2,5 +2,5 @@
 
 public class ChatIdArgException() : ArgumentNullException(ErrorCode)
 {
-    private const string ErrorCode = "ChatId";
+    private const string ErrorCode = "ChatOrNull";
 }

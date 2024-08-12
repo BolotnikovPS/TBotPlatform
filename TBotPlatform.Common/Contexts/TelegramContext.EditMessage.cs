@@ -24,7 +24,7 @@ internal partial class TelegramContext
             Message = text,
             InlineKeyboardMarkup = replyMarkup,
         };
-
+        
         var task = _botClient.EditMessageTextAsync(
             chatId,
             messageId,

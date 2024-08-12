@@ -1,5 +1,5 @@
 ﻿using TBotPlatform.Contracts.Bots.Buttons;
-using TBotPlatform.Contracts.Bots.UserBases;
+using TBotPlatform.Contracts.Bots.Users;
 
 namespace TBotPlatform.Contracts.Abstractions;
 

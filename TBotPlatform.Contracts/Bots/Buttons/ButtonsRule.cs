@@ -7,7 +7,7 @@ public class ButtonsRule(string button)
     /// <summary>
     /// Тип кнопки
     /// </summary>
-    public string ButtonName { get; set; } = button.IsNull() 
+    public string ButtonName { get; set; } = button.IsNull()
         ? throw new ArgumentException("", button)
         : button;
 }

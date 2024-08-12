@@ -107,7 +107,7 @@ internal partial class StateContext
         if (photoData.IsNotNull())
         {
             var checkToDelete = ChatUpdate.CallbackQueryOrNull.IsNotNull()
-                                && (DateTime.UtcNow - ChatUpdate.CallbackQueryOrNull!.CallbackQueryDateId).TotalDays < 1;
+                                && (DateTime.UtcNow - ChatUpdate.CallbackQueryOrNull!.Date).TotalDays < 1;
 
             if (checkToDelete)
             {
@@ -116,7 +116,7 @@ internal partial class StateContext
                     throw new CallbackQueryMessageIdOrNullArgException();
                 }
 
-                await botClient.DeleteMessageAsync(ChatId, ChatUpdate.CallbackQueryOrNull.CallbackQueryMessageId, cancellationToken);
+                await botClient.DeleteMessageAsync(ChatId, ChatUpdate.CallbackQueryOrNull.MessageId, cancellationToken);
             }
 
             await using var fileStream = new MemoryStream(photoData.Byte);
@@ -146,8 +146,8 @@ internal partial class StateContext
             throw new CallbackQueryMessageIdOrNullArgException();
         }
 
-        return ChatUpdate.CallbackQueryOrNull!.CallbackQueryMessageWithImage
-            ? await botClient.EditMessageCaptionAsync(ChatId, ChatUpdate.CallbackQueryOrNull.CallbackQueryMessageId, text, inlineKeyboard, cancellationToken)
-            : await botClient.EditMessageTextAsync(ChatId, ChatUpdate.CallbackQueryOrNull.CallbackQueryMessageId, text, inlineKeyboard, cancellationToken);
+        return ChatUpdate.CallbackQueryOrNull!.MessageWithImage
+            ? await botClient.EditMessageCaptionAsync(ChatId, ChatUpdate.CallbackQueryOrNull.MessageId, text, inlineKeyboard, cancellationToken)
+            : await botClient.EditMessageTextAsync(ChatId, ChatUpdate.CallbackQueryOrNull.MessageId, text, inlineKeyboard, cancellationToken);
     }
 }
