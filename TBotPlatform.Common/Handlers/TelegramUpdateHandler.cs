@@ -7,10 +7,14 @@ using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
 using TBotPlatform.Contracts.Bots.ChatUpdate.Enums;
 using TBotPlatform.Contracts.Bots.Locations;
+using TBotPlatform.Contracts.Bots.Markups;
+using TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 using TBotPlatform.Contracts.Bots.Users;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.Payments;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Common.Handlers;
 
@@ -58,10 +62,10 @@ internal class TelegramUpdateHandler(ILogger<TelegramUpdateHandler> logger, ITel
     {
         if (update.IsNull())
         {
-            return new(EChatUpdateType.None, new(null!, null, null, null, null, null));
+            return new(EChatUpdateType.None, new(EChatMessageType.None, null!, 0, null, null, null, null));
         }
 
-        var message = new ChatUpdateMessage(null!, null, null, null, null, null);
+        var message = new ChatUpdateMessage(EChatMessageType.None, null!, 0, null, null, null, null);
         ChatUpdateMessage editMessageOrNull = null;
         ChatUpdateMessage channelPostOrNull = null;
         ChatUpdateMessage editChannelPostOrNull = null;
@@ -76,271 +80,243 @@ internal class TelegramUpdateHandler(ILogger<TelegramUpdateHandler> logger, ITel
         ChatUpdateShippingQuery shippingQueryOrNull = null;
         ChatUpdatePreCheckoutQuery preCheckoutQueryOrNull = null;
 
-        switch (update.Type)
+        try
         {
-            case UpdateType.Message:
-                {
-                    if (update.Message.IsNotNull())
+            switch (update.Type)
+            {
+                case UpdateType.Message:
                     {
-                        message = await CreateChatUpdateMessageAsync(chatId, update.Message, cancellationToken);
-                    }
-                }
-                break;
-
-            case UpdateType.EditedMessage:
-                {
-                    if (update.EditedMessage.IsNotNull())
-                    {
-                        editMessageOrNull = await CreateChatUpdateMessageAsync(chatId, update.EditedMessage, cancellationToken);
-                    }
-                }
-                break;
-
-            case UpdateType.ChannelPost:
-                {
-                    if (update.ChannelPost.IsNotNull())
-                    {
-                        channelPostOrNull = await CreateChatUpdateMessageAsync(chatId, update.ChannelPost, cancellationToken);
-                    }
-                }
-                break;
-
-            case UpdateType.EditedChannelPost:
-                {
-                    if (update.EditedChannelPost.IsNotNull())
-                    {
-                        editChannelPostOrNull = await CreateChatUpdateMessageAsync(chatId, update.EditedChannelPost, cancellationToken);
-                    }
-                }
-                break;
-
-            case UpdateType.CallbackQuery:
-                {
-                    if (update.CallbackQuery.IsNotNull()
-                        && update.CallbackQuery!.Message.IsNotNull()
-                       )
-                    {
-                        var callbackQueryMessage = update.CallbackQuery.Message!;
-                        var callbackQueryMessageWithImage = callbackQueryMessage.Type == MessageType.Photo;
-
-                        var callbackQueryMessageOrNull = callbackQueryMessageWithImage ? callbackQueryMessage.Caption : callbackQueryMessage.Text;
-
-                        if (callbackQueryMessageOrNull.IsNotNull())
+                        if (update.Message.IsNotNull())
                         {
-                            callbackQueryOrNull = new(
-                                callbackQueryMessageOrNull!,
-                                callbackQueryMessageWithImage,
-                                callbackQueryMessage.MessageId,
-                                callbackQueryMessage.Date
-                                );
+                            message = await CreateChatUpdateMessageAsync(chatId, update.Message, cancellationToken);
                         }
                     }
-                }
-                break;
+                    break;
 
-            case UpdateType.ChatMember:
-                {
-                    if (update.ChatMember.IsNotNull())
+                case UpdateType.EditedMessage:
                     {
-                        memberUpdateOrNull = CreateChatMember(update.ChatMember);
-                    }
-                }
-                break;
-
-            case UpdateType.MyChatMember:
-                {
-                    if (update.MyChatMember.IsNotNull())
-                    {
-                        myMemberUpdateOrNull = CreateChatMember(update.MyChatMember);
-                    }
-                }
-                break;
-
-            case UpdateType.ChatJoinRequest:
-                {
-                    if (update.ChatJoinRequest.IsNotNull())
-                    {
-                        var chatJoinRequest = update.ChatJoinRequest;
-
-                        joinRequestOrNull = new(
-                            CreateChat(chatJoinRequest?.Chat),
-                            CreateUser(chatJoinRequest?.From),
-                            chatJoinRequest!.UserChatId,
-                            chatJoinRequest!.Date
-                            );
-                    }
-                }
-                break;
-
-            case UpdateType.InlineQuery:
-                {
-                    if (update.InlineQuery.IsNotNull())
-                    {
-                        var inlineQuery = update.InlineQuery;
-
-                        inlineQueryOrNull = new(
-                            inlineQuery!.Id,
-                            CreateUser(inlineQuery.From),
-                            inlineQuery.Query,
-                            inlineQuery.Offset,
-                            inlineQuery.ChatType
-                            );
-                    }
-                }
-                break;
-
-            case UpdateType.ChosenInlineResult:
-                {
-                    if (update.ChosenInlineResult.IsNotNull())
-                    {
-                        var inlineQuery = update.ChosenInlineResult;
-
-                        chosenInlineResultOrNull = new(
-                            inlineQuery!.ResultId,
-                            CreateUser(inlineQuery.From),
-                            inlineQuery.InlineMessageId,
-                            inlineQuery.Query
-                            );
-                    }
-                }
-                break;
-
-            case UpdateType.Poll:
-                {
-                    if (update.Poll.IsNotNull())
-                    {
-                        var pool = update.Poll;
-                        ChatMessagePollOption[] optionsOrNull = null;
-
-                        if (pool!.Options.IsNotNull())
+                        if (update.EditedMessage.IsNotNull())
                         {
-                            optionsOrNull = pool
-                                           .Options
-                                           .Select(z => new ChatMessagePollOption(z.Text, z.VoterCount))
-                                           .ToArray();
+                            editMessageOrNull = await CreateChatUpdateMessageAsync(chatId, update.EditedMessage, cancellationToken);
                         }
+                    }
+                    break;
 
-                        CharMessageEntity[] explanationEntitiesOrNull = null;
-
-                        if (pool.ExplanationEntities.IsNotNull())
+                case UpdateType.ChannelPost:
+                    {
+                        if (update.ChannelPost.IsNotNull())
                         {
-                            explanationEntitiesOrNull = pool.ExplanationEntities!
-                                                            .Select(
-                                                                 z => new CharMessageEntity(
-                                                                     z.Type,
-                                                                     z.Offset,
-                                                                     z.Length,
-                                                                     z.Url,
-                                                                     CreateUser(z.User)
-                                                                     )
-                                                                 )
-                                                            .ToArray();
+                            channelPostOrNull = await CreateChatUpdateMessageAsync(chatId, update.ChannelPost, cancellationToken);
                         }
-
-                        chatUpdatePollOrNull = new(
-                            pool.Id,
-                            pool.Question,
-                            optionsOrNull,
-                            pool.TotalVoterCount,
-                            pool.IsClosed,
-                            pool.IsAnonymous,
-                            pool.Type,
-                            pool.AllowsMultipleAnswers,
-                            pool.CorrectOptionId,
-                            pool.Explanation,
-                            explanationEntitiesOrNull,
-                            pool.OpenPeriod,
-                            pool.CloseDate
-                            );
                     }
-                }
-                break;
+                    break;
 
-            case UpdateType.PollAnswer:
-                {
-                    if (update.PollAnswer.IsNotNull())
+                case UpdateType.EditedChannelPost:
                     {
-                        var poolAnswer = update.PollAnswer;
-
-                        pollAnswerOrNull = new(poolAnswer!.PollId, CreateUser(poolAnswer.User), poolAnswer.OptionIds);
-                    }
-                }
-                break;
-
-            case UpdateType.ShippingQuery:
-                {
-                    if (update.ShippingQuery.IsNotNull())
-                    {
-                        var shippingQuery = update.ShippingQuery;
-                        ChatMessageShippingAddress shippingAddressOrNull = null;
-
-                        if (shippingQuery!.ShippingAddress.IsNotNull())
+                        if (update.EditedChannelPost.IsNotNull())
                         {
-                            shippingAddressOrNull = new(
-                                shippingQuery!.ShippingAddress.CountryCode,
-                                shippingQuery.ShippingAddress.State,
-                                shippingQuery.ShippingAddress.City,
-                                shippingQuery.ShippingAddress.StreetLine1,
-                                shippingQuery.ShippingAddress.StreetLine2,
-                                shippingQuery.ShippingAddress.PostCode
-                                );
+                            editChannelPostOrNull = await CreateChatUpdateMessageAsync(chatId, update.EditedChannelPost, cancellationToken);
                         }
-
-                        shippingQueryOrNull = new(shippingQuery.Id, CreateUser(shippingQuery.From), shippingQuery.InvoicePayload, shippingAddressOrNull);
                     }
-                }
-                break;
+                    break;
 
-            case UpdateType.PreCheckoutQuery:
-                {
-                    if (update.PreCheckoutQuery.IsNotNull())
+                case UpdateType.CallbackQuery:
                     {
-                        var pre = update.PreCheckoutQuery;
-                        ChatMessageOrderInfo orderInfoOrNull = null;
-
-                        if (pre!.OrderInfo.IsNotNull())
+                        if (update.CallbackQuery.IsNotNull()
+                            && update.CallbackQuery!.Message.IsNotNull()
+                           )
                         {
-                            var orderInfo = pre!.OrderInfo;
-                            ChatMessageShippingAddress shippingAddressOrNull = null;
+                            var callbackQueryMessage = update.CallbackQuery.Message!;
+                            var callbackQueryMessageWithImage = callbackQueryMessage.Type == MessageType.Photo;
 
-                            if (orderInfo!.ShippingAddress.IsNotNull())
+                            var callbackQueryMessageOrNull = callbackQueryMessageWithImage ? callbackQueryMessage.Caption : callbackQueryMessage.Text;
+
+                            if (callbackQueryMessageOrNull.IsNotNull())
                             {
-                                shippingAddressOrNull = new(
-                                    orderInfo!.ShippingAddress!.CountryCode,
-                                    orderInfo.ShippingAddress.State,
-                                    orderInfo.ShippingAddress.City,
-                                    orderInfo.ShippingAddress.StreetLine1,
-                                    orderInfo.ShippingAddress.StreetLine2,
-                                    orderInfo.ShippingAddress.PostCode
+                                callbackQueryOrNull = new(
+                                    callbackQueryMessageOrNull!,
+                                    callbackQueryMessageWithImage,
+                                    callbackQueryMessage.MessageId,
+                                    callbackQueryMessage.Date
                                     );
                             }
-
-                            orderInfoOrNull = new(orderInfo!.Name, orderInfo.PhoneNumber, orderInfo.Email, shippingAddressOrNull);
                         }
-
-                        preCheckoutQueryOrNull = new(
-                            pre.Id,
-                            CreateUser(pre.From),
-                            pre.Currency,
-                            pre.TotalAmount,
-                            pre.InvoicePayload,
-                            pre.ShippingOptionId,
-                            orderInfoOrNull
-                            );
                     }
-                }
-                break;
+                    break;
 
-            case UpdateType.Unknown:
-                break;
+                case UpdateType.ChatMember:
+                    {
+                        if (update.ChatMember.IsNotNull())
+                        {
+                            memberUpdateOrNull = CreateChatMember(update.ChatMember);
+                        }
+                    }
+                    break;
 
-            default:
-                throw new ArgumentOutOfRangeException();
+                case UpdateType.MyChatMember:
+                    {
+                        if (update.MyChatMember.IsNotNull())
+                        {
+                            myMemberUpdateOrNull = CreateChatMember(update.MyChatMember);
+                        }
+                    }
+                    break;
+
+                case UpdateType.ChatJoinRequest:
+                    {
+                        if (update.ChatJoinRequest.IsNotNull())
+                        {
+                            var chatJoinRequest = update.ChatJoinRequest;
+
+                            joinRequestOrNull = new(
+                                CreateChat(chatJoinRequest?.Chat),
+                                CreateUser(chatJoinRequest?.From),
+                                chatJoinRequest!.UserChatId,
+                                chatJoinRequest!.Date
+                                );
+                        }
+                    }
+                    break;
+
+                case UpdateType.InlineQuery:
+                    {
+                        if (update.InlineQuery.IsNotNull())
+                        {
+                            var inlineQuery = update.InlineQuery;
+
+                            inlineQueryOrNull = new(
+                                inlineQuery!.Id,
+                                CreateUser(inlineQuery.From),
+                                inlineQuery.Query,
+                                inlineQuery.Offset,
+                                CreateChatType(inlineQuery.ChatType)
+                                );
+                        }
+                    }
+                    break;
+
+                case UpdateType.ChosenInlineResult:
+                    {
+                        if (update.ChosenInlineResult.IsNotNull())
+                        {
+                            var inlineQuery = update.ChosenInlineResult;
+
+                            chosenInlineResultOrNull = new(
+                                inlineQuery!.ResultId,
+                                CreateUser(inlineQuery.From),
+                                inlineQuery.InlineMessageId,
+                                inlineQuery.Query
+                                );
+                        }
+                    }
+                    break;
+
+                case UpdateType.Poll:
+                    {
+                        if (update.Poll.IsNotNull())
+                        {
+                            var pool = update.Poll;
+                            ChatMessagePollOption[] optionsOrNull = null;
+
+                            if (pool!.Options.IsNotNull())
+                            {
+                                optionsOrNull = pool
+                                               .Options
+                                               .Select(z => new ChatMessagePollOption(z.Text, z.VoterCount))
+                                               .ToArray();
+                            }
+
+                            ChatMessageEntity[] explanationEntitiesOrNull = null;
+
+                            if (pool.ExplanationEntities.IsNotNull())
+                            {
+                                explanationEntitiesOrNull = CreateChatMessageEntity(pool.ExplanationEntities);
+                            }
+
+                            chatUpdatePollOrNull = new(
+                                pool.Id,
+                                pool.Question,
+                                optionsOrNull,
+                                pool.TotalVoterCount,
+                                pool.IsClosed,
+                                pool.IsAnonymous,
+                                pool.Type,
+                                pool.AllowsMultipleAnswers,
+                                pool.CorrectOptionId,
+                                pool.Explanation,
+                                explanationEntitiesOrNull,
+                                pool.OpenPeriod,
+                                pool.CloseDate
+                                );
+                        }
+                    }
+                    break;
+
+                case UpdateType.PollAnswer:
+                    {
+                        if (update.PollAnswer.IsNotNull())
+                        {
+                            var poolAnswer = update.PollAnswer;
+
+                            pollAnswerOrNull = new(poolAnswer!.PollId, CreateUser(poolAnswer.User), poolAnswer.OptionIds);
+                        }
+                    }
+                    break;
+
+                case UpdateType.ShippingQuery:
+                    {
+                        if (update.ShippingQuery.IsNotNull())
+                        {
+                            var shippingQuery = update.ShippingQuery;
+
+                            shippingQueryOrNull = new(
+                                shippingQuery!.Id,
+                                CreateUser(shippingQuery.From),
+                                shippingQuery.InvoicePayload,
+                                CreateChatMessageShippingAddress(shippingQuery!.ShippingAddress));
+                        }
+                    }
+                    break;
+
+                case UpdateType.PreCheckoutQuery:
+                    {
+                        if (update.PreCheckoutQuery.IsNotNull())
+                        {
+                            var pre = update.PreCheckoutQuery;
+                            ChatMessageOrderInfo orderInfoOrNull = null;
+
+                            if (pre!.OrderInfo.IsNotNull())
+                            {
+                                var orderInfo = pre!.OrderInfo;
+
+                                orderInfoOrNull = new(orderInfo!.Name, orderInfo.PhoneNumber, orderInfo.Email, CreateChatMessageShippingAddress(orderInfo!.ShippingAddress));
+                            }
+
+                            preCheckoutQueryOrNull = new(
+                                pre.Id,
+                                CreateUser(pre.From),
+                                pre.Currency,
+                                pre.TotalAmount,
+                                pre.InvoicePayload,
+                                pre.ShippingOptionId,
+                                orderInfoOrNull
+                                );
+                        }
+                    }
+                    break;
+
+                case UpdateType.Unknown:
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка формирования сообщения с telegram");
         }
 
         var chatUpdateType = update.Type switch
         {
-            UpdateType.Message => GetMessageUpdateType(),
+            UpdateType.Message => EChatUpdateType.Message,
             UpdateType.EditedMessage => EChatUpdateType.EditedMessage,
             UpdateType.InlineQuery => EChatUpdateType.InlineQuery,
             UpdateType.ChosenInlineResult => EChatUpdateType.ChosenInlineResult,
@@ -374,21 +350,6 @@ internal class TelegramUpdateHandler(ILogger<TelegramUpdateHandler> logger, ITel
             shippingQueryOrNull,
             preCheckoutQueryOrNull
             );
-
-        EChatUpdateType GetMessageUpdateType()
-        {
-            if (message.ForwardFromUserOrNull.IsNotNull())
-            {
-                return EChatUpdateType.ForwardMessage;
-            }
-
-            if (message.ReplyToMessageOrNull.IsNotNull())
-            {
-                return EChatUpdateType.ToReplyMessage;
-            }
-
-            return EChatUpdateType.Message;
-        }
     }
 
     private async Task<FileData> DownloadMessagePhotoAsync(long chatId, Message message, CancellationToken cancellationToken)
@@ -465,7 +426,7 @@ internal class TelegramUpdateHandler(ILogger<TelegramUpdateHandler> logger, ITel
 
     private async Task<ChatUpdateMessage> CreateChatUpdateMessageAsync(long chatId, Message message, CancellationToken cancellationToken)
     {
-        ChatUpdateForwardFromUser forwardFromUserOrNull = null;
+        ChatMessageForward forwardOrNull = null;
 
         if (message!.ForwardFromMessageId.IsNotNull()
             || message!.ForwardSignature.IsNotNull()
@@ -473,20 +434,9 @@ internal class TelegramUpdateHandler(ILogger<TelegramUpdateHandler> logger, ITel
             || message!.ForwardDate.IsNotNull()
            )
         {
-            TelegramUser forwardUser = null;
-            var forwardFromBot = false;
-
-            if (message!.ForwardFrom.IsNotNull())
-            {
-                var tgUser = message!.ForwardFrom;
-
-                forwardUser = CreateUser(tgUser);
-                forwardFromBot = tgUser!.IsBot;
-            }
-
-            forwardFromUserOrNull = new(
-                forwardUser,
-                forwardFromBot,
+            forwardOrNull = new(
+                CreateUser(message!.ForwardFrom),
+                message.ForwardFrom?.IsBot ?? false,
                 CreateChat(message.ForwardFromChat),
                 message.ForwardFromMessageId,
                 message.ForwardSignature,
@@ -501,27 +451,46 @@ internal class TelegramUpdateHandler(ILogger<TelegramUpdateHandler> logger, ITel
         {
             var replyToMessage = message.ReplyToMessage;
             replyToMessageOrNull = new(
-                CreateChat(replyToMessage?.Chat),
-                replyToMessage?.MessageId,
-                replyToMessage?.Text,
+                CreateChat(replyToMessage!.Chat),
+                replyToMessage.MessageId,
+                replyToMessage.Text,
                 await DownloadMessagePhotoAsync(chatId, replyToMessage, cancellationToken),
                 await DownloadMessageDocumentAsync(chatId, replyToMessage, cancellationToken),
-                CreateChat(replyToMessage?.SenderChat),
-                CreateLocation(replyToMessage?.Location)
+                CreateChat(replyToMessage.SenderChat),
+                CreateLocation(replyToMessage.Location)
                 );
         }
 
         return new(
+            GetMessageUpdateType(),
             CreateChat(message.Chat),
             message.MessageId,
             message.Text,
             replyToMessageOrNull,
             await DownloadMessagePhotoAsync(chatId, message, cancellationToken),
             await DownloadMessageDocumentAsync(chatId, message, cancellationToken),
-            forwardFromUserOrNull,
+            forwardOrNull,
             CreateChat(message.SenderChat),
-            CreateLocation(message.Location)
+            CreateLocation(message.Location),
+            CreateInlineMarkupList(message.ReplyMarkup),
+            CreateWebAppData(message.WebAppData),
+            CreateChatMessageEntity(message.Entities)
             );
+
+        EChatMessageType GetMessageUpdateType()
+        {
+            if (forwardOrNull.IsNotNull())
+            {
+                return EChatMessageType.ForwardMessage;
+            }
+
+            if (replyToMessageOrNull.IsNotNull())
+            {
+                return EChatMessageType.ToReplyMessage;
+            }
+
+            return EChatMessageType.Message;
+        }
     }
 
     private static TelegramChat CreateChat(Chat chat)
@@ -562,10 +531,10 @@ internal class TelegramUpdateHandler(ILogger<TelegramUpdateHandler> logger, ITel
                 permissions.CanManageTopics
                 );
         }
-        
+
         return new(
             chat.Id,
-            chat.Type,
+            CreateChatType(chat.Type),
             chat.Title,
             chat.Username,
             chat.FirstName,
@@ -630,7 +599,25 @@ internal class TelegramUpdateHandler(ILogger<TelegramUpdateHandler> logger, ITel
     }
 
     private static ChatMessageMember CreateChatMessageMember(ChatMember chatMember)
-        => new(chatMember.Status);
+    {
+        if (chatMember.IsNull())
+        {
+            return new(EChatMemberStatus.None);
+        }
+
+        var status = chatMember.Status switch
+        {
+            ChatMemberStatus.Creator => EChatMemberStatus.Creator,
+            ChatMemberStatus.Administrator => EChatMemberStatus.Administrator,
+            ChatMemberStatus.Member => EChatMemberStatus.Member,
+            ChatMemberStatus.Left => EChatMemberStatus.Left,
+            ChatMemberStatus.Kicked => EChatMemberStatus.Kicked,
+            ChatMemberStatus.Restricted => EChatMemberStatus.Restricted,
+            _ => EChatMemberStatus.None,
+        };
+
+        return new(status);
+    }
 
     private static TelegramChatLocation CreateChatLocation(ChatLocation location)
     {
@@ -659,5 +646,170 @@ internal class TelegramUpdateHandler(ILogger<TelegramUpdateHandler> logger, ITel
             );
     }
 
-    
+    private static InlineMarkupList CreateInlineMarkupList(InlineKeyboardMarkup replyMarkup)
+    {
+        if (replyMarkup.IsNull())
+        {
+            return default;
+        }
+
+        var result = new InlineMarkupList();
+
+        var inlineMarkups = replyMarkup.InlineKeyboard.SelectMany(x => x.Select(CreateInlineMarkup));
+
+        foreach (var inlineMarkup in inlineMarkups)
+        {
+            result.Add(inlineMarkup);
+        }
+
+        return result;
+    }
+
+    private static InlineMarkupBase CreateInlineMarkup(InlineKeyboardButton button)
+    {
+        if (button.CallbackData.IsNotNull())
+        {
+            if (button.CallbackData!.TryParseJson<MarkupNextState>(out var newMarkupNextState))
+            {
+                return new InlineMarkupState(button.Text, newMarkupNextState.State, newMarkupNextState.Data);
+            }
+        }
+
+        if (button.Url.IsNotNull())
+        {
+            return new InlineMarkupUrl(button.Text, button.Url);
+        }
+
+        if (button.LoginUrl.IsNotNull())
+        {
+            return new InlineMarkupLoginUrl(button.Text, button.LoginUrl);
+        }
+
+        if (button.CallbackGame.IsNotNull())
+        {
+            return new InlineMarkupCallBackGame(button.Text, button.CallbackGame);
+        }
+
+        if (button.Pay == true)
+        {
+            return new InlineMarkupPayment(button.Text);
+        }
+
+        if (button.SwitchInlineQuery.IsNotNull())
+        {
+            return new InlineMarkupSwitchInlineQuery(button.Text, button.SwitchInlineQuery);
+        }
+
+        if (button.SwitchInlineQueryChosenChat.IsNotNull())
+        {
+            return new InlineMarkupSwitchInlineQueryChosenChat(button.Text, button.SwitchInlineQueryChosenChat);
+        }
+
+        if (button.SwitchInlineQueryCurrentChat.IsNotNull())
+        {
+            return new InlineMarkupSwitchInlineQueryCurrentChat(button.Text, button.SwitchInlineQueryCurrentChat);
+        }
+
+        if (button.WebApp.IsNotNull())
+        {
+            return new InlineMarkupWebApp(button.Text, button.WebApp!.Url);
+        }
+
+        return default;
+    }
+
+    private static ChatMessageWebAppData CreateWebAppData(WebAppData data)
+    {
+        if (data.IsNull())
+        {
+            return default;
+        }
+
+        return new(data.Data, data.ButtonText);
+    }
+
+    private static ChatMessageEntity[] CreateChatMessageEntity(MessageEntity[] entity)
+    {
+        if (entity.IsNull() || !entity.CheckAny())
+        {
+            return default;
+        }
+
+        return entity
+              .Select(
+                   z => new ChatMessageEntity(
+                       CreateChatMessageEntityType(z.Type),
+                       z.Offset,
+                       z.Length,
+                       z.Url,
+                       CreateUser(z.User)
+                       )
+                   )
+              .ToArray();
+    }
+
+    private static EChatMessageEntityType CreateChatMessageEntityType(MessageEntityType? type)
+    {
+        if (type.IsNull())
+        {
+            return EChatMessageEntityType.None;
+        }
+
+        return type switch
+        {
+            MessageEntityType.Mention => EChatMessageEntityType.Mention,
+            MessageEntityType.Hashtag => EChatMessageEntityType.Hashtag,
+            MessageEntityType.BotCommand => EChatMessageEntityType.BotCommand,
+            MessageEntityType.Url => EChatMessageEntityType.Url,
+            MessageEntityType.Email => EChatMessageEntityType.Email,
+            MessageEntityType.Bold => EChatMessageEntityType.Bold,
+            MessageEntityType.Italic => EChatMessageEntityType.Italic,
+            MessageEntityType.Code => EChatMessageEntityType.Code,
+            MessageEntityType.Pre => EChatMessageEntityType.Pre,
+            MessageEntityType.TextLink => EChatMessageEntityType.TextLink,
+            MessageEntityType.TextMention => EChatMessageEntityType.TextMention,
+            MessageEntityType.PhoneNumber => EChatMessageEntityType.PhoneNumber,
+            MessageEntityType.Cashtag => EChatMessageEntityType.Cashtag,
+            MessageEntityType.Underline => EChatMessageEntityType.Underline,
+            MessageEntityType.Strikethrough => EChatMessageEntityType.Strikethrough,
+            MessageEntityType.Spoiler => EChatMessageEntityType.Spoiler,
+            MessageEntityType.CustomEmoji => EChatMessageEntityType.CustomEmoji,
+            _ => EChatMessageEntityType.None,
+        };
+    }
+
+    private static ChatMessageShippingAddress CreateChatMessageShippingAddress(ShippingAddress shippingAddress)
+    {
+        if (shippingAddress.IsNull())
+        {
+            return default;
+        }
+
+        return new(
+            shippingAddress!.CountryCode,
+            shippingAddress.State,
+            shippingAddress.City,
+            shippingAddress.StreetLine1,
+            shippingAddress.StreetLine2,
+            shippingAddress.PostCode
+            );
+    }
+
+    private static EChatType CreateChatType(ChatType? type)
+    {
+        if (type.IsNull())
+        {
+            return EChatType.None;
+        }
+
+        return type switch
+        {
+            ChatType.Private => EChatType.Private,
+            ChatType.Group => EChatType.Group,
+            ChatType.Supergroup => EChatType.Supergroup,
+            ChatType.Channel => EChatType.Channel,
+            ChatType.Sender => EChatType.Sender,
+            _ => EChatType.None,
+        };
+    }
 }

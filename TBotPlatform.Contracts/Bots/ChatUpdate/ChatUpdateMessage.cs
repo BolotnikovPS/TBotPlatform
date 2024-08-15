@@ -1,22 +1,30 @@
 ﻿#nullable enable
 using TBotPlatform.Contracts.Bots.Chats;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
+using TBotPlatform.Contracts.Bots.ChatUpdate.Enums;
 using TBotPlatform.Contracts.Bots.Locations;
+using TBotPlatform.Contracts.Bots.Markups;
 
 namespace TBotPlatform.Contracts.Bots.ChatUpdate;
 
 public class ChatUpdateMessage(
+    EChatMessageType type,
     TelegramChat chat,
-    int? messageIdOrNull,
+    int messageId,
     string? text,
     ChatMessageReplyToMessage? replyToMessageOrNull,
     FileData? photoData,
     FileData? documentData,
-    ChatUpdateForwardFromUser? forwardFromUserOrNull = null,
+    ChatMessageForward? forwardOrNull = null,
     TelegramChat? senderChatOrNull = null,
-    TelegramLocation? locationOrNull = null
+    TelegramLocation? locationOrNull = null,
+    InlineMarkupList? inlineMarkupListOrNull = null,
+    ChatMessageWebAppData? webAppDataOrNull = null,
+    ChatMessageEntity[]? messageEntities = null
     )
 {
+    public EChatMessageType Type { get; } = type;
+
     /// <summary>
     /// Conversation the message belongs to
     /// </summary>
@@ -25,18 +33,12 @@ public class ChatUpdateMessage(
     /// <summary>
     /// Сообщение от пользователя
     /// </summary>
-    public int? MessageIdOrNull { get; } = messageIdOrNull;
+    public int MessageId { get; } = messageId;
 
     /// <summary>
     /// Сообщение от пользователя
     /// </summary>
-    public string? Text { get; } = text;
-
-    /// <summary>
-    /// Сообщение от пользователя со ссылкой на другое сообщение
-    /// </summary>
-    public ChatMessageReplyToMessage? ReplyToMessageOrNull { get; } = replyToMessageOrNull;
-
+    public string Text { get; } = text ?? "";
     /// <summary>
     /// Фото присланные от пользователя в ответ на сообщение
     /// </summary>
@@ -48,9 +50,14 @@ public class ChatUpdateMessage(
     public FileData? DocumentDataOrNull { get; } = documentData;
 
     /// <summary>
+    /// Сообщение от пользователя со ссылкой на другое сообщение
+    /// </summary>
+    public ChatMessageReplyToMessage? ReplyToMessageOrNull { get; } = replyToMessageOrNull;
+
+    /// <summary>
     /// Сообщение пересланное от пользователя
     /// </summary>
-    public ChatUpdateForwardFromUser? ForwardFromUserOrNull { get; } = forwardFromUserOrNull;
+    public ChatMessageForward? ForwardOrNull { get; } = forwardOrNull;
 
     /// <summary>
     /// Optional. Sender of the message, sent on behalf of a chat. The channel itself for channel messages.
@@ -60,4 +67,10 @@ public class ChatUpdateMessage(
     public TelegramChat? SenderChatOrNull { get; } = senderChatOrNull;
 
     public TelegramLocation? LocationOrNull { get; } = locationOrNull;
+
+    public InlineMarkupList? InlineMarkupListOrNull { get; } = inlineMarkupListOrNull;
+
+    public ChatMessageWebAppData? WebAppDataOrNull { get; } = webAppDataOrNull;
+
+    public ChatMessageEntity[]? MessageEntities { get; } = messageEntities;
 }

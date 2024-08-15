@@ -1,10 +1,10 @@
 ﻿#nullable enable
+using TBotPlatform.Contracts.Bots.ChatUpdate.Enums;
 using TBotPlatform.Contracts.Bots.Users;
-using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Contracts.Bots.ChatUpdate;
 
-public class ChatUpdateInlineQuery(string id, TelegramUser fromUserOrNull, string query, string offset, ChatType? chatTypeOrNull)
+public class ChatUpdateInlineQuery(string id, TelegramUser fromUser, string query, string offset, EChatType chatType)
 {
     /// <summary>
     /// Unique identifier for this query
@@ -14,7 +14,7 @@ public class ChatUpdateInlineQuery(string id, TelegramUser fromUserOrNull, strin
     /// <summary>
     /// Данные пользователя
     /// </summary>
-    public TelegramUser? FromUserOrNull { get; } = fromUserOrNull;
+    public TelegramUser FromUser { get; } = fromUser;
 
     /// <summary>
     /// Text of the query (up to 256 characters)
@@ -29,5 +29,5 @@ public class ChatUpdateInlineQuery(string id, TelegramUser fromUserOrNull, strin
     /// <summary>
     /// Optional. Type of the chat, from which the inline query was sent.
     /// </summary>
-    public ChatType? ChatTypeOrNull { get; } = chatTypeOrNull;
+    public EChatType ChatType { get; } = chatType;
 }

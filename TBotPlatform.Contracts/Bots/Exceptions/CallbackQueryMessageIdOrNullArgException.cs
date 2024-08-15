@@ -2,5 +2,5 @@
 
 public class CallbackQueryMessageIdOrNullArgException() : ArgumentNullException(ErrorCode)
 {
-    private const string ErrorCode = "MessageIdOrNull";
+    private const string ErrorCode = "MessageId";
 }

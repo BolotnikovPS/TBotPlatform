@@ -1,4 +1,6 @@
-﻿namespace TBotPlatform.Contracts.Bots.Users;
+﻿using TBotPlatform.Extension;
+
+namespace TBotPlatform.Contracts.Bots.Users;
 
 public abstract class UserBase
 {
@@ -13,4 +15,7 @@ public abstract class UserBase
     public string LastName { get; set; }
 
     public abstract bool IsAdmin();
+
+    public override string ToString()
+        => $"{(UserName.IsNull() ? $"{FirstName}{LastName.Insert(0, " ")}" : $"@{UserName}")} ({TgUserId})";
 }

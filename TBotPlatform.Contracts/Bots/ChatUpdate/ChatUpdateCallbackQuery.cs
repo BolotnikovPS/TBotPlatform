@@ -1,12 +1,12 @@
 ﻿#nullable enable
 namespace TBotPlatform.Contracts.Bots.ChatUpdate;
 
-public class ChatUpdateCallbackQuery(string textOrNull, bool messageWithImage, int messageIdOrNull, DateTime dateOrNull)
+public class ChatUpdateCallbackQuery(string text, bool messageWithImage, int messageIdOrNull, DateTime dateOrNull)
 {
     /// <summary>
     /// Сообщение от пользователя c inline кнопки
     /// </summary>
-    public string Text { get; } = textOrNull;
+    public string Text { get; } = text;
 
     /// <summary>
     /// Наличие изображения в сообщение с inline кнопками

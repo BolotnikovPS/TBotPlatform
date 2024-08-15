@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using Telegram.Bot.Types.Enums;
+using TBotPlatform.Contracts.Bots.ChatUpdate.Enums;
 
 namespace TBotPlatform.Contracts.Bots.Config;
 
@@ -10,7 +10,7 @@ public class TelegramSettings
     public bool ProtectContent { get; init; }
 
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    public UpdateType[] UpdateType { get; set; }
+    public EChatUpdateType[] UpdateType { get; set; }
     
     /// <summary>
     /// Время ожидания между получением новых сообщений от telegram

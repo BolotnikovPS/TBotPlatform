@@ -14,9 +14,9 @@ public class ChatUpdatePoll(
     bool allowsMultipleAnswers,
     int? correctOptionId,
     string? explanationOrNull,
-    CharMessageEntity[]? explanationEntitiesOrNull,
-    int? openPeriodOrNull,
-    DateTime? closeDateOrNull
+    ChatMessageEntity[]? explanationEntitiesOrNull,
+    int? openPeriod,
+    DateTime? closeDate
     )
 {
     /// <summary>
@@ -75,15 +75,15 @@ public class ChatUpdatePoll(
     /// Optional. Special entities like usernames, URLs, bot commands, etc. that appear in the
     /// <see cref="ExplanationOrNull"/>
     /// </summary>
-    public CharMessageEntity[]? ExplanationEntitiesOrNull { get; } = explanationEntitiesOrNull;
+    public ChatMessageEntity[]? ExplanationEntitiesOrNull { get; } = explanationEntitiesOrNull;
 
     /// <summary>
     /// Optional. Amount of time in seconds the poll will be active after creation
     /// </summary>
-    public int? OpenPeriodOrNull { get; } = openPeriodOrNull;
+    public int? OpenPeriod { get; } = openPeriod;
 
     /// <summary>
     /// Optional. Point in time when the poll will be automatically closed
     /// </summary>
-    public DateTime? CloseDateOrNull { get; } = closeDateOrNull;
+    public DateTime? CloseDate { get; } = closeDate;
 }

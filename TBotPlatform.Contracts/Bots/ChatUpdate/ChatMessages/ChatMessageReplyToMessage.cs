@@ -6,7 +6,7 @@ namespace TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
 
 public class ChatMessageReplyToMessage(
     TelegramChat chat,
-    int? messageIdOrNull,
+    int messageId,
     string? text,
     FileData? photoData,
     FileData? documentData,
@@ -22,12 +22,12 @@ public class ChatMessageReplyToMessage(
     /// <summary>
     /// Сообщение от пользователя
     /// </summary>
-    public int? MessageIdOrNull { get; } = messageIdOrNull;
+    public int MessageId { get; } = messageId;
 
     /// <summary>
     /// Сообщение от пользователя
     /// </summary>
-    public string? Text { get; } = text;
+    public string Text { get; } = text ?? "";
 
     /// <summary>
     /// Фото присланные от пользователя в ответ на сообщение

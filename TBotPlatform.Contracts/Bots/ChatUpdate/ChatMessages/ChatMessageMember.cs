@@ -1,8 +1,8 @@
-﻿using Telegram.Bot.Types.Enums;
+﻿using TBotPlatform.Contracts.Bots.ChatUpdate.Enums;
 
 namespace TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
 
-public class ChatMessageMember(ChatMemberStatus status)
+public class ChatMessageMember(EChatMemberStatus status)
 {
-    public ChatMemberStatus Status { get; } = status;
+    public EChatMemberStatus Status { get; } = status;
 }

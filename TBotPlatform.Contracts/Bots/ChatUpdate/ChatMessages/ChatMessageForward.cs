@@ -2,14 +2,14 @@
 using TBotPlatform.Contracts.Bots.Chats;
 using TBotPlatform.Contracts.Bots.Users;
 
-namespace TBotPlatform.Contracts.Bots.ChatUpdate;
+namespace TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
 
-public class ChatUpdateForwardFromUser(TelegramUser? fromUserOrNull, bool isForwardFromBot, TelegramChat chat, int? forwardFromMessageIdOrNull, string? forwardFromSignatureOrNull, string? forwardFromSenderNameOrNull, DateTime? forwardFromDateOrNull)
+public class ChatMessageForward(TelegramUser fromUser, bool isForwardFromBot, TelegramChat chat, int? forwardFromMessageId, string? forwardFromSignature, string? forwardFromSenderName, DateTime? forwardFromDate)
 {
     /// <summary>
     /// Данные пользователя
     /// </summary>
-    public TelegramUser? FromUserOrNull { get; } = fromUserOrNull;
+    public TelegramUser FromUser { get; } = fromUser;
 
     public bool IsForwardFromBot { get; } = isForwardFromBot;
 
@@ -18,20 +18,20 @@ public class ChatUpdateForwardFromUser(TelegramUser? fromUserOrNull, bool isForw
     /// <summary>
     /// Id пересылаемого сообщения
     /// </summary>
-    public int? FromMessageIdOrNull { get; } = forwardFromMessageIdOrNull;
+    public int? FromMessageId { get; } = forwardFromMessageId;
 
     /// <summary>
     /// Сигнатура пересылаемого сообщения
     /// </summary>
-    public string? SignatureOrNull { get; } = forwardFromSignatureOrNull;
+    public string Signature { get; } = forwardFromSignature ?? "";
 
     /// <summary>
     /// Имя владельца сообщения
     /// </summary>
-    public string? SenderNameOrNull { get; } = forwardFromSenderNameOrNull;
+    public string SenderName { get; } = forwardFromSenderName ?? "";
 
     /// <summary>
     /// Время создания сообщения
     /// </summary>
-    public DateTime? DateOrNull { get; } = forwardFromDateOrNull;
+    public DateTime Date { get; } = forwardFromDate ?? DateTime.UtcNow;
 }

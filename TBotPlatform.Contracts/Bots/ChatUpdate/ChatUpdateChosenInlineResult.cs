@@ -3,7 +3,7 @@ using TBotPlatform.Contracts.Bots.Users;
 
 namespace TBotPlatform.Contracts.Bots.ChatUpdate;
 
-public class ChatUpdateChosenInlineResult(string resultId, TelegramUser fromUser, string? inlineMessageIdOrNull, string query)
+public class ChatUpdateChosenInlineResult(string resultId, TelegramUser fromUser, string? inlineMessageId, string query)
 {
     /// <summary>
     /// The unique identifier for the result that was chosen.
@@ -19,7 +19,7 @@ public class ChatUpdateChosenInlineResult(string resultId, TelegramUser fromUser
     /// Optional. Identifier of the sent inline message. Available only if there is an inline keyboard attached
     /// to the message. Will be also received in callback queries and can be used to edit the message.
     /// </summary>
-    public string? InlineMessageIdOrNull { get; } = inlineMessageIdOrNull;
+    public string? InlineMessageId { get; } = inlineMessageId;
 
     /// <summary>
     /// The query that was used to obtain the result.

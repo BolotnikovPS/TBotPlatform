@@ -3,28 +3,28 @@ namespace TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
 
 public class ChatMessageOrderInfo(
     string? name,
-    string? phoneNumberOrNull,
+    string? phoneNumber,
     string? email,
-    ChatMessageShippingAddress? shippingAddress
+    ChatMessageShippingAddress? shippingAddressOrNull
     )
 {
     /// <summary>
     /// Optional. User name
     /// </summary>
-    public string? Name { get; } = name;
+    public string Name { get; } = name ?? "";
 
     /// <summary>
     /// Optional. User's phone number
     /// </summary>
-    public string? PhoneNumberOrNull { get; } = phoneNumberOrNull;
+    public string PhoneNumber { get; } = phoneNumber ?? "";
 
     /// <summary>
     /// Optional. User email
     /// </summary>
-    public string? Email { get; } = email;
+    public string Email { get; } = email ?? "";
 
     /// <summary>
     /// Optional. User shipping address
     /// </summary>
-    public ChatMessageShippingAddress? ShippingAddress { get; } = shippingAddress;
+    public ChatMessageShippingAddress? ShippingAddressOrNull { get; } = shippingAddressOrNull;
 }

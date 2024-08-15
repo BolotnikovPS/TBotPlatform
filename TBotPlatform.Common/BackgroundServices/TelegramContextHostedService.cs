@@ -6,6 +6,7 @@ using System.Text;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots;
+using TBotPlatform.Contracts.Bots.ChatUpdate.Enums;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Extension;
 using Telegram.Bot;
@@ -35,7 +36,7 @@ internal class TelegramContextHostedService(
         var offset = 0;
 
         var updateType = settings.UpdateType.IsNotNull()
-            ? settings.UpdateType
+            ? settings.UpdateType.Select(MapChatUpdate)
             : null;
 
         while (!stoppingToken.IsCancellationRequested)
@@ -114,4 +115,24 @@ internal class TelegramContextHostedService(
             }
         }
     }
+
+    private static UpdateType MapChatUpdate(EChatUpdateType updateTypes)
+        => updateTypes switch
+        {
+            EChatUpdateType.Message => UpdateType.Message,
+            EChatUpdateType.EditedMessage => UpdateType.EditedMessage,
+            EChatUpdateType.InlineQuery => UpdateType.InlineQuery,
+            EChatUpdateType.ChosenInlineResult => UpdateType.ChosenInlineResult,
+            EChatUpdateType.CallbackQuery => UpdateType.CallbackQuery,
+            EChatUpdateType.ChannelPost => UpdateType.ChannelPost,
+            EChatUpdateType.EditedChannelPost => UpdateType.EditedChannelPost,
+            EChatUpdateType.ShippingQuery => UpdateType.ShippingQuery,
+            EChatUpdateType.PreCheckoutQuery => UpdateType.PreCheckoutQuery,
+            EChatUpdateType.Poll => UpdateType.Poll,
+            EChatUpdateType.PollAnswer => UpdateType.PollAnswer,
+            EChatUpdateType.MyChatMember => UpdateType.MyChatMember,
+            EChatUpdateType.ChatMember => UpdateType.ChatMember,
+            EChatUpdateType.ChatJoinRequest => UpdateType.ChatJoinRequest,
+            _ => UpdateType.Unknown,
+        };
 }
