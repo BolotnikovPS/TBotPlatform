@@ -52,7 +52,7 @@ internal partial class StateContext
             cancellationToken
             );
 
-        return telegramMapping.MappingMessage(result);
+        return telegramMapping.MessageToResult(result);
     }
 
     public async Task SendLongTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)

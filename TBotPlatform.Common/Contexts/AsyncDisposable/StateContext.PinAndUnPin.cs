@@ -20,6 +20,9 @@ internal partial class StateContext
         return botClient.PinChatMessageAsync(ChatId, messageId, disableNotification, cancellationToken);
     }
 
+    public Task PinChatMessageAsync(int messageId, CancellationToken cancellationToken)
+        => PinChatMessageAsync(messageId, false, cancellationToken);
+
     public Task UnpinChatMessageAsync(int messageId, CancellationToken cancellationToken)
     {
         if (ChatId.IsDefault())

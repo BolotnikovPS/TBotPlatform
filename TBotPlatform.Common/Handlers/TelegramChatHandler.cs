@@ -346,7 +346,7 @@ internal partial class TelegramChatHandler(ILogger<TelegramChatHandler> logger, 
             );
     }
 
-    public ChatResult MappingMessage(Message message)
+    public ChatResult MessageToResult(Message message)
         => new(
             CreateChat(message.Chat),
             message.MessageId,

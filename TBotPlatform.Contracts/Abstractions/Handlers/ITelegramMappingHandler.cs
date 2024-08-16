@@ -5,5 +5,5 @@ namespace TBotPlatform.Contracts.Abstractions.Handlers;
 
 public interface ITelegramMappingHandler
 {
-    ChatResult MappingMessage(Message message);
+    ChatResult MessageToResult(Message message);
 }

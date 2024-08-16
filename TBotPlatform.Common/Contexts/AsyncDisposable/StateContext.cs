@@ -57,7 +57,7 @@ internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITe
             cancellationToken
             );
 
-        return telegramMapping.MappingMessage(result);
+        return telegramMapping.MessageToResult(result);
     }
 
     public Task<ChatResult> SendDocumentAsync(InputFile inputFile, CancellationToken cancellationToken)
@@ -99,7 +99,7 @@ internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITe
             cancellationToken
             );
 
-        return telegramMapping.MappingMessage(result);
+        return telegramMapping.MessageToResult(result);
     }
 
     public Task UpdateMarkupTextAndDropButtonAsync(string text, CancellationToken cancellationToken)

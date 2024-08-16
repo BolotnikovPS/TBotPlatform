@@ -130,7 +130,7 @@ internal partial class StateContext
                 cancellationToken
                 );
 
-            return telegramMapping.MappingMessage(resultSendPhoto);
+            return telegramMapping.MessageToResult(resultSendPhoto);
         }
 
         if (MarkupNextState.IsNull())
@@ -143,7 +143,7 @@ internal partial class StateContext
                 cancellationToken
                 );
 
-            return telegramMapping.MappingMessage(resultSendText);
+            return telegramMapping.MessageToResult(resultSendText);
         }
 
         if (ChatUpdate.CallbackQueryOrNull.IsNull())
@@ -155,6 +155,6 @@ internal partial class StateContext
             ? await botClient.EditMessageCaptionAsync(ChatId, ChatUpdate.CallbackQueryOrNull.MessageId, text, inlineKeyboard, cancellationToken)
             : await botClient.EditMessageTextAsync(ChatId, ChatUpdate.CallbackQueryOrNull.MessageId, text, inlineKeyboard, cancellationToken);
         
-        return telegramMapping.MappingMessage(result);
+        return telegramMapping.MessageToResult(result);
     }
 }

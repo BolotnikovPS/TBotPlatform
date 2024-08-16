@@ -21,7 +21,7 @@ internal partial class StateContext
 
         var result = await botClient.ForwardMessageAsync(ChatId, fromChatId, messageId, disableNotification, cancellationToken);
 
-        return telegramMapping.MappingMessage(result);
+        return telegramMapping.MessageToResult(result);
     }
 
     public Task<ChatResult> ForwardMessageAsync(long fromChatId, int messageId, CancellationToken cancellationToken)

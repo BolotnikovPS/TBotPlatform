@@ -288,6 +288,14 @@ public interface IStateContext : IAsyncDisposable
     Task PinChatMessageAsync(int messageId, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Фиксирует сообщение
+    /// </summary>
+    /// <param name="messageId">Id сообщения</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task PinChatMessageAsync(int messageId, CancellationToken cancellationToken);
+
+    /// <summary>
     /// Снимает фиксацию с сообщения
     /// </summary>
     /// <param name="messageId">Id сообщения</param>
