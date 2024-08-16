@@ -29,10 +29,19 @@ public class ChatUpdate(
     /// </summary>
     public ChatMessage Message { get; } = message;
 
+    /// <summary>
+    /// Смотреть описание Message
+    /// </summary>
     public ChatMessage? EditMessageOrNull { get; } = editMessageOrNull;
 
+    /// <summary>
+    /// Смотреть описание Message. Направлен на работу с каналами
+    /// </summary>
     public ChatMessage? ChannelPostOrNull { get; } = channelPostOrNull;
 
+    /// <summary>
+    /// Смотреть описание Message. Направлен на работу с каналами
+    /// </summary>
     public ChatMessage? EditChannelPostOrNull { get; } = editChannelPostOrNull;
 
     /// <summary>
@@ -50,17 +59,39 @@ public class ChatUpdate(
     /// </summary>
     public ChatMemberUpdate? MemberUpdateOrNull { get; } = memberUpdateOrNull;
 
+    /// <summary>
+    /// Получение информации о поданной заявки на вступление в чат/канал.
+    /// </summary>
     public ChatJoinRequestQuery? JoinRequestOrNull { get; } = joinRequestOrNull;
 
+    /// <summary>
+    /// Получение входящих Inline запросов.
+    /// Inline запрос - отправка сообщения в чат используя "@username" бота и вводя какой-то запрос
+    /// </summary>
     public ChatInlineQuery? InlineQueryOrNull { get; } = inlineQueryOrNull;
 
+    /// <summary>
+    /// Обработка Inline запроса. Получает выбор пользователя и обрабатывает его.
+    /// </summary>
     public ChatChosenInlineResult? ChosenInlineResultOrNull { get; } = chosenInlineResultOrNull;
 
+    /// <summary>
+    /// Все связанное с голосованием
+    /// </summary>
     public ChatPoll? PollOrNull { get; } = pollOrNull;
 
+    /// <summary>
+    /// Когда пользователь выбрал ответ в голосовании
+    /// </summary>
     public ChatPollAnswer? PollAnswerOrNull { get; } = pollAnswerOrNull;
 
+    /// <summary>
+    /// Информация о платеже, который начал оплачивать пользователь
+    /// </summary>
     public ChatShippingQuery? ShippingQueryOrNull { get; } = shippingQueryOrNull;
 
+    /// <summary>
+    /// Подтверждение успешной оплаты
+    /// </summary>
     public ChatPreCheckoutQuery? PreCheckoutQueryOrNull { get; } = preCheckoutQueryOrNull;
 }

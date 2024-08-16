@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using TBotPlatform.Contracts.Bots.ChatUpdate.Enums;
 using TBotPlatform.Contracts.Bots.Users;
-using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
 
@@ -23,12 +22,12 @@ public class ChatEntity(EChatEntityType type, int offset, int length, string? ur
     public int Length { get; } = length;
 
     /// <summary>
-    /// Optional. For <see cref="MessageEntityType.TextLink"/> only, URL that will be opened after user taps on the text
+    /// Optional. For <see cref="EChatEntityType.TextLink"/> only, URL that will be opened after user taps on the text
     /// </summary>
     public string Url { get; } = url ?? "";
 
     /// <summary>
-    /// Optional. For <see cref="MessageEntityType.TextMention"/> only, the mentioned user
+    /// Optional. For <see cref="EChatEntityType.TextMention"/> only, the mentioned user
     /// </summary>
     public TelegramUser? FromUserOrNull { get; } = fromUserOrNull;
 }

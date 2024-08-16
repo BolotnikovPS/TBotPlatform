@@ -351,6 +351,7 @@ internal partial class TelegramChatHandler(ILogger<TelegramChatHandler> logger, 
             CreateChat(message.Chat),
             message.MessageId,
             message.Text,
+            CreateInlineMarkupList(message.ReplyMarkup),
             CreateChatMessageEntity(message.Entities)
             );
 }

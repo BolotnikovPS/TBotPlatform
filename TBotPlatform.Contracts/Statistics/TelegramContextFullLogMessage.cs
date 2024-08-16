@@ -8,5 +8,5 @@ public class TelegramContextFullLogMessage
     public TelegramContextLogMessage? Request { get; set; }
 
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    public string? Result { get; set; }
+    public object? Result { get; set; }
 }

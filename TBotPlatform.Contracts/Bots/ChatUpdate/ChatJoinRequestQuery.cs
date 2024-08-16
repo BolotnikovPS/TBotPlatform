@@ -13,7 +13,13 @@ public class ChatJoinRequestQuery(TelegramChat? chatOrNull, TelegramUser fromUse
     /// </summary>
     public TelegramUser FromUser { get; } = fromUser;
 
+    /// <summary>
+    /// Id чата
+    /// </summary>
     public long UserChatId { get; } = userChatId;
 
+    /// <summary>
+    /// Дата запроса
+    /// </summary>
     public DateTime Date { get; } = date;
 }

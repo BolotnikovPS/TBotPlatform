@@ -20,7 +20,7 @@ public class ChatMessage(
     TelegramLocation? locationOrNull = null,
     InlineMarkupList? inlineMarkupListOrNull = null,
     ChatWebAppData? webAppDataOrNull = null,
-    ChatEntity[]? messageEntities = null
+    ChatEntity[]? entities = null
     )
 {
     public EChatMessageType Type { get; } = type;
@@ -66,11 +66,23 @@ public class ChatMessage(
     /// </summary>
     public TelegramChat? SenderChatOrNull { get; } = senderChatOrNull;
 
+    /// <summary>
+    /// Данные о локации
+    /// </summary>
     public TelegramLocation? LocationOrNull { get; } = locationOrNull;
 
+    /// <summary>
+    /// Данные о inline кнопках
+    /// </summary>
     public InlineMarkupList? InlineMarkupListOrNull { get; } = inlineMarkupListOrNull;
 
+    /// <summary>
+    /// Данные с кнопки WebApp
+    /// </summary>
     public ChatWebAppData? WebAppDataOrNull { get; } = webAppDataOrNull;
 
-    public ChatEntity[]? MessageEntities { get; } = messageEntities;
+    /// <summary>
+    /// Данные об объектах сообщения
+    /// </summary>
+    public ChatEntity[]? Entities { get; } = entities;
 }

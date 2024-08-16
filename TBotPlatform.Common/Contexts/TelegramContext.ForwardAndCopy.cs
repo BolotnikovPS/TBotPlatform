@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Contracts.Statistics;
+﻿using TBotPlatform.Common.Contracts.Statistics;
+using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -9,14 +10,19 @@ internal partial class TelegramContext
 {
     public Task<Message> ForwardMessageAsync(long chatId, long fromChatId, int messageId, bool disableNotification, CancellationToken cancellationToken)
     {
+        var logMessageData = new TelegramContextLogMessageData
+        {
+            FromChatId = fromChatId,
+            MessageId = messageId,
+            DisableNotification = disableNotification,
+        };
+
         var log = new TelegramContextLogMessage
         {
             OperationGuid = _operationGuid,
             OperationType = nameof(ForwardMessageAsync),
             ChatId = chatId,
-            FromChatId = fromChatId,
-            MessageId = messageId,
-            DisableNotification = disableNotification,
+            MessageBody = logMessageData,
         };
 
         var task = _botClient.ForwardMessageAsync(
@@ -42,11 +48,8 @@ internal partial class TelegramContext
         CancellationToken cancellationToken
         )
     {
-        var log = new TelegramContextLogMessage
+        var logMessageData = new TelegramContextLogMessageData
         {
-            OperationGuid = _operationGuid,
-            OperationType = nameof(CopyMessageAsync),
-            ChatId = chatId,
             FromChatId = fromChatId,
             MessageId = messageId,
             Caption = caption,
@@ -54,6 +57,14 @@ internal partial class TelegramContext
             AllowSendingWithoutReply = allowSendingWithoutReply,
             ReplyMarkup = replyMarkup,
             DisableNotification = disableNotification,
+        };
+
+        var log = new TelegramContextLogMessage
+        {
+            OperationGuid = _operationGuid,
+            OperationType = nameof(CopyMessageAsync),
+            ChatId = chatId,
+            MessageBody = logMessageData,
         };
 
         var task = _botClient.CopyMessageAsync(

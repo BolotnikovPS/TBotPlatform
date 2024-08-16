@@ -68,7 +68,7 @@ internal partial class TelegramContext
 
             if (result.IsNotNull())
             {
-                fullLogMessage.Result = result.ToJson();
+                fullLogMessage.Result = result;
             }
 
             await telegramContextLog.HandleLogAsync(fullLogMessage, cancellationToken);

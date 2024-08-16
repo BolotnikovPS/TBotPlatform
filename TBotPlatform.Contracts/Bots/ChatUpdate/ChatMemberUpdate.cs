@@ -14,9 +14,18 @@ public class ChatMemberUpdate(TelegramChat? chatOrNull, TelegramUser fromUser, D
     /// </summary>
     public TelegramUser FromUser { get; } = fromUser;
 
+    /// <summary>
+    /// Дата запроса
+    /// </summary>
     public DateTime Date { get; } = date;
 
+    /// <summary>
+    /// Предыдущее состояние действия
+    /// </summary>
     public ChatMemberData OldChatMember { get; } = oldChatMember;
 
+    /// <summary>
+    /// Новое состояние действия
+    /// </summary>
     public ChatMemberData NewChatMember { get; } = newChatMember;
 }

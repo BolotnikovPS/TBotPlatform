@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Contracts.Statistics;
+﻿using TBotPlatform.Common.Contracts.Statistics;
+using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -10,14 +11,19 @@ internal partial class TelegramContext
 {
     public Task<Message> SendDocumentAsync(long chatId, InputFile document, IReplyMarkup replyMarkup, bool disableNotification, CancellationToken cancellationToken)
     {
+        var logMessageData = new TelegramContextLogMessageData
+        {
+            ReplyMarkup = replyMarkup,
+            InputFile = document,
+            DisableNotification = disableNotification,
+        };
+
         var log = new TelegramContextLogMessage
         {
             OperationGuid = _operationGuid,
             OperationType = nameof(SendDocumentAsync),
             ChatId = chatId,
-            ReplyMarkup = replyMarkup,
-            InputFile = document,
-            DisableNotification = disableNotification,
+            MessageBody = logMessageData,
         };
 
         var task = _botClient.SendDocumentAsync(
@@ -45,15 +51,20 @@ internal partial class TelegramContext
         CancellationToken cancellationToken
         )
     {
+        var logMessageData = new TelegramContextLogMessageData
+        {
+            ReplyMarkup = replyMarkup,
+            Caption = caption,
+            InputFile = photo,
+            DisableNotification = disableNotification,
+        };
+
         var log = new TelegramContextLogMessage
         {
             OperationGuid = _operationGuid,
             OperationType = nameof(SendPhotoAsync),
             ChatId = chatId,
-            ReplyMarkup = replyMarkup,
-            Caption = caption,
-            InputFile = photo,
-            DisableNotification = disableNotification,
+            MessageBody = logMessageData,
         };
 
         var task = _botClient.SendPhotoAsync(
@@ -80,6 +91,7 @@ internal partial class TelegramContext
             OperationGuid = _operationGuid,
             OperationType = nameof(DownloadFileAsync),
             ChatId = chatId,
+            MessageBody = "",
         };
 
         var task = _botClient.DownloadFileAsync(filePath, destination, cancellationToken);
@@ -96,6 +108,7 @@ internal partial class TelegramContext
             OperationGuid = _operationGuid,
             OperationType = nameof(GetFileAsync),
             ChatId = chatId,
+            MessageBody = "",
         };
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);
@@ -110,6 +123,7 @@ internal partial class TelegramContext
             OperationGuid = _operationGuid,
             OperationType = nameof(GetFileAsync),
             ChatId = chatId,
+            MessageBody = "",
         };
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);

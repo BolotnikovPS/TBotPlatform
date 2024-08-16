@@ -43,12 +43,16 @@ internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITe
 
     public void SetBindState(EBindStateType type) => BindState = type;
 
-    public async Task<ChatResult> SendDocumentAsync(InputFile inputFile, bool disableNotification, CancellationToken cancellationToken)
+    public async Task<ChatResult> SendDocumentAsync(byte[] fileBytes, string fileName, bool disableNotification, CancellationToken cancellationToken)
     {
         if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
+
+        await using var fileStream = new MemoryStream(fileBytes);
+
+        var inputFile = InputFile.FromStream(fileStream, fileName);
 
         var result = await botClient.SendDocumentAsync(
             ChatId,
@@ -60,8 +64,8 @@ internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITe
         return telegramMapping.MessageToResult(result);
     }
 
-    public Task<ChatResult> SendDocumentAsync(InputFile inputFile, CancellationToken cancellationToken)
-        => SendDocumentAsync(inputFile, false, cancellationToken);
+    public Task<ChatResult> SendDocumentAsync(byte[] fileBytes, string fileName, CancellationToken cancellationToken)
+        => SendDocumentAsync(fileBytes, fileName, false, cancellationToken);
 
     public Task SendChatActionAsync(ChatAction chatAction, CancellationToken cancellationToken)
     {

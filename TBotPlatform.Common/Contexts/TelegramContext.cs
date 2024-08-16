@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using TBotPlatform.Common.Contracts.Statistics;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Statistics;
@@ -31,12 +32,17 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
     
     public Task DeleteMessageAsync(long chatId, int messageId, CancellationToken cancellationToken)
     {
+        var logMessageData = new TelegramContextLogMessageData
+        {
+            MessageId = messageId,
+        };
+
         var log = new TelegramContextLogMessage
         {
             OperationGuid = _operationGuid,
             OperationType = nameof(DeleteMessageAsync),
             ChatId = chatId,
-            MessageId = messageId,
+            MessageBody = logMessageData,
         };
 
         var task = _botClient.DeleteMessageAsync(chatId, messageId, cancellationToken);
@@ -46,12 +52,17 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
 
     public Task SendChatActionAsync(long chatId, ChatAction chatAction, CancellationToken cancellationToken)
     {
+        var logMessageData = new TelegramContextLogMessageData
+        {
+            ChatAction = chatAction,
+        };
+
         var log = new TelegramContextLogMessage
         {
             OperationGuid = _operationGuid,
             OperationType = nameof(SendChatActionAsync),
             ChatId = chatId,
-            ChatAction = chatAction,
+            MessageBody = logMessageData,
         };
 
         var task = _botClient.SendChatActionAsync(chatId, chatAction, cancellationToken: cancellationToken);

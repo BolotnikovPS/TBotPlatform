@@ -4,7 +4,6 @@ using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
 using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Contracts.Bots.StateContext;
-using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -56,19 +55,21 @@ public interface IStateContext : IAsyncDisposable
     /// <summary>
     /// Отправляет документы в чат
     /// </summary>
-    /// <param name="inputFile">Файл документа</param>
+    /// <param name="fileBytes">Файл документа</param>
+    /// <param name="fileName">Название файла</param>
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendDocumentAsync(InputFile inputFile, bool disableNotification, CancellationToken cancellationToken);
+    Task<ChatResult> SendDocumentAsync(byte[] fileBytes, string fileName, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет документы в чат
     /// </summary>
-    /// <param name="inputFile">Файл документа</param>
+    /// <param name="fileBytes">Файл документа</param>
+    /// <param name="fileName">Название файла</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendDocumentAsync(InputFile inputFile, CancellationToken cancellationToken);
+    Task<ChatResult> SendDocumentAsync(byte[] fileBytes, string fileName, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
