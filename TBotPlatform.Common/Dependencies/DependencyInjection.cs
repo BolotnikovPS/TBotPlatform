@@ -5,8 +5,8 @@ using System.Net;
 using TBotPlatform.Common.BackgroundServices;
 using TBotPlatform.Common.Contexts;
 using TBotPlatform.Common.Handlers;
-using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts;
+using TBotPlatform.Contracts.Abstractions.Handlers;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Extension;
 
@@ -33,7 +33,9 @@ public static partial class DependencyInjection
            .AddPolicyHandler(GetRetryPolicy());
 
         services
-           .AddScoped<ITelegramUpdateHandler, TelegramUpdateHandler>();
+           .AddScoped<TelegramChatHandler>()
+           .AddScoped<ITelegramUpdateHandler>(src => src.GetRequiredService<TelegramChatHandler>())
+           .AddScoped<ITelegramMappingHandler>(src => src.GetRequiredService<TelegramChatHandler>());
 
         return services;
     }

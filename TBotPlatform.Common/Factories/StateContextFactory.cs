@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using TBotPlatform.Common.Contexts;
+using TBotPlatform.Common.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts;
+using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Factories;
+using TBotPlatform.Contracts.Abstractions.Handlers;
 using TBotPlatform.Contracts.Attributes;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
@@ -18,7 +20,8 @@ internal class StateContextFactory(
     ILogger<StateContextFactory> logger,
     ITelegramContext botClient,
     IServiceScopeFactory serviceScopeFactory,
-    ITelegramUpdateHandler telegramUpdateHandler
+    ITelegramUpdateHandler telegramUpdateHandler,
+    ITelegramMappingHandler telegramMappingHandler
     ) : IStateContextFactory
 {
     private const string ErrorText = "🆘 Произошла ошибка при обработке запроса";
@@ -30,7 +33,7 @@ internal class StateContextFactory(
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        return new StateContext(botClient, chatId);
+        return new StateContext(telegramMappingHandler, botClient, chatId);
     }
 
     public Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
@@ -52,7 +55,7 @@ internal class StateContextFactory(
     {
         ArgumentNullException.ThrowIfNull(user);
 
-        var stateContext = new StateContext(botClient, user.ChatId);
+        var stateContext = new StateContext(telegramMappingHandler, botClient, user.ChatId);
         stateContext.CreateStateContext(chatUpdate, markupNextState);
 
         if (stateHistory.IsNotNull())

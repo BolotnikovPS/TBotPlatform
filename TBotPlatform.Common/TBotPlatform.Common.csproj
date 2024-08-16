@@ -18,6 +18,9 @@
 		<Compile Update="**\TelegramContext.*.cs">
 			<DependentUpon>TelegramContext.cs</DependentUpon>
 		</Compile>
+		<Compile Update="**\TelegramChatHandler.*.cs">
+			<DependentUpon>TelegramChatHandler.cs</DependentUpon>
+		</Compile>
 		<Compile Update="**\DependencyInjection.*.cs">
 			<DependentUpon>DependencyInjection.cs</DependentUpon>
 		</Compile>

@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Contracts.Abstractions.Contexts;
+﻿using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.Users;

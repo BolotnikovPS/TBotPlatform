@@ -41,14 +41,15 @@ internal partial class TelegramContext
     /// Исполнение метода в очереди
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="taskGenerator"></param>
+    /// <param name="execute">Исполняемая функция</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<T> Enqueue<T>(Func<Task<T>> taskGenerator, CancellationToken cancellationToken)
+    /// <exception cref="ArgumentException"></exception>
+    private async Task<T> Enqueue<T>(Func<Task<T>> execute, CancellationToken cancellationToken)
     {
-        if (taskGenerator.IsNull())
+        if (execute.IsNull())
         {
-            throw new ArgumentException(nameof(taskGenerator));
+            throw new ArgumentException(nameof(execute));
         }
 
         await Semaphore.WaitAsync(cancellationToken);
@@ -58,7 +59,7 @@ internal partial class TelegramContext
 
             await DelayAsync(cancellationToken);
 
-            return await taskGenerator();
+            return await execute();
         }
         catch (Exception ex)
         {
@@ -76,14 +77,15 @@ internal partial class TelegramContext
     /// <summary>
     /// Исполнение метода в очереди
     /// </summary>
-    /// <param name="taskGenerator"></param>
+    /// <param name="execute">Исполняемая функция</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task Enqueue(Func<Task> taskGenerator, CancellationToken cancellationToken)
+    /// <exception cref="ArgumentException"></exception>
+    private async Task Enqueue(Func<Task> execute, CancellationToken cancellationToken)
     {
-        if (taskGenerator.IsNull())
+        if (execute.IsNull())
         {
-            throw new ArgumentException(nameof(taskGenerator));
+            throw new ArgumentException(nameof(execute));
         }
 
         await Semaphore.WaitAsync(cancellationToken);
@@ -93,7 +95,7 @@ internal partial class TelegramContext
 
             await DelayAsync(cancellationToken);
 
-            await taskGenerator();
+            await execute();
         }
         catch (Exception ex)
         {

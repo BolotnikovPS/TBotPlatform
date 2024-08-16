@@ -8,10 +8,11 @@ internal partial class TelegramContext
     /// <summary>
     /// Исполнение метода в очереди с сохранением статистики
     /// </summary>
-    /// <param name="method"></param>
-    /// <param name="logMessage"></param>
+    /// <param name="method">Исполняемый метод</param>
+    /// <param name="logMessage">Сообщение для логирования</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     private async Task ExecuteEnqueueSafety(Task method, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
     {
         if (method.IsNull())
@@ -41,10 +42,12 @@ internal partial class TelegramContext
     /// <summary>
     /// Исполнение метода в очереди с сохранением статистики
     /// </summary>
-    /// <param name="method"></param>
-    /// <param name="logMessage"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="method">Исполняемый метод</param>
+    /// <param name="logMessage">Сообщение для логирования</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     private async Task<T> ExecuteEnqueueSafety<T>(Task<T> method, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
     {
         if (method.IsNull())
