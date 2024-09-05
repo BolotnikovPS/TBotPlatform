@@ -1,7 +1,7 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Bots.Users;
 
-namespace TBotPlatform.Contracts.Abstractions;
+namespace TBotPlatform.Contracts.Abstractions.State;
 
 public interface IState<in T>
     where T : UserBase

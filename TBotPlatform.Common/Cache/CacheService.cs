@@ -87,6 +87,13 @@ internal class CacheService(ILogger<CacheService> logger, Lazy<ConnectionMultipl
         return false;
     }
 
+    Task<bool> ICacheService.KeyExistsAsync(string key, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return DbCache.KeyExistsAsync(CreateKeyName(key));
+    }
+
     private T DeserializeObject<T>(RedisValue? value)
         where T : IKeyInCache
     {
@@ -107,7 +114,7 @@ internal class CacheService(ILogger<CacheService> logger, Lazy<ConnectionMultipl
         }
     }
 
-    private string CreateCollectionName(string collection) => $"{cacheSettings.CachePrefix}_{collection}";
+    private string CreateCollectionName(string collection) => cacheSettings.CachePrefix.IsNotNull() ? $"{cacheSettings.CachePrefix}_{collection}" : collection;
 
-    private string CreateKeyName(string key) => $"{cacheSettings.CachePrefix}_{key}";
+    private string CreateKeyName(string key) => cacheSettings.CachePrefix.IsNotNull() ? $"{cacheSettings.CachePrefix}_{key}" : key;
 }

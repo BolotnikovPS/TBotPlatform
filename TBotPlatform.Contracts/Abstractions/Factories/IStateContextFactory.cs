@@ -13,14 +13,14 @@ public interface IStateContextFactory
     /// </summary>
     /// <param name="user">Пользователь с которым будем взаимодействовать</param>
     /// <returns></returns>
-    IStateContext CreateStateContext<T>(T user) where T : UserBase;
+    IStateContextMinimal CreateStateContext<T>(T user) where T : UserBase;
 
     /// <summary>
     /// Создание контекста состояния
     /// </summary>
     /// <param name="chatId">Id чата с которым будем взаимодействовать</param>
     /// <returns></returns>
-    IStateContext CreateStateContext(long chatId);
+    IStateContextMinimal CreateStateContext(long chatId);
 
     /// <summary>
     /// Создание контекста состояния и вызов состояния
@@ -91,6 +91,6 @@ public interface IStateContextFactory
     /// <param name="stateHistory">Вызываемое состояние</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task UpdateMarkupByStateAsync<T>(T user, IStateContext stateContext, StateHistory stateHistory, CancellationToken cancellationToken)
+    Task UpdateMarkupByStateAsync<T>(T user, IStateContextMinimal stateContext, StateHistory stateHistory, CancellationToken cancellationToken)
         where T : UserBase;
 }

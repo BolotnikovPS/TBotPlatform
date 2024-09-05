@@ -1,7 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿#nullable enable
+using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using TBotPlatform.Common.Cache;
+using TBotPlatform.Common.Factories;
 using TBotPlatform.Contracts.Abstractions.Cache;
+using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Dependencies;
@@ -17,7 +20,7 @@ public static partial class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddCache(this IServiceCollection services, string redisConnectionString, string prefix, string[] tags = null)
+    public static IServiceCollection AddCache(this IServiceCollection services, string redisConnectionString, string? prefix = null, string[]? tags = null)
     {
         services
            .AddSingleton(
@@ -37,7 +40,16 @@ public static partial class DependencyInjection
         return services;
     }
 
-    private static void AddHealthCheckRedis(this IServiceCollection services, string redisConnectionString, string[] tags = null)
+    public static IServiceCollection AddCacheWithDistributedLock(this IServiceCollection services, string redisConnectionString, string? prefix = null, string[]? tags = null)
+    {
+        services
+           .AddCache(redisConnectionString, prefix, tags)
+           .AddSingleton<IDistributedLockFactory, DistributedLockFactory>();
+
+        return services;
+    }
+
+    private static void AddHealthCheckRedis(this IServiceCollection services, string redisConnectionString, string[]? tags = null)
     {
         if (tags.IsNull())
         {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using TBotPlatform.Common.Contracts.Statistics;
+using TBotPlatform.Common.Contracts;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Statistics;

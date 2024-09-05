@@ -1,5 +1,5 @@
 <h1 align="center">TBotPlatform</h1>
-C# библиотека для создания бота <a href="https://core.telegram.org/bots/api">Telegram</a>
+C# библиотека для облегчения создания бота <a href="https://core.telegram.org/bots/api">Telegram</a>
 
 Библиотека использует <a href="https://www.nuget.org/packages/Telegram.Bot/">Telegram.Bot</a> и дает вам дополнительный контроль над вашим ботом, обновлениями, методами, логированием, очередями вызовов, которые обычно невозможно использовать с API-интерфейсом бота.
 

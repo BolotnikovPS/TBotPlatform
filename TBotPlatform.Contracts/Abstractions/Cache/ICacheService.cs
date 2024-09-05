@@ -83,4 +83,12 @@ public interface ICacheService
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<bool> RemoveValueAsync(string key, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Проверяет наличие ключа
+    /// </summary>
+    /// <param name="key">Ключ</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<bool> KeyExistsAsync(string key, CancellationToken cancellationToken);
 }

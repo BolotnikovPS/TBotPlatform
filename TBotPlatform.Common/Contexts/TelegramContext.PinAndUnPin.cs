@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Common.Contracts.Statistics;
+﻿using TBotPlatform.Common.Contracts;
 using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
 

@@ -90,7 +90,7 @@ internal partial class StateContext
 
     private async Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineKeyboardMarkup inlineKeyboard, FileData photoData, bool disableNotification, CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
+        if (chatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -117,12 +117,12 @@ internal partial class StateContext
                     throw new CallbackQueryMessageIdOrNullArgException();
                 }
 
-                await botClient.DeleteMessageAsync(ChatId, ChatUpdate.CallbackQueryOrNull.MessageId, cancellationToken);
+                await botClient.DeleteMessageAsync(chatId, ChatUpdate.CallbackQueryOrNull.MessageId, cancellationToken);
             }
 
             await using var fileStream = new MemoryStream(photoData.Byte);
             var resultSendPhoto = await botClient.SendPhotoAsync(
-                ChatId,
+                chatId,
                 InputFile.FromStream(fileStream),
                 text,
                 inlineKeyboard,
@@ -136,7 +136,7 @@ internal partial class StateContext
         if (MarkupNextState.IsNull())
         {
             var resultSendText = await botClient.SendTextMessageAsync(
-                ChatId,
+                chatId,
                 text,
                 inlineKeyboard,
                 disableNotification,
@@ -152,8 +152,8 @@ internal partial class StateContext
         }
 
         var result = ChatUpdate.CallbackQueryOrNull!.MessageWithImage
-            ? await botClient.EditMessageCaptionAsync(ChatId, ChatUpdate.CallbackQueryOrNull.MessageId, text, inlineKeyboard, cancellationToken)
-            : await botClient.EditMessageTextAsync(ChatId, ChatUpdate.CallbackQueryOrNull.MessageId, text, inlineKeyboard, cancellationToken);
+            ? await botClient.EditMessageCaptionAsync(chatId, ChatUpdate.CallbackQueryOrNull.MessageId, text, inlineKeyboard, cancellationToken)
+            : await botClient.EditMessageTextAsync(chatId, ChatUpdate.CallbackQueryOrNull.MessageId, text, inlineKeyboard, cancellationToken);
         
         return telegramMapping.MessageToResult(result);
     }

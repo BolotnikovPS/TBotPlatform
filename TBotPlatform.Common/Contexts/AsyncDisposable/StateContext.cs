@@ -2,33 +2,30 @@
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Handlers;
+using TBotPlatform.Contracts.Abstractions.State;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.Exceptions;
-using TBotPlatform.Contracts.Bots.StateContext;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
-internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITelegramContext botClient, long chatId) : IStateContext
+internal partial class StateContext(StateHistory stateHistory, IStateBind stateBind, ITelegramMappingHandler telegramMapping, ITelegramContext botClient, long chatId) : IStateContext
 {
     public MarkupNextState MarkupNextState { get; private set; }
     public ChatUpdate ChatUpdate { get; private set; }
-    public EBindStateType BindState { get; private set; }
     public bool IsForceReplyLastMenu { get; private set; }
-
-    private long ChatId { get; } = chatId;
 
     private const string ChooseAction = "😊 Выберите действие";
 
     public void CreateStateContext(ChatUpdate chatUpdate, MarkupNextState markupNextState)
     {
-        if (ChatId.IsDefault())
+        if (chatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -41,11 +38,15 @@ internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITe
 
     public void SetNeedIsForceReplyLastMenu() => IsForceReplyLastMenu = true;
 
-    public void SetBindState(EBindStateType type) => BindState = type;
+    public Task BindStateAsync(CancellationToken cancellationToken)
+        => stateBind.BindStateAsync(chatId, stateHistory, cancellationToken);
+
+    public Task UnBindStateAsync(CancellationToken cancellationToken)
+        => stateBind.UnBindStateAsync(chatId, cancellationToken);
 
     public async Task<ChatResult> SendDocumentAsync(byte[] fileBytes, string fileName, bool disableNotification, CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
+        if (chatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -55,7 +56,7 @@ internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITe
         var inputFile = InputFile.FromStream(fileStream, fileName);
 
         var result = await botClient.SendDocumentAsync(
-            ChatId,
+            chatId,
             inputFile,
             disableNotification,
             cancellationToken
@@ -69,13 +70,13 @@ internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITe
 
     public Task SendChatActionAsync(ChatAction chatAction, CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
+        if (chatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
         return botClient.SendChatActionAsync(
-            ChatId,
+            chatId,
             chatAction,
             cancellationToken
             );
@@ -83,7 +84,7 @@ internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITe
 
     public async Task<ChatResult> UpdateMarkupAsync(ButtonsRuleMassiveList replyMarkup, CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
+        if (chatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -96,7 +97,7 @@ internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITe
         }
 
         var result = await botClient.SendTextMessageAsync(
-            ChatId,
+            chatId,
             ChooseAction,
             newMarkup,
             false,
@@ -113,7 +114,7 @@ internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITe
             return Task.CompletedTask;
         }
 
-        if (ChatId.IsDefault())
+        if (chatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -141,7 +142,7 @@ internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITe
         if (ChatUpdate.CallbackQueryOrNull!.MessageWithImage)
         {
             return botClient.EditMessageCaptionAsync(
-                ChatId,
+                chatId,
                 ChatUpdate.CallbackQueryOrNull!.MessageId,
                 message,
                 cancellationToken
@@ -149,7 +150,7 @@ internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITe
         }
 
         return botClient.EditMessageTextAsync(
-            ChatId,
+            chatId,
             ChatUpdate.CallbackQueryOrNull!.MessageId,
             message,
             cancellationToken
@@ -161,7 +162,7 @@ internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITe
 
     public Task RemoveMessageAsync(int messageId, CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
+        if (chatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -172,7 +173,7 @@ internal partial class StateContext(ITelegramMappingHandler telegramMapping, ITe
         }
 
 
-        return botClient.DeleteMessageAsync(ChatId, messageId, cancellationToken);
+        return botClient.DeleteMessageAsync(chatId, messageId, cancellationToken);
     }
 
     public ValueTask DisposeAsync()

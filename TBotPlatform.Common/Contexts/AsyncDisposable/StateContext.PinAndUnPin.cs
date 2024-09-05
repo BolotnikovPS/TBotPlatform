@@ -7,7 +7,7 @@ internal partial class StateContext
 {
     public Task PinChatMessageAsync(int messageId, bool disableNotification, CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
+        if (chatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -17,7 +17,7 @@ internal partial class StateContext
             throw new MessageIdArgException();
         }
 
-        return botClient.PinChatMessageAsync(ChatId, messageId, disableNotification, cancellationToken);
+        return botClient.PinChatMessageAsync(chatId, messageId, disableNotification, cancellationToken);
     }
 
     public Task PinChatMessageAsync(int messageId, CancellationToken cancellationToken)
@@ -25,7 +25,7 @@ internal partial class StateContext
 
     public Task UnpinChatMessageAsync(int messageId, CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
+        if (chatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -35,16 +35,16 @@ internal partial class StateContext
             throw new MessageIdArgException();
         }
 
-        return botClient.UnpinChatMessageAsync(ChatId, messageId, cancellationToken);
+        return botClient.UnpinChatMessageAsync(chatId, messageId, cancellationToken);
     }
 
     public Task UnpinAllChatMessages(CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
+        if (chatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
-        return botClient.UnpinAllChatMessages(ChatId, cancellationToken);
+        return botClient.UnpinAllChatMessages(chatId, cancellationToken);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TBotPlatform.Contracts.Abstractions;
+using TBotPlatform.Contracts.Abstractions.State;
 using TBotPlatform.Contracts.Attributes;
 using TBotPlatform.Contracts.Bots.StateFactory;
 using TBotPlatform.Contracts.Bots.Users;
@@ -12,6 +13,11 @@ public static partial class DependencyInjection
 {
     public static IServiceCollection AddStates(this IServiceCollection services, Assembly executingAssembly, string botType = "")
     {
+        if (executingAssembly.IsNull())
+        {
+            throw new ArgumentNullException(nameof(executingAssembly));
+        }
+
         var potentialStates = executingAssembly
                              .GetTypes()
                              .Where(z => z.IsDefined(typeof(StateActivatorBaseAttribute), false))

@@ -1,6 +1,9 @@
-﻿namespace TBotPlatform.Common.Cache;
+﻿#nullable enable
+using TBotPlatform;
+
+namespace TBotPlatform.Common.Cache;
 
 internal class CacheSettings
 {
-    public string CachePrefix { get; set; }
+    public string? CachePrefix { get; set; }
 }
