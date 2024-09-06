@@ -71,23 +71,13 @@ internal partial class StateContext
         {
             foreach (var tf in text.SplitByLength(StateContextConstant.TextLength))
             {
-                await botClient.SendTextMessageAsync(
-                    chatId,
-                    tf,
-                    disableNotification,
-                    cancellationToken
-                    );
+                await botClient.SendTextMessageAsync(chatId, tf, disableNotification, cancellationToken);
             }
 
             return;
         }
 
-        await botClient.SendTextMessageAsync(
-            chatId,
-            text,
-            disableNotification,
-            cancellationToken
-            );
+        await botClient.SendTextMessageAsync(chatId, text, disableNotification, cancellationToken);
     }
 
     public Task SendLongTextMessageAsync(string text, CancellationToken cancellationToken)

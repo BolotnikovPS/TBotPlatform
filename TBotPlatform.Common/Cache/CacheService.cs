@@ -77,9 +77,7 @@ internal class CacheService(ILogger<CacheService> logger, Lazy<ConnectionMultipl
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var isKeyExist = await DbCache.KeyExistsAsync(CreateKeyName(key));
-
-        if (isKeyExist)
+        if (await DbCache.KeyExistsAsync(CreateKeyName(key)))
         {
             return await DbCache.KeyDeleteAsync(CreateKeyName(key));
         }

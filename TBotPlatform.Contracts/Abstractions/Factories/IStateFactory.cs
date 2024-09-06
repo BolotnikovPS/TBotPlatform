@@ -67,12 +67,4 @@ public interface IStateFactory : IStateBind
     /// </summary>
     /// <returns></returns>
     StateHistory GetLockState();
-
-    /// <summary>
-    /// Получает забиндинное состояние или null
-    /// </summary>
-    /// <param name="chatId">Id чата</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task<StateHistory> GetBindStateOrNullAsync(long chatId, CancellationToken cancellationToken);
 }

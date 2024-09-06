@@ -22,8 +22,9 @@ public static partial class DependencyInjection
                 {
                     Assembly = executingAssembly,
                 })
-           .AddScoped<IStateFactory, StateFactory>()
-           .AddScoped<IStateBind, StateFactory>()
+           .AddScoped<StateFactory>()
+           .AddScoped<IStateFactory>(src => src.GetRequiredService<StateFactory>())
+           .AddScoped<IStateBind>(src => src.GetRequiredService<StateFactory>())
            .AddScoped<IStateContextFactory, StateContextFactory>();
 
         return services;

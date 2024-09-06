@@ -75,11 +75,7 @@ internal partial class StateContext(StateHistory stateHistory, IStateBind stateB
             throw new ChatIdArgException();
         }
 
-        return botClient.SendChatActionAsync(
-            chatId,
-            chatAction,
-            cancellationToken
-            );
+        return botClient.SendChatActionAsync(chatId, chatAction, cancellationToken);
     }
 
     public async Task<ChatResult> UpdateMarkupAsync(ButtonsRuleMassiveList replyMarkup, CancellationToken cancellationToken)
