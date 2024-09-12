@@ -11,7 +11,7 @@ public abstract class BaseState(ICacheService cacheService)
     protected string StateName
         => GetType().Name;
 
-    protected async Task<T> GetValueStateOrNullFromCacheAsync<T>(int userId, CancellationToken cancellationToken)
+    protected virtual async Task<T> GetValueStateOrNullFromCacheAsync<T>(int userId, CancellationToken cancellationToken)
     {
         CacheServiceCheck();
 
@@ -22,7 +22,7 @@ public abstract class BaseState(ICacheService cacheService)
             : default;
     }
 
-    protected Task AddValueStateInCacheAsync<T>(int userId, T value, CancellationToken cancellationToken)
+    protected virtual Task AddValueStateInCacheAsync<T>(int userId, T value, CancellationToken cancellationToken)
     {
         CacheServiceCheck();
 
@@ -35,14 +35,14 @@ public abstract class BaseState(ICacheService cacheService)
         return CacheService.AddValueToCollectionAsync(GetCacheCollectionName(userId), data, cancellationToken);
     }
 
-    protected Task RemoveValueStateInCacheAsync(int userId, CancellationToken cancellationToken)
+    protected virtual Task RemoveValueStateInCacheAsync(int userId, CancellationToken cancellationToken)
     {
         CacheServiceCheck();
 
         return CacheService.RemoveValueFromCollectionAsync(GetCacheCollectionName(userId), GetCacheKeyName(), cancellationToken);
     }
 
-    protected Task RemoveValuesInCacheAsync(int userId, CancellationToken cancellationToken)
+    protected virtual Task RemoveValuesInCacheAsync(int userId, CancellationToken cancellationToken)
     {
         CacheServiceCheck();
 
