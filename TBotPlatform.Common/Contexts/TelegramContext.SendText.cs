@@ -39,5 +39,5 @@ internal partial class TelegramContext
     }
 
     public Task<Message> SendTextMessageAsync(long chatId, string text, bool disableNotification, CancellationToken cancellationToken)
-        => SendTextMessageAsync(chatId, text, null, disableNotification, cancellationToken);
+        => SendTextMessageAsync(chatId, text, replyMarkup: null, disableNotification, cancellationToken);
 }

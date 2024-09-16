@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿#nullable enable
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TBotPlatform.Common.Contexts.AsyncDisposable;
-using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Factories;
@@ -11,6 +11,7 @@ using TBotPlatform.Contracts.Attributes;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.Users;
+using TBotPlatform.Contracts.State;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -35,34 +36,34 @@ internal class StateContextFactory(
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        return new StateContext(null, stateBind, telegramMappingHandler, botClient, chatId);
+        return new StateContext(stateHistory: null, stateBind, telegramMappingHandler, botClient, chatId);
     }
 
-    public Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
+    public Task<IStateContextMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(user);
         ArgumentNullException.ThrowIfNull(stateHistory);
         ArgumentNullException.ThrowIfNull(update);
 
-        return CreateStateContextAsync(user, stateHistory, update, null, cancellationToken);
+        return CreateStateContextAsync(user, stateHistory, update, markupNextState: null, cancellationToken);
     }
 
-    public Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory stateHistory, ChatUpdate chatUpdate, CancellationToken cancellationToken)
+    public Task<IStateContextMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, ChatUpdate chatUpdate, CancellationToken cancellationToken)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(user);
         ArgumentNullException.ThrowIfNull(stateHistory);
         ArgumentNullException.ThrowIfNull(chatUpdate);
 
-        return CreateStateContextAsync(user, stateHistory, chatUpdate, null, cancellationToken);
+        return CreateStateContextAsync(user, stateHistory, chatUpdate, markupNextState: null, cancellationToken);
     }
 
-    public async Task<IStateContext> CreateStateContextAsync<T>(
+    public async Task<IStateContextMinimal> CreateStateContextAsync<T>(
         T user,
         StateHistory stateHistory,
         Update update,
-        MarkupNextState markupNextState,
+        MarkupNextState? markupNextState,
         CancellationToken cancellationToken
         )
         where T : UserBase
@@ -74,15 +75,15 @@ internal class StateContextFactory(
         var chatMessage = await telegramUpdateHandler.GetChatMessageAsync(user.ChatId, update, cancellationToken);
 
         ArgumentNullException.ThrowIfNull(chatMessage);
-        
+
         return await CreateStateContextAsync(user, stateHistory, chatMessage, markupNextState, cancellationToken);
     }
 
-    public async Task<IStateContext> CreateStateContextAsync<T>(
+    public async Task<IStateContextMinimal> CreateStateContextAsync<T>(
         T user,
         StateHistory stateHistory,
         ChatUpdate chatUpdate,
-        MarkupNextState markupNextState,
+        MarkupNextState? markupNextState,
         CancellationToken cancellationToken
         )
         where T : UserBase
@@ -99,33 +100,10 @@ internal class StateContextFactory(
         return stateContext;
     }
 
-    public async Task UpdateMarkupByStateAsync<T>(T user, IStateContextMinimal stateContext, StateHistory stateHistory, CancellationToken cancellationToken)
-        where T : UserBase
-    {
-        ArgumentNullException.ThrowIfNull(user);
-        ArgumentNullException.ThrowIfNull(stateContext);
-        ArgumentNullException.ThrowIfNull(stateHistory);
-        ArgumentNullException.ThrowIfNull(stateHistory.MenuStateType);
-
-        var menuStateType = stateHistory.MenuStateType;
-        var isMenuType = menuStateType.GetInterfaces().Any(x => x.Name == nameof(IMenuButton));
-
-        if (!isMenuType)
-        {
-            throw new($"Класс {menuStateType.Name} не наследуется от {nameof(IMenuButton)}");
-        }
-
-        await using var scope = serviceScopeFactory.CreateAsyncScope();
-        var menuButtons = scope.ServiceProvider.GetRequiredService(menuStateType) as IMenuButton;
-
-        if (menuButtons.IsNull())
-        {
-            throw new("Не смогли активировать состояние");
-        }
-
-        var menu = await menuButtons!.GetMarkUpAsync(user);
-        await stateContext.UpdateMarkupAsync(menu, cancellationToken);
-    }
+    public StateResult? GetStateResult(IStateContextMinimal stateContext)
+        => stateContext is StateContext context
+            ? context.StateResult
+            : default;
 
     private async Task RequestAsync<T>(IStateContext stateContext, T user, StateHistory stateHistory, CancellationToken cancellationToken)
         where T : UserBase
@@ -149,7 +127,7 @@ internal class StateContextFactory(
 
         if (state.IsNull())
         {
-            throw new("Не смогли активировать состояние");
+            throw new("Не смог активировать состояние");
         }
 
         try
@@ -161,12 +139,12 @@ internal class StateContextFactory(
             // ignored
         }
 
-        Exception exception = null;
+        Exception? exception = null;
         try
         {
             await state!.HandleAsync(stateContext, user, cancellationToken);
 
-            await state!.HandleCompleteAsync(stateContext, user, cancellationToken);
+            await state.HandleCompleteAsync(stateContext, user, cancellationToken);
         }
         catch (Exception ex)
         {

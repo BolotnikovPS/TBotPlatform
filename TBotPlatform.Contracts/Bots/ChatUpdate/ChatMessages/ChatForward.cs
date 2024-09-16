@@ -4,7 +4,15 @@ using TBotPlatform.Contracts.Bots.Users;
 
 namespace TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
 
-public class ChatForward(TelegramUser fromUser, bool isForwardFromBot, TelegramChat chat, int? forwardFromMessageId, string? forwardFromSignature, string? forwardFromSenderName, DateTime? forwardFromDate)
+public class ChatForward(
+    TelegramUser fromUser,
+    bool isForwardFromBot,
+    TelegramChat chat,
+    int? forwardFromMessageId,
+    string? forwardFromSignature,
+    string? forwardFromSenderName,
+    DateTime? forwardFromDate
+    )
 {
     /// <summary>
     /// Данные пользователя

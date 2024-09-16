@@ -138,7 +138,6 @@ public class TelegramChat(
     /// Returned only in <see cref="GetChatRequest"/>.
     /// </summary>
     /// public ChatUpdateMessage? PinnedMessage { get; } = pinnedMessage;
-
     /// <summary>
     /// Optional. Default chat member permissions, for groups and supergroups.
     /// Returned only in <see cref="GetChatRequest"/>.

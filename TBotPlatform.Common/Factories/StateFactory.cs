@@ -129,8 +129,8 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
         var result = await GetLastStateWithMenuOrMainAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
 
-        return result.IsNotNull() 
-            ? result 
+        return result.IsNotNull()
+            ? result
             : default;
     }
 
@@ -139,7 +139,7 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
         var state = stateFactoryDataCollection.FirstOrDefault(z => z.IsLockUserState);
 
         return state.IsNotNull()
-            ? Convert(state) 
+            ? Convert(state)
             : default;
     }
 

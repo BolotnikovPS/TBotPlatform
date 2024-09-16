@@ -17,11 +17,7 @@ public class StateHistory
     /// </summary>
     public bool IsInlineState { get; }
 
-    public StateHistory(
-        Type stateType,
-        Type menuStateType = null,
-        bool? isInlineState = null
-        )
+    public StateHistory(Type stateType, Type menuStateType = null, bool? isInlineState = null)
     {
         StateType = stateType;
         MenuStateType = menuStateType;

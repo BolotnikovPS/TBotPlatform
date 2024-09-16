@@ -22,11 +22,6 @@ internal class TelegramContextHostedService(
     ITelegramUpdateHandler telegramUpdateHandler
     ) : BackgroundService
 {
-    public override async Task StartAsync(CancellationToken cancellationToken)
-    {
-        await base.StartAsync(cancellationToken);
-    }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var result = await telegramContext.MakeRequestAsync(request => request.GetMeAsync(stoppingToken), stoppingToken);
@@ -74,12 +69,9 @@ internal class TelegramContextHostedService(
                         {
                             var data = update.CallbackQuery?.Data;
 
-                            if (data.IsNotNull())
+                            if (data.IsNotNull() && data!.TryParseJson<MarkupNextState>(out var newMarkupNextState))
                             {
-                                if (data!.TryParseJson<MarkupNextState>(out var newMarkupNextState))
-                                {
-                                    markupNextState = newMarkupNextState;
-                                }
+                                markupNextState = newMarkupNextState;
                             }
                         }
 

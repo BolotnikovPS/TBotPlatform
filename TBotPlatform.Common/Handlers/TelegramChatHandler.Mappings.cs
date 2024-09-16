@@ -209,14 +209,15 @@ internal partial class TelegramChatHandler
             _ => EChatMemberStatus.None,
         };
 
-        return new(status);
+
+        return new(status, CreateUser(chatMember.User));
     }
 
     private static TelegramChatLocation CreateChatLocation(ChatLocation location)
     {
         if (location.IsNull())
         {
-            return new(null, "");
+            return new(location: null, "");
         }
 
         return new(CreateLocation(location.Location), location.Address);

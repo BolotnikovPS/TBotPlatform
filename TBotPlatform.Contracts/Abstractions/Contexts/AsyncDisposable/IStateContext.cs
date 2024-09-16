@@ -1,32 +1,25 @@
 ﻿using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
+using TBotPlatform.Contracts.State;
 
 namespace TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 
 public interface IStateContext : IStateContextMinimal
 {
     /// <summary>
-    /// Признак необходимости отправки меню
+    /// Результат работы состояния
     /// </summary>
-    /// <returns></returns>
-    bool IsForceReplyLastMenu { get; }
+    StateResult StateResult { get; set; }
 
     /// <summary>
     /// Информация о сообщении из чата
     /// </summary>
-    /// <returns></returns>
     ChatUpdate ChatUpdate { get; }
 
     /// <summary>
     /// Информация о состоянии входящей кнопки inline меню
     /// </summary>
-    /// <returns></returns>
     MarkupNextState MarkupNextState { get; }
-
-    /// <summary>
-    /// Устанавливает необходимость отправки меню
-    /// </summary>
-    void SetNeedIsForceReplyLastMenu();
 
     /// <summary>
     /// Устанавливает необходимость зафиксировать состояние

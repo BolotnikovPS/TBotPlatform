@@ -21,7 +21,7 @@ internal partial class StateContext
     }
 
     public Task PinChatMessageAsync(int messageId, CancellationToken cancellationToken)
-        => PinChatMessageAsync(messageId, false, cancellationToken);
+        => PinChatMessageAsync(messageId, disableNotification: false, cancellationToken);
 
     public Task UnpinChatMessageAsync(int messageId, CancellationToken cancellationToken)
     {

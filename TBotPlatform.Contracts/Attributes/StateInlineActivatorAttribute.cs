@@ -1,3 +1,3 @@
 ﻿namespace TBotPlatform.Contracts.Attributes;
 
-public class StateInlineActivatorAttribute() : StateActivatorBaseAttribute(true, null);
+public class StateInlineActivatorAttribute() : StateActivatorBaseAttribute(isInlineState: true, menuType: null);

@@ -25,7 +25,7 @@ internal partial class StateContext
     }
 
     public Task<ChatResult> ForwardMessageAsync(long fromChatId, int messageId, CancellationToken cancellationToken)
-        => ForwardMessageAsync(fromChatId, messageId, false, cancellationToken);
+        => ForwardMessageAsync(fromChatId, messageId, disableNotification: false, cancellationToken);
 
     public async Task<int> CopyMessageAsync(
         long fromChatId,

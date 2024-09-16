@@ -10,7 +10,7 @@ namespace TBotPlatform.Contracts.Abstractions.Contexts;
 public interface ITelegramContext
 {
     /// <summary>
-    /// Получает OperationGuid лога текущих пулов запросов к telegram
+    /// Получает OperationGuid текущих пулов запросов к telegram
     /// </summary>
     /// <returns></returns>
     Guid GetCurrentOperation();
@@ -291,4 +291,45 @@ public interface ITelegramContext
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task UnpinAllChatMessages(long chatId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Подсчитывает число участников чата
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<int> GetChatMemberCountAsync(long chatId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получает информацию для пользователя по чату
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <param name="userId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<ChatMember> GetChatMemberAsync(long chatId, long userId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получает информацию о списке администраторов чата
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<ChatMember[]> GetChatAdministratorsAsync(long chatId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получает информацию о чате
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<Chat> GetChatAsync(long chatId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Покидает чат
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task LeaveChatAsync(long chatId, CancellationToken cancellationToken);
 }

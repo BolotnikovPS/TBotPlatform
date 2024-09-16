@@ -29,7 +29,7 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
 
     public Task MakeRequestAsync(Func<ITelegramBotClient, Task> request, CancellationToken cancellationToken)
         => Enqueue(() => request.Invoke(_botClient), cancellationToken);
-    
+
     public Task DeleteMessageAsync(long chatId, int messageId, CancellationToken cancellationToken)
     {
         var logMessageData = new TelegramContextLogMessageData

@@ -30,7 +30,7 @@ internal partial class TelegramContext
             ChatId = chatId,
             MessageBody = logMessageData,
         };
-        
+
         var task = _botClient.EditMessageTextAsync(
             chatId,
             messageId,
@@ -44,7 +44,7 @@ internal partial class TelegramContext
     }
 
     public Task<Message> EditMessageTextAsync(long chatId, int messageId, string text, CancellationToken cancellationToken)
-        => EditMessageTextAsync(chatId, messageId, text, null, cancellationToken);
+        => EditMessageTextAsync(chatId, messageId, text, replyMarkup: null, cancellationToken);
 
     public Task<Message> EditMessageCaptionAsync(long chatId, int messageId, string caption, InlineKeyboardMarkup replyMarkup, CancellationToken cancellationToken)
     {
@@ -76,7 +76,7 @@ internal partial class TelegramContext
     }
 
     public Task<Message> EditMessageCaptionAsync(long chatId, int messageId, string caption, CancellationToken cancellationToken)
-        => EditMessageCaptionAsync(chatId, messageId, caption, null, cancellationToken);
+        => EditMessageCaptionAsync(chatId, messageId, caption, replyMarkup: null, cancellationToken);
 
     public Task<Message> EditMessageReplyMarkupAsync(
         long chatId,

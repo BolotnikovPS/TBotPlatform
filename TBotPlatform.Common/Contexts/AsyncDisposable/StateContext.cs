@@ -9,20 +9,27 @@ using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.Exceptions;
+using TBotPlatform.Contracts.State;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
-internal partial class StateContext(StateHistory stateHistory, IStateBind stateBind, ITelegramMappingHandler telegramMapping, ITelegramContext botClient, long chatId) : IStateContext
+internal partial class StateContext(
+    StateHistory stateHistory,
+    IStateBind stateBind,
+    ITelegramMappingHandler telegramMapping,
+    ITelegramContext botClient,
+    long chatId
+    ) : IStateContext
 {
+    public StateResult StateResult { get; set; }
     public MarkupNextState MarkupNextState { get; private set; }
     public ChatUpdate ChatUpdate { get; private set; }
-    public bool IsForceReplyLastMenu { get; private set; }
 
     private const string ChooseAction = "😊 Выберите действие";
-
+    
     public void CreateStateContext(ChatUpdate chatUpdate, MarkupNextState markupNextState)
     {
         if (chatId.IsDefault())
@@ -30,13 +37,14 @@ internal partial class StateContext(StateHistory stateHistory, IStateBind stateB
             throw new ChatIdArgException();
         }
 
-        ChatUpdate = chatUpdate;
+        StateResult = new();
         MarkupNextState = markupNextState;
+        ChatUpdate = chatUpdate;
     }
 
     public Guid GetCurrentOperation() => botClient.GetCurrentOperation();
 
-    public void SetNeedIsForceReplyLastMenu() => IsForceReplyLastMenu = true;
+    public ITelegramContext GetTelegramContext() => botClient;
 
     public Task BindStateAsync(CancellationToken cancellationToken)
         => stateBind.BindStateAsync(chatId, stateHistory, cancellationToken);
@@ -66,7 +74,7 @@ internal partial class StateContext(StateHistory stateHistory, IStateBind stateB
     }
 
     public Task<ChatResult> SendDocumentAsync(byte[] fileBytes, string fileName, CancellationToken cancellationToken)
-        => SendDocumentAsync(fileBytes, fileName, false, cancellationToken);
+        => SendDocumentAsync(fileBytes, fileName, disableNotification: false, cancellationToken);
 
     public Task SendChatActionAsync(ChatAction chatAction, CancellationToken cancellationToken)
     {
@@ -96,7 +104,7 @@ internal partial class StateContext(StateHistory stateHistory, IStateBind stateB
             chatId,
             ChooseAction,
             newMarkup,
-            false,
+            disableNotification: false,
             cancellationToken
             );
 
@@ -183,6 +191,6 @@ internal partial class StateContext(StateHistory stateHistory, IStateBind stateB
     {
         ChatUpdate = null;
         MarkupNextState = null;
-        IsForceReplyLastMenu = false;
+        StateResult = null;
     }
 }

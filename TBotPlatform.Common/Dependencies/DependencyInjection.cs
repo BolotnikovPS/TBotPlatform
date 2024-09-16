@@ -74,7 +74,7 @@ public static partial class DependencyInjection
                       && res.Headers.RetryAfter.IsNotNull()
                )
           .WaitAndRetryAsync(
-               3,
+               retryCount: 3,
                (_, response, _) => response.Result.Headers.RetryAfter?.Delta ?? TimeSpan.FromSeconds(1),
                (_, _, _, _) => Task.CompletedTask
                );

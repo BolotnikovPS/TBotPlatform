@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Handlers;
+using TBotPlatform.Contracts.Bots.Chats;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
@@ -56,10 +57,10 @@ internal partial class TelegramChatHandler(ILogger<TelegramChatHandler> logger, 
     {
         if (update.IsNull())
         {
-            return new(EChatUpdateType.None, new(EChatMessageType.None, null!, 0, null, null, null, null));
+            return new(EChatUpdateType.None, new(EChatMessageType.None, null!, messageId: 0, text: null, replyToMessageOrNull: null, photoData: null, documentData: null));
         }
 
-        var message = new ChatMessage(EChatMessageType.None, null!, 0, null, null, null, null);
+        var message = new ChatMessage(EChatMessageType.None, null!, messageId: 0, text: null, replyToMessageOrNull: null, photoData: null, documentData: null);
         ChatMessage editMessageOrNull = null;
         ChatMessage channelPostOrNull = null;
         ChatMessage editChannelPostOrNull = null;
@@ -354,4 +355,8 @@ internal partial class TelegramChatHandler(ILogger<TelegramChatHandler> logger, 
             CreateInlineMarkupList(message.ReplyMarkup),
             CreateChatMessageEntity(message.Entities)
             );
+
+    public ChatMemberData ChatMemberToData(ChatMember chatMember) => CreateChatMessageMember(chatMember);
+
+    public TelegramChat ChatToTelegramChat(Chat chat) => CreateChat(chat);
 }

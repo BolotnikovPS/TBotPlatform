@@ -15,6 +15,7 @@ Project targets .NET 8 at minimum.
   <br/>- <b>IStateFactory</b> - помошник, помогает определить состояние по атрибуту состояния
   <br/>- <b>IStateBind</b> - помошник, помогает работать с зафиксированными состояниями
   <br/>- <b>IStateContextFactory</b> - контекст обработка состояния, вызовы методов из IState, обновление основого (нижнего) меню пользователя
+  <br/>- <b>IMenuButtonFactory</b> - Обновлениие основных кнопок меню
   <br/>- <b>IDistributedLockFactory</b> - Распределенная блокировка
   <br/>- <b>IStateContext</b> - конекст работы с методами telegram. Набор методов, отправка/редактирование сообщений, документов, основного (нижнего) меню, кнопок сообщений, фото и т.д., со всеми необходимыми провеками и валидациями
   <br/>- <b>IStateContextMinimal</b> - тоже что и <b>IStateContext</b>, но для работы без конкретного состояния в <b>IStateContextFactory</b>
@@ -29,3 +30,11 @@ Project targets .NET 8 at minimum.
   - <b>StateActivatorBaseAttribute</b> - базовый атрибут включающий все переменные для определения состояния
   <br/>- <b>StateActivatorAttribute</b> - атрибут для состояний определяющих основое (нижнее) меню
   <br/>- <b>StateInlineActivatorAttribute</b> - атрибут для состояний определяющих кнопки в сообщениях
+
+<h2>DI</h2>
+  - <b>AddTelegramContext</b> - зависимости для работы с telegram. Включает инфтерфейсы: <br/>ITelegramContextLog</b>, <br/>ITelegramContext</b>, <br/>ITelegramUpdateHandler</b>, <br/>ITelegramMappingHandler</b>
+  <br/>- <b>AddTelegramClientHostedService</b> - включает все зависимости <b>AddTelegramContext</b> и добавляет HostedService для обработки обновлений (не webhook)
+  <br/>- <b>AddReceivingHandler</b> - добавляет зависимость для интерфейса <b>IStartReceivingHandler</b>
+  <br/>- <b>AddCache</b> - добавляение кеша для работы функционала состоний. Базовый кеш - Redis.
+  <br/>- <b>AddFactories</b> - добавляение интерфейса фабрик: <b>IStateFactory</b>, <b>IStateBind</b>, <b>IStateContextFactory</b>, <b>IMenuButtonFactory</b>
+  <br/>- <b>AddStates</b> - добавляет все доступные состояния по интерфейсу <b>IState</b>

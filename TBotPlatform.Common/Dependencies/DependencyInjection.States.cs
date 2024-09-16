@@ -20,7 +20,7 @@ public static partial class DependencyInjection
 
         var potentialStates = executingAssembly
                              .GetTypes()
-                             .Where(z => z.IsDefined(typeof(StateActivatorBaseAttribute), false))
+                             .Where(z => z.IsDefined(typeof(StateActivatorBaseAttribute), inherit: false))
                              .OrderBy(z => z.FullName)
                              .ToList();
 
@@ -43,11 +43,9 @@ public static partial class DependencyInjection
                 throw new($"Класс {stateType.Name} содержит атрибут {nameof(StateActivatorBaseAttribute)} но не наследуется от {stateInterfaceName}");
             }
 
-            var attr = stateType.GetCustomAttributes(typeof(StateActivatorBaseAttribute), true).FirstOrDefault() as StateActivatorBaseAttribute;
+            var attr = stateType.GetCustomAttributes(typeof(StateActivatorBaseAttribute), inherit: true).FirstOrDefault() as StateActivatorBaseAttribute;
 
-            if (!attr!.OnlyForBot.In("None", botType)
-                && attr.OnlyForBot.CheckAny()
-               )
+            if (!attr!.OnlyForBot.In("None", botType) && attr.OnlyForBot.CheckAny())
             {
                 continue;
             }
@@ -88,26 +86,24 @@ public static partial class DependencyInjection
                 }
             }
 
-            if (attr.MenuType.IsNotNull()
-                && attr.IsInlineState
-               )
+            if (attr.MenuType.IsNotNull() && attr.IsInlineState)
             {
                 throw new(
                     $"Класс {stateType.Name} не должен определять атрибут {nameof(StateActivatorBaseAttribute)} в котором единовременно определены {nameof(attr.IsInlineState)} = true и {nameof(attr.MenuType)} != null");
             }
 
-            states.Add(
-                new(
-                    stateType.Name,
-                    attr.MenuType?.Name,
-                    attr.IsInlineState,
-                    attr.IsLockUserState,
-                    attr.IsRegistrationState,
-                    attr.ButtonsTypes,
-                    attr.TextsTypes,
-                    attr.CommandsTypes
-                    )
+            var newState = new StateFactoryData(
+                stateType.Name,
+                attr.MenuType?.Name,
+                attr.IsInlineState,
+                attr.IsLockUserState,
+                attr.IsRegistrationState,
+                attr.ButtonsTypes,
+                attr.TextsTypes,
+                attr.CommandsTypes
                 );
+
+            states.Add(newState);
 
             services.AddScoped(stateType);
 

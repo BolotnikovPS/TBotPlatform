@@ -17,5 +17,5 @@ public abstract class UserBase
     public abstract bool IsAdmin();
 
     public override string ToString()
-        => $"{(UserName.IsNull() ? $"{FirstName}{LastName.Insert(0, " ")}" : $"@{UserName}")} ({TgUserId})";
+        => $"{(UserName.IsNull() ? $"{FirstName}{LastName.Insert(startIndex: 0, " ")}" : $"@{UserName}")} ({TgUserId})";
 }

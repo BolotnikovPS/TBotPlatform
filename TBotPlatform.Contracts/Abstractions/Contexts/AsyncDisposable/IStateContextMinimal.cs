@@ -1,5 +1,7 @@
 ﻿using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
+using TBotPlatform.Contracts.Bots.Chats;
+using TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
 using TBotPlatform.Contracts.Bots.Markups;
 using Telegram.Bot.Types.Enums;
@@ -10,10 +12,16 @@ namespace TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 public interface IStateContextMinimal : IAsyncDisposable
 {
     /// <summary>
-    /// Получает OperationGuid лога текущих пулов запросов к telegram
+    /// Получает OperationGuid текущих пулов запросов к telegram
     /// </summary>
     /// <returns></returns>
     Guid GetCurrentOperation();
+
+    /// <summary>
+    /// Получает контекст для работы с telegram напрямую
+    /// </summary>
+    /// <returns></returns>
+    ITelegramContext GetTelegramContext();
 
     /// <summary>
     /// Отправляет документы в чат
@@ -273,4 +281,45 @@ public interface IStateContextMinimal : IAsyncDisposable
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task UnpinAllChatMessages(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Подсчитывает число участников чата
+    /// </summary>
+    /// <param name="chatIdToCheck"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<int> GetChatMemberCountAsync(long chatIdToCheck, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получает информацию для пользователя по чату
+    /// </summary>
+    /// <param name="chatIdToCheck"></param>
+    /// <param name="userIdToCheck"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<ChatMemberData> GetChatMemberAsync(long chatIdToCheck, long userIdToCheck, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получает информацию о списке администраторов чата
+    /// </summary>
+    /// <param name="chatIdToCheck"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<List<ChatMemberData>> GetChatAdministratorsAsync(long chatIdToCheck, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получает информацию о чате
+    /// </summary>
+    /// <param name="chatIdToCheck"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<TelegramChat> GetChatAsync(long chatIdToCheck, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Покидает чат
+    /// </summary>
+    /// <param name="chatIdToLeave"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task LeaveChatAsync(long chatIdToLeave, CancellationToken cancellationToken);
 }

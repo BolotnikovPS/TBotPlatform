@@ -58,6 +58,6 @@ public static partial class DependencyInjection
 
         services
            .AddHealthChecks()
-           .AddRedis(redisConnectionString, null, null, tags);
+           .AddRedis(redisConnectionString, name: null, failureStatus: null, tags);
     }
 }

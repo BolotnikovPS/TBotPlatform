@@ -1,7 +1,9 @@
-﻿using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
+﻿#nullable enable
+using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.Users;
+using TBotPlatform.Contracts.State;
 using Telegram.Bot.Types;
 
 namespace TBotPlatform.Contracts.Abstractions.Factories;
@@ -30,7 +32,7 @@ public interface IStateContextFactory
     /// <param name="update">Сообщение с telegram</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
+    Task<IStateContextMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
         where T : UserBase;
 
     /// <summary>
@@ -42,7 +44,7 @@ public interface IStateContextFactory
     /// <param name="chatUpdate">Форматированное сообщение с telegram</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IStateContext> CreateStateContextAsync<T>(T user, StateHistory stateHistory, ChatUpdate chatUpdate, CancellationToken cancellationToken)
+    Task<IStateContextMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, ChatUpdate chatUpdate, CancellationToken cancellationToken)
         where T : UserBase;
 
     /// <summary>
@@ -55,11 +57,11 @@ public interface IStateContextFactory
     /// <param name="markupNextState">Данные с кнопки inline</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<IStateContext> CreateStateContextAsync<T>(
+    public Task<IStateContextMinimal> CreateStateContextAsync<T>(
         T user,
         StateHistory stateHistory,
         ChatUpdate chatUpdate,
-        MarkupNextState markupNextState,
+        MarkupNextState? markupNextState,
         CancellationToken cancellationToken
         )
         where T : UserBase;
@@ -73,24 +75,19 @@ public interface IStateContextFactory
     /// <param name="markupNextState">Данные с кнопки inline</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IStateContext> CreateStateContextAsync<T>(
+    Task<IStateContextMinimal> CreateStateContextAsync<T>(
         T user,
         StateHistory stateHistory,
         Update update,
-        MarkupNextState markupNextState,
+        MarkupNextState? markupNextState,
         CancellationToken cancellationToken
         )
         where T : UserBase;
 
     /// <summary>
-    /// Получает кнопки состояния по вызываемому состоянию
+    /// Получает результат выполнения состояния
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="user">Пользователь с которым будем взаимодействовать</param>
     /// <param name="stateContext">Контекст состояния</param>
-    /// <param name="stateHistory">Вызываемое состояние</param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task UpdateMarkupByStateAsync<T>(T user, IStateContextMinimal stateContext, StateHistory stateHistory, CancellationToken cancellationToken)
-        where T : UserBase;
+    StateResult? GetStateResult(IStateContextMinimal stateContext);
 }

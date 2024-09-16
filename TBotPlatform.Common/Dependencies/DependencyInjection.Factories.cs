@@ -25,7 +25,8 @@ public static partial class DependencyInjection
            .AddScoped<StateFactory>()
            .AddScoped<IStateFactory>(src => src.GetRequiredService<StateFactory>())
            .AddScoped<IStateBind>(src => src.GetRequiredService<StateFactory>())
-           .AddScoped<IStateContextFactory, StateContextFactory>();
+           .AddScoped<IStateContextFactory, StateContextFactory>()
+           .AddScoped<IMenuButtonFactory, MenuButtonFactory>();
 
         return services;
     }

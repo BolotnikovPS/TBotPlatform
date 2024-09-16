@@ -32,7 +32,7 @@ internal partial class StateContext
     }
 
     public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileData photoData, CancellationToken cancellationToken)
-        => SendOrUpdateTextMessageAsync(text, inlineMarkupList, photoData, false, cancellationToken);
+        => SendOrUpdateTextMessageAsync(text, inlineMarkupList, photoData, disableNotification: false, cancellationToken);
 
     public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, bool disableNotification, CancellationToken cancellationToken)
     {
@@ -51,11 +51,11 @@ internal partial class StateContext
                 });
         }
 
-        return SendOrUpdateTextMessageAsync(text, inlineKeyboard, null, disableNotification, cancellationToken);
+        return SendOrUpdateTextMessageAsync(text, inlineKeyboard, photoData: null, disableNotification, cancellationToken);
     }
 
     public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, CancellationToken cancellationToken)
-        => SendOrUpdateTextMessageAsync(text, inlineMarkupList, false, cancellationToken);
+        => SendOrUpdateTextMessageAsync(text, inlineMarkupList, disableNotification: false, cancellationToken);
 
     public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, bool disableNotification, CancellationToken cancellationToken)
     {
@@ -66,11 +66,11 @@ internal partial class StateContext
             inlineKeyboard = Map(inlineMarkupMassiveList);
         }
 
-        return SendOrUpdateTextMessageAsync(text, inlineKeyboard, null, disableNotification, cancellationToken);
+        return SendOrUpdateTextMessageAsync(text, inlineKeyboard, photoData: null, disableNotification, cancellationToken);
     }
 
     public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, CancellationToken cancellationToken)
-        => SendOrUpdateTextMessageAsync(text, inlineMarkupMassiveList, false, cancellationToken);
+        => SendOrUpdateTextMessageAsync(text, inlineMarkupMassiveList, disableNotification: false, cancellationToken);
 
     public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)
         => SendOrUpdateTextMessageAsync(
@@ -84,7 +84,7 @@ internal partial class StateContext
         => SendOrUpdateTextMessageAsync(
             text,
             inlineMarkupMassiveList: null,
-            false,
+            disableNotification: false,
             cancellationToken
             );
 
@@ -154,7 +154,7 @@ internal partial class StateContext
         var result = ChatUpdate.CallbackQueryOrNull!.MessageWithImage
             ? await botClient.EditMessageCaptionAsync(chatId, ChatUpdate.CallbackQueryOrNull.MessageId, text, inlineKeyboard, cancellationToken)
             : await botClient.EditMessageTextAsync(chatId, ChatUpdate.CallbackQueryOrNull.MessageId, text, inlineKeyboard, cancellationToken);
-        
+
         return telegramMapping.MessageToResult(result);
     }
 }

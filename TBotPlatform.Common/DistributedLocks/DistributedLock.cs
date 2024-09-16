@@ -44,7 +44,7 @@ internal class DistributedLock(ICacheService cacheService, string key) : IDistri
         {
             return false;
         }
-        
+
         return await cacheService.SetValueAsync(CreateCacheValue(blockingTimeOut), cancellationToken);
     }
 

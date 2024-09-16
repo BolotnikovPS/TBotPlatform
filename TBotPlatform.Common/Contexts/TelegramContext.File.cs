@@ -40,7 +40,7 @@ internal partial class TelegramContext
     }
 
     public Task<Message> SendDocumentAsync(long chatId, InputFile document, bool disableNotification, CancellationToken cancellationToken)
-        => SendDocumentAsync(chatId, document, null, disableNotification, cancellationToken);
+        => SendDocumentAsync(chatId, document, replyMarkup: null, disableNotification, cancellationToken);
 
     public Task<Message> SendPhotoAsync(
         long chatId,
@@ -82,7 +82,7 @@ internal partial class TelegramContext
     }
 
     public Task<Message> SendPhotoAsync(long chatId, InputFile photo, bool disableNotification, CancellationToken cancellationToken)
-        => SendPhotoAsync(chatId, photo, null, null, disableNotification, cancellationToken);
+        => SendPhotoAsync(chatId, photo, caption: null, replyMarkup: null, disableNotification, cancellationToken);
 
     public Task DownloadFileAsync(long chatId, string filePath, Stream destination, CancellationToken cancellationToken)
     {
