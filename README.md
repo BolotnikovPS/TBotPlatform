@@ -32,7 +32,7 @@ Project targets .NET 8 at minimum.
   <br/>- <b>StateInlineActivatorAttribute</b> - атрибут для состояний определяющих кнопки в сообщениях
 
 <h2>DI</h2>
-  - <b>AddTelegramContext</b> - зависимости для работы с telegram. Включает инфтерфейсы: <br/>ITelegramContextLog</b>, <br/>ITelegramContext</b>, <br/>ITelegramUpdateHandler</b>, <br/>ITelegramMappingHandler</b>
+  - <b>AddTelegramContext</b> - зависимости для работы с telegram. Включает инфтерфейсы: <b/>ITelegramContextLog</b>, <b/>ITelegramContext</b>, <b/>ITelegramUpdateHandler</b>, <b/>ITelegramMappingHandler</b>
   <br/>- <b>AddTelegramClientHostedService</b> - включает все зависимости <b>AddTelegramContext</b> и добавляет HostedService для обработки обновлений (не webhook)
   <br/>- <b>AddReceivingHandler</b> - добавляет зависимость для интерфейса <b>IStartReceivingHandler</b>
   <br/>- <b>AddCache</b> - добавляение кеша для работы функционала состоний. Базовый кеш - Redis.
