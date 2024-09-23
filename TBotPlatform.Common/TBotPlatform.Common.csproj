@@ -3,24 +3,15 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-	<SelfContained>true</SelfContained>
-	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	<SelfContained>True</SelfContained>
+	<IncludeNativeLibrariesForSelfExtract>True</IncludeNativeLibrariesForSelfExtract>
+	<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	<Title>TBotPlatform</Title>
 	<RepositoryUrl>https://github.com/BolotnikovPS/TBotPlatform</RepositoryUrl>
 	<Description>C# библиотека для облегчения создания бота Telegram</Description>
-	<Version>1.0.2</Version>
-	<IncludeSymbols>False</IncludeSymbols>
-	<Product>TBotPlatform</Product>
+	<Version>1.0.4</Version>
+	<IncludeSymbols>True</IncludeSymbols>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="..\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
 
 	<ItemGroup>
 		<Compile Update="**\StateContext.*.cs">
