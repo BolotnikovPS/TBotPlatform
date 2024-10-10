@@ -19,7 +19,7 @@ internal partial class StateContext
             throw new MessageIdArgException();
         }
 
-        var result = await botClient.ForwardMessageAsync(chatId, fromChatId, messageId, disableNotification, cancellationToken);
+        var result = await telegramContext.ForwardMessageAsync(chatId, fromChatId, messageId, disableNotification, cancellationToken);
 
         return telegramMapping.MessageToResult(result);
     }
@@ -53,7 +53,7 @@ internal partial class StateContext
             throw new MessageIdArgException();
         }
 
-        var result = await botClient.CopyMessageAsync(
+        var result = await telegramContext.CopyMessageAsync(
             chatId,
             fromChatId,
             messageId,

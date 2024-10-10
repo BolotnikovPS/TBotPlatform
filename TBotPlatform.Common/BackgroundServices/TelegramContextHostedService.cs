@@ -31,7 +31,7 @@ internal class TelegramContextHostedService(
         var offset = 0;
 
         var updateType = settings.UpdateType.IsNotNull()
-            ? settings.UpdateType.Select(MapChatUpdate)
+            ? settings?.UpdateType?.Select(MapChatUpdate)
             : null;
 
         while (!stoppingToken.IsCancellationRequested)

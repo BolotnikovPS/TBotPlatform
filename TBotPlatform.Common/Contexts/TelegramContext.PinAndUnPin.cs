@@ -46,12 +46,12 @@ internal partial class TelegramContext
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
-    public Task UnpinAllChatMessages(long chatId, CancellationToken cancellationToken)
+    public Task UnpinAllChatMessagesAsync(long chatId, CancellationToken cancellationToken)
     {
         var log = new TelegramContextLogMessage
         {
             OperationGuid = _operationGuid,
-            OperationType = nameof(UnpinAllChatMessages),
+            OperationType = nameof(UnpinAllChatMessagesAsync),
             ChatId = chatId,
             MessageBody = "",
         };

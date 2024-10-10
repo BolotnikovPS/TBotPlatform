@@ -7,46 +7,39 @@ namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class StateContext
 {
-    private static ReplyKeyboardMarkup Map(ButtonsRuleMassiveList cakes)
+    private static ReplyKeyboardMarkup Map(MainButtonMassiveList cakes)
         => GenerateButtons(cakes);
 
     private static InlineKeyboardButton[][] Map(InlineMarkupMassiveList cakes)
-        => GenerateButtons(cakes);
+        => cakes.SelectMany(x => GenerateButtons(x.InlineMarkups, x.ButtonsPerRow)).ToArray();
 
-    private static ReplyKeyboardMarkup GenerateButtons(ButtonsRuleMassiveList cakes)
+    private static ReplyKeyboardMarkup GenerateButtons(MainButtonMassiveList cakes)
     {
-        var result = cakes.Select(x => GenerateButtons(x.ButtonsRules)).ToArray();
+        var result = cakes.Select(x => GenerateButtons(x.MainButtons)).ToArray();
 
         return new(result)
         {
-            IsPersistent = true,
-            ResizeKeyboard = true,
+            IsPersistent = cakes.ButtonsRule?.IsPersistent,
+            ResizeKeyboard = cakes.ButtonsRule?.ResizeKeyboard,
+            InputFieldPlaceholder = cakes.ButtonsRule?.InputFieldPlaceholder,
+            OneTimeKeyboard = cakes.ButtonsRule?.OneTimeKeyboard,
+            Selective = cakes.ButtonsRule?.Selective,
         };
     }
 
-    private static IEnumerable<KeyboardButton> GenerateButtons(ButtonsRuleList cakes)
+    private static IEnumerable<KeyboardButton> GenerateButtons(MainButtonList cakes)
     {
         return cakes
               .Select(q => new KeyboardButton(q.ButtonName))
               .ToArray();
     }
 
-    private static InlineKeyboardButton[][] GenerateButtons(InlineMarkupMassiveList cakes)
-    {
-        return cakes.SelectMany(x => GenerateButtons(x.InlineMarkups, x.ButtonsPerRow)).ToArray();
-    }
-
     private static IEnumerable<InlineKeyboardButton[]> GenerateButtons(InlineMarkupList cakes, int buttonsPerRow = 1)
     {
-        if (buttonsPerRow <= 0)
-        {
-            buttonsPerRow = 1;
-        }
-
         return cakes
               .Select(x => x.Format())
               .Where(z => z.IsNotNull())
-              .Chunk(buttonsPerRow)
+              .Chunk(buttonsPerRow <= 0 ? 1 : buttonsPerRow)
               .Select(c => c.ToArray())
               .ToList();
     }

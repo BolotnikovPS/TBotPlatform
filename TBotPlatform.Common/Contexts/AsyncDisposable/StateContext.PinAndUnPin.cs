@@ -17,7 +17,7 @@ internal partial class StateContext
             throw new MessageIdArgException();
         }
 
-        return botClient.PinChatMessageAsync(chatId, messageId, disableNotification, cancellationToken);
+        return telegramContext.PinChatMessageAsync(chatId, messageId, disableNotification, cancellationToken);
     }
 
     public Task PinChatMessageAsync(int messageId, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ internal partial class StateContext
             throw new MessageIdArgException();
         }
 
-        return botClient.UnpinChatMessageAsync(chatId, messageId, cancellationToken);
+        return telegramContext.UnpinChatMessageAsync(chatId, messageId, cancellationToken);
     }
 
     public Task UnpinAllChatMessages(CancellationToken cancellationToken)
@@ -45,6 +45,6 @@ internal partial class StateContext
             throw new ChatIdArgException();
         }
 
-        return botClient.UnpinAllChatMessages(chatId, cancellationToken);
+        return telegramContext.UnpinAllChatMessagesAsync(chatId, cancellationToken);
     }
 }

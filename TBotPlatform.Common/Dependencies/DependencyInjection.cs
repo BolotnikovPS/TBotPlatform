@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿#nullable enable
+using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Extensions.Http;
 using System.Net;
@@ -17,12 +18,12 @@ public static partial class DependencyInjection
     public static IServiceCollection AddTelegramContext<TLog>(this IServiceCollection services, TelegramSettings telegramSettings)
         where TLog : ITelegramContextLog
     {
-        if (telegramSettings.IsNull()
-            || telegramSettings.Token.IsNull()
-           )
+        if (telegramSettings.IsNull() || telegramSettings.Token.IsNull())
         {
             throw new ArgumentNullException(nameof(TelegramSettings.Token));
         }
+
+        var policy = GetRetryPolicy(telegramSettings.HttpPolicy);
 
         services
            .AddScoped<LoggingHttpHandler>()
@@ -30,7 +31,7 @@ public static partial class DependencyInjection
            .AddScoped(typeof(ITelegramContextLog), typeof(TLog))
            .AddHttpClient<ITelegramContext, TelegramContext>()
            .AddHttpMessageHandler<LoggingHttpHandler>()
-           .AddPolicyHandler(GetRetryPolicy());
+           .AddPolicyHandler(policy);
 
         services
            .AddScoped<TelegramChatHandler>()
@@ -65,17 +66,19 @@ public static partial class DependencyInjection
         return services;
     }
 
-    private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+    private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(TelegramSettingsHttpPolicy httpPolicy)
         => HttpPolicyExtensions
           .HandleTransientHttpError()
           .OrResult(
-               res => res.StatusCode == HttpStatusCode.TooManyRequests
-                      && res.Headers.IsNotNull()
-                      && res.Headers.RetryAfter.IsNotNull()
+               res =>
+                   res.Headers.IsNotNull()
+                   && httpPolicy.BadStatuses.IsNull()
+                       ? res.StatusCode.NotIn(HttpStatusCode.OK, HttpStatusCode.NoContent)
+                       : ((int)res.StatusCode).In(httpPolicy.BadStatuses)
                )
           .WaitAndRetryAsync(
-               retryCount: 3,
-               (_, response, _) => response.Result.Headers.RetryAfter?.Delta ?? TimeSpan.FromSeconds(1),
+               httpPolicy.RetryCount,
+               (_, response, _) => response?.Result?.Headers.RetryAfter?.Delta ?? TimeSpan.FromMilliseconds(httpPolicy.RetryMilliSecondInterval),
                (_, _, _, _) => Task.CompletedTask
                );
 }

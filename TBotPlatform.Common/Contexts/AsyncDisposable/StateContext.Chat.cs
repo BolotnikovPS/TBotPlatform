@@ -14,7 +14,7 @@ internal partial class StateContext
             throw new ChatIdArgException();
         }
 
-        return botClient.GetChatMemberCountAsync(chatIdToCheck, cancellationToken);
+        return telegramContext.GetChatMemberCountAsync(chatIdToCheck, cancellationToken);
     }
 
     public async Task<ChatMemberData> GetChatMemberAsync(long chatIdToCheck, long userIdToCheck, CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ internal partial class StateContext
             throw new ChatIdArgException();
         }
 
-        var result = await botClient.GetChatMemberAsync(chatIdToCheck, userIdToCheck, cancellationToken);
+        var result = await telegramContext.GetChatMemberAsync(chatIdToCheck, userIdToCheck, cancellationToken);
 
         return telegramMapping.ChatMemberToData(result);
     }
@@ -36,7 +36,7 @@ internal partial class StateContext
             throw new ChatIdArgException();
         }
 
-        var result = await botClient.GetChatAdministratorsAsync(chatIdToCheck, cancellationToken);
+        var result = await telegramContext.GetChatAdministratorsAsync(chatIdToCheck, cancellationToken);
 
         return result.CheckAny() ? result.Select(telegramMapping.ChatMemberToData).ToList() : default;
     }
@@ -48,7 +48,7 @@ internal partial class StateContext
             throw new ChatIdArgException();
         }
 
-        var result = await botClient.GetChatAsync(chatIdToCheck, cancellationToken);
+        var result = await telegramContext.GetChatAsync(chatIdToCheck, cancellationToken);
 
         return telegramMapping.ChatToTelegramChat(result);
     }
@@ -60,6 +60,6 @@ internal partial class StateContext
             throw new ChatIdArgException();
         }
 
-        return botClient.LeaveChatAsync(chatId, cancellationToken);
+        return telegramContext.LeaveChatAsync(chatId, cancellationToken);
     }
 }

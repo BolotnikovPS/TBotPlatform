@@ -2,6 +2,7 @@
 using TBotPlatform.Contracts.Bots.Chats;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
 using TBotPlatform.Contracts.Bots.ChatUpdate.Enums;
+using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.Bots.Locations;
 using TBotPlatform.Contracts.Bots.Markups;
 
@@ -11,6 +12,7 @@ public class ChatMessage(
     EChatMessageType type,
     TelegramChat chat,
     int messageId,
+    DateTime date,
     string? text,
     ChatReplyToMessage? replyToMessageOrNull,
     FileData? photoData,
@@ -36,9 +38,15 @@ public class ChatMessage(
     public int MessageId { get; } = messageId;
 
     /// <summary>
+    /// Дата, когда сообщение было отправлено
+    /// </summary>
+    public DateTime Date { get; } = date;
+
+    /// <summary>
     /// Сообщение от пользователя
     /// </summary>
     public string Text { get; } = text ?? "";
+
     /// <summary>
     /// Фото присланные от пользователя в ответ на сообщение
     /// </summary>

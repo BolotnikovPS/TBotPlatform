@@ -1,8 +1,8 @@
-﻿using TBotPlatform.Contracts.Bots;
-using TBotPlatform.Contracts.Bots.Buttons;
+﻿using TBotPlatform.Contracts.Bots.Buttons;
 using TBotPlatform.Contracts.Bots.Chats;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
+using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.Bots.Markups;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -26,21 +26,36 @@ public interface IStateContextMinimal : IAsyncDisposable
     /// <summary>
     /// Отправляет документы в чат
     /// </summary>
-    /// <param name="fileBytes">Файл документа</param>
-    /// <param name="fileName">Название файла</param>
+    /// <param name="documentData">Файл документа</param>
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendDocumentAsync(byte[] fileBytes, string fileName, bool disableNotification, CancellationToken cancellationToken);
+    Task<ChatResult> SendDocumentAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет документы в чат
     /// </summary>
-    /// <param name="fileBytes">Файл документа</param>
-    /// <param name="fileName">Название файла</param>
+    /// <param name="documentData">Файл документа</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendDocumentAsync(byte[] fileBytes, string fileName, CancellationToken cancellationToken);
+    Task<ChatResult> SendDocumentAsync(FileDataBase documentData, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отправляет фото в чат
+    /// </summary>
+    /// <param name="documentData">Файл документа</param>
+    /// <param name="disableNotification"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<ChatResult> SendPhotoAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отправляет фото в чат
+    /// </summary>
+    /// <param name="documentData">Файл документа</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<ChatResult> SendPhotoAsync(FileDataBase documentData, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
@@ -51,7 +66,7 @@ public interface IStateContextMinimal : IAsyncDisposable
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileData photoData, bool disableNotification, CancellationToken cancellationToken);
+    Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileDataBase photoData, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
@@ -61,7 +76,7 @@ public interface IStateContextMinimal : IAsyncDisposable
     /// <param name="photoData">Файл изображения</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileData photoData, CancellationToken cancellationToken);
+    Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileDataBase photoData, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
@@ -178,12 +193,29 @@ public interface IStateContextMinimal : IAsyncDisposable
     Task SendChatActionAsync(ChatAction chatAction, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Обновляет кнопки в чате
+    /// Удаляет основные кнопки в чате
+    /// </summary>
+    /// <param name="text">Текст сообщения</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<ChatResult> RemoveMarkupAsync(string text, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Обновляет основные кнопки в чате
     /// </summary>
     /// <param name="replyMarkup">Кнопки</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> UpdateMarkupAsync(ButtonsRuleMassiveList replyMarkup, CancellationToken cancellationToken);
+    Task<ChatResult> UpdateMarkupAsync(MainButtonMassiveList replyMarkup, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Обновляет основные кнопки в чате
+    /// </summary>
+    /// <param name="replyMarkup">Кнопки</param>
+    /// <param name="text">Текст сообщения</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<ChatResult> UpdateMarkupAsync(MainButtonMassiveList replyMarkup, string text, CancellationToken cancellationToken);
 
     /// <summary>
     /// Обновляет сообщение и удаляет кнопки с заменой текста

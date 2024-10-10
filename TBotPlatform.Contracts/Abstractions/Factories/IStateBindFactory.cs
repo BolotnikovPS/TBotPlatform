@@ -1,8 +1,8 @@
 ﻿using TBotPlatform.Contracts.Bots;
 
-namespace TBotPlatform.Contracts.Abstractions.State;
+namespace TBotPlatform.Contracts.Abstractions.Factories;
 
-public interface IStateBind
+public interface IStateBindFactory
 {
     /// <summary>
     /// Получает зафиксированное состояние или null

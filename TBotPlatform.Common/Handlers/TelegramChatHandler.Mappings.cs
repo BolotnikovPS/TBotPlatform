@@ -58,6 +58,7 @@ internal partial class TelegramChatHandler
             GetMessageUpdateType(),
             CreateChat(message.Chat),
             message.MessageId,
+            message.Date,
             message.Text,
             replyToMessageOrNull,
             await DownloadMessagePhotoAsync(chatId, message, cancellationToken),
@@ -77,12 +78,7 @@ internal partial class TelegramChatHandler
                 return EChatMessageType.ForwardMessage;
             }
 
-            if (replyToMessageOrNull.IsNotNull())
-            {
-                return EChatMessageType.ToReplyMessage;
-            }
-
-            return EChatMessageType.Message;
+            return replyToMessageOrNull.IsNotNull() ? EChatMessageType.ToReplyMessage : EChatMessageType.Message;
         }
     }
 
@@ -125,6 +121,15 @@ internal partial class TelegramChatHandler
                 );
         }
 
+        TelegramChatPinMessage telegramPinMessage = null;
+
+        if (chat.PinnedMessage.IsNotNull())
+        {
+            var pinMessage = chat.PinnedMessage;
+            
+            telegramPinMessage = new(pinMessage.MessageId, pinMessage.Date, pinMessage.Text);
+        }
+
         return new(
             chat.Id,
             CreateChatType(chat.Type),
@@ -143,6 +148,7 @@ internal partial class TelegramChatHandler
             chat.JoinByRequest,
             chat.Description,
             chat.InviteLink,
+            telegramPinMessage,
             telegramChatPermissions,
             chat.SlowModeDelay,
             chat.MessageAutoDeleteTime,

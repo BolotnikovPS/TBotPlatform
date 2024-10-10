@@ -22,6 +22,7 @@ public class TelegramChat(
     bool? joinByRequest,
     string? description,
     string? inviteLink,
+    TelegramChatPinMessage? pinnedMessageOrNull,
     TelegramChatPermissions? permissionsOrNull,
     int? slowModeDelay,
     int? messageAutoDeleteTime,
@@ -137,7 +138,8 @@ public class TelegramChat(
     /// Optional. The most recent pinned message (by sending date).
     /// Returned only in <see cref="GetChatRequest"/>.
     /// </summary>
-    /// public ChatUpdateMessage? PinnedMessage { get; } = pinnedMessage;
+    public TelegramChatPinMessage? PinnedMessageOrNull { get; } = pinnedMessageOrNull;
+    
     /// <summary>
     /// Optional. Default chat member permissions, for groups and supergroups.
     /// Returned only in <see cref="GetChatRequest"/>.

@@ -2,7 +2,6 @@
 using System.Reflection;
 using TBotPlatform.Common.Factories;
 using TBotPlatform.Contracts.Abstractions.Factories;
-using TBotPlatform.Contracts.Abstractions.State;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Dependencies;
@@ -24,7 +23,7 @@ public static partial class DependencyInjection
                 })
            .AddScoped<StateFactory>()
            .AddScoped<IStateFactory>(src => src.GetRequiredService<StateFactory>())
-           .AddScoped<IStateBind>(src => src.GetRequiredService<StateFactory>())
+           .AddScoped<IStateBindFactory>(src => src.GetRequiredService<StateFactory>())
            .AddScoped<IStateContextFactory, StateContextFactory>()
            .AddScoped<IMenuButtonFactory, MenuButtonFactory>();
 

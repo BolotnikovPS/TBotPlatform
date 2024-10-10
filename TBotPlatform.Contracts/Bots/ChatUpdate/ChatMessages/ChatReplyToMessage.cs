@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using TBotPlatform.Contracts.Bots.Chats;
+using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.Bots.Locations;
 
 namespace TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;

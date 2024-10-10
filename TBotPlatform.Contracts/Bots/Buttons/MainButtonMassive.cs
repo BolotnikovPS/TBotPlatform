@@ -1,9 +1,9 @@
 ﻿namespace TBotPlatform.Contracts.Bots.Buttons;
 
-public class ButtonsRuleMassive
+public class MainButtonMassive
 {
     /// <summary>
     /// Коллекция кнопок
     /// </summary>
-    public ButtonsRuleList ButtonsRules { get; set; }
+    public MainButtonList MainButtons { get; set; }
 }

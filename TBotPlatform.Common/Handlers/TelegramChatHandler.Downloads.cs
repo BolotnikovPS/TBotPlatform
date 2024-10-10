@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using TBotPlatform.Contracts.Bots;
+using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 
@@ -66,7 +66,7 @@ internal partial class TelegramChatHandler
 
             return new()
             {
-                Byte = fileStream.ToArray(),
+                Bytes = fileStream.ToArray(),
                 Name = file.FilePath,
                 Size = file.FileSize!.Value,
             };

@@ -290,7 +290,7 @@ public interface ITelegramContext
     /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task UnpinAllChatMessages(long chatId, CancellationToken cancellationToken);
+    Task UnpinAllChatMessagesAsync(long chatId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Подсчитывает число участников чата

@@ -3,9 +3,9 @@ using TBotPlatform.Extension;
 
 namespace TBotPlatform.Contracts.Bots.Buttons;
 
-public class ButtonsRuleList : List<ButtonsRule>
+public class MainButtonList : List<MainButton>
 {
-    public new void Add(ButtonsRule item)
+    public new void Add(MainButton item)
     {
         if (SizeJsonCheck(item))
         {
@@ -15,7 +15,7 @@ public class ButtonsRuleList : List<ButtonsRule>
         base.Add(item);
     }
 
-    private static bool SizeJsonCheck(ButtonsRule item)
+    private static bool SizeJsonCheck(MainButton item)
     {
         if (item.ButtonName.IsNull())
         {

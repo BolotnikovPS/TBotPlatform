@@ -21,10 +21,10 @@ namespace TBotPlatform.Common.Factories;
 internal class StateContextFactory(
     ILogger<StateContextFactory> logger,
     ITelegramContext botClient,
-    IStateBind stateBind,
-    IServiceScopeFactory serviceScopeFactory,
+    IStateBindFactory stateBindFactory,
     ITelegramUpdateHandler telegramUpdateHandler,
-    ITelegramMappingHandler telegramMappingHandler
+    ITelegramMappingHandler telegramMappingHandler,
+    IServiceScopeFactory serviceScopeFactory
     ) : IStateContextFactory
 {
     private const string ErrorText = "🆘 Произошла ошибка при обработке запроса";
@@ -36,7 +36,7 @@ internal class StateContextFactory(
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        return new StateContext(stateHistory: null, stateBind, telegramMappingHandler, botClient, chatId);
+        return new StateContext(stateHistory: null, stateBindFactory, telegramMappingHandler, botClient, chatId);
     }
 
     public Task<IStateContextMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
@@ -92,7 +92,7 @@ internal class StateContextFactory(
         ArgumentNullException.ThrowIfNull(stateHistory);
         ArgumentNullException.ThrowIfNull(chatUpdate);
 
-        var stateContext = new StateContext(stateHistory, stateBind, telegramMappingHandler, botClient, user.ChatId);
+        var stateContext = new StateContext(stateHistory, stateBindFactory, telegramMappingHandler, botClient, user.ChatId);
         stateContext.CreateStateContext(chatUpdate, markupNextState);
 
         await RequestAsync(stateContext, user, stateHistory, cancellationToken);

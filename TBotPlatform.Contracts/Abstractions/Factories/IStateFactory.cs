@@ -1,9 +1,8 @@
-﻿using TBotPlatform.Contracts.Abstractions.State;
-using TBotPlatform.Contracts.Bots;
+﻿using TBotPlatform.Contracts.Bots;
 
 namespace TBotPlatform.Contracts.Abstractions.Factories;
 
-public interface IStateFactory : IStateBind
+public interface IStateFactory : IStateBindFactory
 {
     /// <summary>
     /// Получает состояние по его названию

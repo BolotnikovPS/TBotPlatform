@@ -1,4 +1,6 @@
-﻿namespace TBotPlatform.Contracts.Abstractions.Factories;
+﻿using TBotPlatform.Contracts.Abstractions.Cache.AsyncDisposable;
+
+namespace TBotPlatform.Contracts.Abstractions.Factories;
 
 public interface IDistributedLockFactory
 {

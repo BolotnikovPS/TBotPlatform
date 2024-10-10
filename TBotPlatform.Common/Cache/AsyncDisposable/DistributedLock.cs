@@ -1,8 +1,8 @@
 ﻿using TBotPlatform.Common.Contracts;
-using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Cache;
+using TBotPlatform.Contracts.Abstractions.Cache.AsyncDisposable;
 
-namespace TBotPlatform.Common.DistributedLocks;
+namespace TBotPlatform.Common.Cache.AsyncDisposable;
 
 internal class DistributedLock(ICacheService cacheService, string key) : IDistributedLock
 {

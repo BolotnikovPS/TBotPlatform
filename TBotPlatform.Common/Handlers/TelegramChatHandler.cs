@@ -57,10 +57,10 @@ internal partial class TelegramChatHandler(ILogger<TelegramChatHandler> logger, 
     {
         if (update.IsNull())
         {
-            return new(EChatUpdateType.None, new(EChatMessageType.None, null!, messageId: 0, text: null, replyToMessageOrNull: null, photoData: null, documentData: null));
+            return new(EChatUpdateType.None, new(EChatMessageType.None, null!, messageId: 0, DateTime.UtcNow, text: null, replyToMessageOrNull: null, photoData: null, documentData: null));
         }
 
-        var message = new ChatMessage(EChatMessageType.None, null!, messageId: 0, text: null, replyToMessageOrNull: null, photoData: null, documentData: null);
+        var message = new ChatMessage(EChatMessageType.None, null!, messageId: 0, DateTime.UtcNow, text: null, replyToMessageOrNull: null, photoData: null, documentData: null);
         ChatMessage editMessageOrNull = null;
         ChatMessage channelPostOrNull = null;
         ChatMessage editChannelPostOrNull = null;

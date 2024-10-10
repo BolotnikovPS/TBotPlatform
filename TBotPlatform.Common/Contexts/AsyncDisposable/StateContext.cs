@@ -1,26 +1,28 @@
 ﻿using System.Text;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
+using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Abstractions.Handlers;
-using TBotPlatform.Contracts.Abstractions.State;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.Exceptions;
+using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.State;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class StateContext(
     StateHistory stateHistory,
-    IStateBind stateBind,
+    IStateBindFactory stateBindFactory,
     ITelegramMappingHandler telegramMapping,
-    ITelegramContext botClient,
+    ITelegramContext telegramContext,
     long chatId
     ) : IStateContext
 {
@@ -29,7 +31,7 @@ internal partial class StateContext(
     public ChatUpdate ChatUpdate { get; private set; }
 
     private const string ChooseAction = "😊 Выберите действие";
-    
+
     public void CreateStateContext(ChatUpdate chatUpdate, MarkupNextState markupNextState)
     {
         if (chatId.IsDefault())
@@ -42,28 +44,28 @@ internal partial class StateContext(
         ChatUpdate = chatUpdate;
     }
 
-    public Guid GetCurrentOperation() => botClient.GetCurrentOperation();
+    public Guid GetCurrentOperation() => telegramContext.GetCurrentOperation();
 
-    public ITelegramContext GetTelegramContext() => botClient;
+    public ITelegramContext GetTelegramContext() => telegramContext;
 
     public Task BindStateAsync(CancellationToken cancellationToken)
-        => stateBind.BindStateAsync(chatId, stateHistory, cancellationToken);
+        => stateBindFactory.BindStateAsync(chatId, stateHistory, cancellationToken);
 
     public Task UnBindStateAsync(CancellationToken cancellationToken)
-        => stateBind.UnBindStateAsync(chatId, cancellationToken);
+        => stateBindFactory.UnBindStateAsync(chatId, cancellationToken);
 
-    public async Task<ChatResult> SendDocumentAsync(byte[] fileBytes, string fileName, bool disableNotification, CancellationToken cancellationToken)
+    public async Task<ChatResult> SendDocumentAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
     {
         if (chatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
-        await using var fileStream = new MemoryStream(fileBytes);
+        await using var fileStream = new MemoryStream(documentData.Bytes);
 
-        var inputFile = InputFile.FromStream(fileStream, fileName);
+        var inputFile = InputFile.FromStream(fileStream, documentData.Name);
 
-        var result = await botClient.SendDocumentAsync(
+        var result = await telegramContext.SendDocumentAsync(
             chatId,
             inputFile,
             disableNotification,
@@ -73,8 +75,32 @@ internal partial class StateContext(
         return telegramMapping.MessageToResult(result);
     }
 
-    public Task<ChatResult> SendDocumentAsync(byte[] fileBytes, string fileName, CancellationToken cancellationToken)
-        => SendDocumentAsync(fileBytes, fileName, disableNotification: false, cancellationToken);
+    public Task<ChatResult> SendDocumentAsync(FileDataBase documentData, CancellationToken cancellationToken)
+        => SendDocumentAsync(documentData, disableNotification: false, cancellationToken);
+
+    public async Task<ChatResult> SendPhotoAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
+    {
+        if (chatId.IsDefault())
+        {
+            throw new ChatIdArgException();
+        }
+
+        await using var fileStream = new MemoryStream(documentData.Bytes);
+
+        var inputFile = InputFile.FromStream(fileStream, documentData.Name);
+
+        var result = await telegramContext.SendPhotoAsync(
+            chatId,
+            inputFile,
+            disableNotification,
+            cancellationToken
+            );
+
+        return telegramMapping.MessageToResult(result);
+    }
+
+    public Task<ChatResult> SendPhotoAsync(FileDataBase documentData, CancellationToken cancellationToken)
+        => SendPhotoAsync(documentData, disableNotification: false, cancellationToken);
 
     public Task SendChatActionAsync(ChatAction chatAction, CancellationToken cancellationToken)
     {
@@ -83,26 +109,57 @@ internal partial class StateContext(
             throw new ChatIdArgException();
         }
 
-        return botClient.SendChatActionAsync(chatId, chatAction, cancellationToken);
+        return telegramContext.SendChatActionAsync(chatId, chatAction, cancellationToken);
     }
 
-    public async Task<ChatResult> UpdateMarkupAsync(ButtonsRuleMassiveList replyMarkup, CancellationToken cancellationToken)
+    public async Task<ChatResult> RemoveMarkupAsync(string text, CancellationToken cancellationToken)
     {
         if (chatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
-        var newMarkup = Map(replyMarkup);
+        if (text.Length > StateContextConstant.TextLength)
+        {
+            throw new TextLengthException(text.Length, StateContextConstant.TextLength);
+        }
+
+        var result = await telegramContext.SendTextMessageAsync(
+            chatId,
+            text,
+            new ReplyKeyboardRemove(),
+            disableNotification: false,
+            cancellationToken
+            );
+
+        return telegramMapping.MessageToResult(result);
+    }
+
+    public Task<ChatResult> UpdateMarkupAsync(MainButtonMassiveList mainButtonMassiveList, CancellationToken cancellationToken)
+        => UpdateMarkupAsync(mainButtonMassiveList, ChooseAction, cancellationToken);
+
+    public async Task<ChatResult> UpdateMarkupAsync(MainButtonMassiveList mainButtonMassiveList, string text, CancellationToken cancellationToken)
+    {
+        if (chatId.IsDefault())
+        {
+            throw new ChatIdArgException();
+        }
+
+        if (text.Length > StateContextConstant.TextLength)
+        {
+            throw new TextLengthException(text.Length, StateContextConstant.TextLength);
+        }
+
+        var newMarkup = Map(mainButtonMassiveList);
 
         if (newMarkup.IsNull())
         {
             throw new ReplyKeyboardMarkupArgException();
         }
 
-        var result = await botClient.SendTextMessageAsync(
+        var result = await telegramContext.SendTextMessageAsync(
             chatId,
-            ChooseAction,
+            text,
             newMarkup,
             disableNotification: false,
             cancellationToken
@@ -145,7 +202,7 @@ internal partial class StateContext(
 
         if (ChatUpdate.CallbackQueryOrNull!.MessageWithImage)
         {
-            return botClient.EditMessageCaptionAsync(
+            return telegramContext.EditMessageCaptionAsync(
                 chatId,
                 ChatUpdate.CallbackQueryOrNull!.MessageId,
                 message,
@@ -153,7 +210,7 @@ internal partial class StateContext(
                 );
         }
 
-        return botClient.EditMessageTextAsync(
+        return telegramContext.EditMessageTextAsync(
             chatId,
             ChatUpdate.CallbackQueryOrNull!.MessageId,
             message,
@@ -177,20 +234,15 @@ internal partial class StateContext(
         }
 
 
-        return botClient.DeleteMessageAsync(chatId, messageId, cancellationToken);
+        return telegramContext.DeleteMessageAsync(chatId, messageId, cancellationToken);
     }
 
     public ValueTask DisposeAsync()
     {
-        CleanUp();
-
-        return ValueTask.CompletedTask;
-    }
-
-    private void CleanUp()
-    {
         ChatUpdate = null;
         MarkupNextState = null;
         StateResult = null;
+
+        return ValueTask.CompletedTask;
     }
 }
