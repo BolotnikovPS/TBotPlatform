@@ -35,6 +35,14 @@ Project targets .NET 8 at minimum.
   - <b>AddTelegramContext</b> - зависимости для работы с telegram. Включает инфтерфейсы: <b/>ITelegramContextLog</b>, <b/>ITelegramContext</b>, <b/>ITelegramUpdateHandler</b>, <b/>ITelegramMappingHandler</b>
   <br/>- <b>AddTelegramClientHostedService</b> - включает все зависимости <b>AddTelegramContext</b> и добавляет HostedService для обработки обновлений (не webhook)
   <br/>- <b>AddReceivingHandler</b> - добавляет зависимость для интерфейса <b>IStartReceivingHandler</b>
-  <br/>- <b>AddCache</b> - добавляение кеша для работы функционала состоний. Базовый кеш - Redis.
+  <br/>- <b>AddCache</b>, <b>AddCacheWithDistributedLock</b> - добавляение кеша для работы функционала состоний. Базовый кеш - Redis.
   <br/>- <b>AddFactories</b> - добавляение интерфейса фабрик: <b>IStateFactory</b>, <b>IStateBind</b>, <b>IStateContextFactory</b>, <b>IMenuButtonFactory</b>
   <br/>- <b>AddStates</b> - добавляет все доступные состояния по интерфейсу <b>IState</b>
+
+
+
+<h2>Примеры проектов</h2>
+  - <a href="https://t.me/mycarcarebot">AutoCareBot</a>
+
+<h2>Контакты</h2>
+  - <a href="https://t.me/PBolDeveloper">Telegram</a>
