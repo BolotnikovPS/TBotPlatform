@@ -1,5 +1,5 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Contexts;
-using TBotPlatform.Contracts.Abstractions.Contexts.Proxies;
+using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;

@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
-using TBotPlatform.Contracts.Abstractions.Contexts.Proxies;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.Users;
 using TBotPlatform.Contracts.Bots;

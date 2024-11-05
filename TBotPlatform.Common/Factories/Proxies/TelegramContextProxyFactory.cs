@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TBotPlatform.Common.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts;
-using TBotPlatform.Contracts.Abstractions.Contexts.Proxies;
+using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Factories.Proxies;
 using TBotPlatform.Contracts.Bots.Config;
 

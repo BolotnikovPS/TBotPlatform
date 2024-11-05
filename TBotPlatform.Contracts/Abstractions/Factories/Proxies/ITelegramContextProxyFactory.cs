@@ -1,5 +1,5 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Contexts;
-using TBotPlatform.Contracts.Abstractions.Contexts.Proxies;
+using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 
 namespace TBotPlatform.Contracts.Abstractions.Factories.Proxies;
 
