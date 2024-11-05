@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using TBotPlatform.Contracts.Abstractions.Contexts;
+﻿using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Handlers;
 using TBotPlatform.Contracts.Bots.Chats;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
@@ -12,7 +11,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Handlers;
 
-internal partial class TelegramChatHandler(ILogger<TelegramChatHandler> logger, ITelegramContext botClient)
+internal partial class TelegramChatHandler(ITelegramContext botClient)
     : ITelegramUpdateHandler, ITelegramMappingHandler
 {
     public TelegramMessageUserData GetTelegramMessageUserData(Update update)
@@ -75,238 +74,231 @@ internal partial class TelegramChatHandler(ILogger<TelegramChatHandler> logger, 
         ChatShippingQuery shippingQueryOrNull = null;
         ChatPreCheckoutQuery preCheckoutQueryOrNull = null;
 
-        try
+        switch (update.Type)
         {
-            switch (update.Type)
-            {
-                case UpdateType.Message:
+            case UpdateType.Message:
+                {
+                    if (update.Message.IsNotNull())
                     {
-                        if (update.Message.IsNotNull())
-                        {
-                            message = await CreateChatUpdateMessageAsync(chatId, update.Message, cancellationToken);
-                        }
+                        message = await CreateChatUpdateMessageAsync(chatId, update.Message, cancellationToken);
                     }
-                    break;
+                }
+                break;
 
-                case UpdateType.EditedMessage:
+            case UpdateType.EditedMessage:
+                {
+                    if (update.EditedMessage.IsNotNull())
                     {
-                        if (update.EditedMessage.IsNotNull())
-                        {
-                            editMessageOrNull = await CreateChatUpdateMessageAsync(chatId, update.EditedMessage, cancellationToken);
-                        }
+                        editMessageOrNull = await CreateChatUpdateMessageAsync(chatId, update.EditedMessage, cancellationToken);
                     }
-                    break;
+                }
+                break;
 
-                case UpdateType.ChannelPost:
+            case UpdateType.ChannelPost:
+                {
+                    if (update.ChannelPost.IsNotNull())
                     {
-                        if (update.ChannelPost.IsNotNull())
-                        {
-                            channelPostOrNull = await CreateChatUpdateMessageAsync(chatId, update.ChannelPost, cancellationToken);
-                        }
+                        channelPostOrNull = await CreateChatUpdateMessageAsync(chatId, update.ChannelPost, cancellationToken);
                     }
-                    break;
+                }
+                break;
 
-                case UpdateType.EditedChannelPost:
+            case UpdateType.EditedChannelPost:
+                {
+                    if (update.EditedChannelPost.IsNotNull())
                     {
-                        if (update.EditedChannelPost.IsNotNull())
-                        {
-                            editChannelPostOrNull = await CreateChatUpdateMessageAsync(chatId, update.EditedChannelPost, cancellationToken);
-                        }
+                        editChannelPostOrNull = await CreateChatUpdateMessageAsync(chatId, update.EditedChannelPost, cancellationToken);
                     }
-                    break;
+                }
+                break;
 
-                case UpdateType.CallbackQuery:
+            case UpdateType.CallbackQuery:
+                {
+                    if (update.CallbackQuery.IsNotNull()
+                        && update.CallbackQuery!.Message.IsNotNull()
+                       )
                     {
-                        if (update.CallbackQuery.IsNotNull()
-                            && update.CallbackQuery!.Message.IsNotNull()
-                           )
+                        var callbackQueryMessage = update.CallbackQuery.Message!;
+                        var callbackQueryMessageWithImage = callbackQueryMessage.Type == MessageType.Photo;
+
+                        var callbackQueryMessageOrNull = callbackQueryMessageWithImage ? callbackQueryMessage.Caption : callbackQueryMessage.Text;
+
+                        if (callbackQueryMessageOrNull.IsNotNull())
                         {
-                            var callbackQueryMessage = update.CallbackQuery.Message!;
-                            var callbackQueryMessageWithImage = callbackQueryMessage.Type == MessageType.Photo;
-
-                            var callbackQueryMessageOrNull = callbackQueryMessageWithImage ? callbackQueryMessage.Caption : callbackQueryMessage.Text;
-
-                            if (callbackQueryMessageOrNull.IsNotNull())
-                            {
-                                callbackQueryOrNull = new(
-                                    callbackQueryMessageOrNull!,
-                                    callbackQueryMessageWithImage,
-                                    callbackQueryMessage.MessageId,
-                                    callbackQueryMessage.Date
-                                    );
-                            }
-                        }
-                    }
-                    break;
-
-                case UpdateType.ChatMember:
-                    {
-                        if (update.ChatMember.IsNotNull())
-                        {
-                            memberUpdateOrNull = CreateChatMember(update.ChatMember);
-                        }
-                    }
-                    break;
-
-                case UpdateType.MyChatMember:
-                    {
-                        if (update.MyChatMember.IsNotNull())
-                        {
-                            myMemberUpdateOrNull = CreateChatMember(update.MyChatMember);
-                        }
-                    }
-                    break;
-
-                case UpdateType.ChatJoinRequest:
-                    {
-                        if (update.ChatJoinRequest.IsNotNull())
-                        {
-                            var chatJoinRequest = update.ChatJoinRequest;
-
-                            joinRequestOrNull = new(
-                                CreateChat(chatJoinRequest?.Chat),
-                                CreateUser(chatJoinRequest?.From),
-                                chatJoinRequest!.UserChatId,
-                                chatJoinRequest!.Date
+                            callbackQueryOrNull = new(
+                                callbackQueryMessageOrNull!,
+                                callbackQueryMessageWithImage,
+                                callbackQueryMessage.MessageId,
+                                callbackQueryMessage.Date
                                 );
                         }
                     }
-                    break;
+                }
+                break;
 
-                case UpdateType.InlineQuery:
+            case UpdateType.ChatMember:
+                {
+                    if (update.ChatMember.IsNotNull())
                     {
-                        if (update.InlineQuery.IsNotNull())
-                        {
-                            var inlineQuery = update.InlineQuery;
-
-                            inlineQueryOrNull = new(
-                                inlineQuery!.Id,
-                                CreateUser(inlineQuery.From),
-                                inlineQuery.Query,
-                                inlineQuery.Offset,
-                                CreateChatType(inlineQuery.ChatType)
-                                );
-                        }
+                        memberUpdateOrNull = CreateChatMember(update.ChatMember);
                     }
-                    break;
+                }
+                break;
 
-                case UpdateType.ChosenInlineResult:
+            case UpdateType.MyChatMember:
+                {
+                    if (update.MyChatMember.IsNotNull())
                     {
-                        if (update.ChosenInlineResult.IsNotNull())
-                        {
-                            var inlineQuery = update.ChosenInlineResult;
-
-                            chosenInlineResultOrNull = new(
-                                inlineQuery!.ResultId,
-                                CreateUser(inlineQuery.From),
-                                inlineQuery.InlineMessageId,
-                                inlineQuery.Query
-                                );
-                        }
+                        myMemberUpdateOrNull = CreateChatMember(update.MyChatMember);
                     }
-                    break;
+                }
+                break;
 
-                case UpdateType.Poll:
+            case UpdateType.ChatJoinRequest:
+                {
+                    if (update.ChatJoinRequest.IsNotNull())
                     {
-                        if (update.Poll.IsNotNull())
-                        {
-                            var pool = update.Poll;
-                            ChatPollOption[] optionsOrNull = null;
+                        var chatJoinRequest = update.ChatJoinRequest;
 
-                            if (pool!.Options.IsNotNull())
-                            {
-                                optionsOrNull = pool
-                                               .Options
-                                               .Select(z => new ChatPollOption(z.Text, z.VoterCount))
-                                               .ToArray();
-                            }
-
-                            ChatEntity[] explanationEntitiesOrNull = null;
-
-                            if (pool.ExplanationEntities.IsNotNull())
-                            {
-                                explanationEntitiesOrNull = CreateChatMessageEntity(pool.ExplanationEntities);
-                            }
-
-                            chatUpdatePollOrNull = new(
-                                pool.Id,
-                                pool.Question,
-                                optionsOrNull,
-                                pool.TotalVoterCount,
-                                pool.IsClosed,
-                                pool.IsAnonymous,
-                                pool.Type,
-                                pool.AllowsMultipleAnswers,
-                                pool.CorrectOptionId,
-                                pool.Explanation,
-                                explanationEntitiesOrNull,
-                                pool.OpenPeriod,
-                                pool.CloseDate
-                                );
-                        }
+                        joinRequestOrNull = new(
+                            CreateChat(chatJoinRequest?.Chat),
+                            CreateUser(chatJoinRequest?.From),
+                            chatJoinRequest!.UserChatId,
+                            chatJoinRequest!.Date
+                            );
                     }
-                    break;
+                }
+                break;
 
-                case UpdateType.PollAnswer:
+            case UpdateType.InlineQuery:
+                {
+                    if (update.InlineQuery.IsNotNull())
                     {
-                        if (update.PollAnswer.IsNotNull())
-                        {
-                            var poolAnswer = update.PollAnswer;
+                        var inlineQuery = update.InlineQuery;
 
-                            pollAnswerOrNull = new(poolAnswer!.PollId, CreateUser(poolAnswer.User), poolAnswer.OptionIds);
-                        }
+                        inlineQueryOrNull = new(
+                            inlineQuery!.Id,
+                            CreateUser(inlineQuery.From),
+                            inlineQuery.Query,
+                            inlineQuery.Offset,
+                            CreateChatType(inlineQuery.ChatType)
+                            );
                     }
-                    break;
+                }
+                break;
 
-                case UpdateType.ShippingQuery:
+            case UpdateType.ChosenInlineResult:
+                {
+                    if (update.ChosenInlineResult.IsNotNull())
                     {
-                        if (update.ShippingQuery.IsNotNull())
-                        {
-                            var shippingQuery = update.ShippingQuery;
+                        var inlineQuery = update.ChosenInlineResult;
 
-                            shippingQueryOrNull = new(
-                                shippingQuery!.Id,
-                                CreateUser(shippingQuery.From),
-                                shippingQuery.InvoicePayload,
-                                CreateChatMessageShippingAddress(shippingQuery!.ShippingAddress));
-                        }
+                        chosenInlineResultOrNull = new(
+                            inlineQuery!.ResultId,
+                            CreateUser(inlineQuery.From),
+                            inlineQuery.InlineMessageId,
+                            inlineQuery.Query
+                            );
                     }
-                    break;
+                }
+                break;
 
-                case UpdateType.PreCheckoutQuery:
+            case UpdateType.Poll:
+                {
+                    if (update.Poll.IsNotNull())
                     {
-                        if (update.PreCheckoutQuery.IsNotNull())
+                        var pool = update.Poll;
+                        ChatPollOption[] optionsOrNull = null;
+
+                        if (pool!.Options.IsNotNull())
                         {
-                            var pre = update.PreCheckoutQuery;
-                            ChatOrderInfo orderInfoOrNull = null;
-
-                            if (pre!.OrderInfo.IsNotNull())
-                            {
-                                var orderInfo = pre!.OrderInfo;
-
-                                orderInfoOrNull = new(orderInfo!.Name, orderInfo.PhoneNumber, orderInfo.Email, CreateChatMessageShippingAddress(orderInfo!.ShippingAddress));
-                            }
-
-                            preCheckoutQueryOrNull = new(
-                                pre.Id,
-                                CreateUser(pre.From),
-                                pre.Currency,
-                                pre.TotalAmount,
-                                pre.InvoicePayload,
-                                pre.ShippingOptionId,
-                                orderInfoOrNull
-                                );
+                            optionsOrNull = pool
+                                           .Options
+                                           .Select(z => new ChatPollOption(z.Text, z.VoterCount))
+                                           .ToArray();
                         }
-                    }
-                    break;
 
-                case UpdateType.Unknown:
-                    break;
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Ошибка формирования сообщения с telegram");
+                        ChatEntity[] explanationEntitiesOrNull = null;
+
+                        if (pool.ExplanationEntities.IsNotNull())
+                        {
+                            explanationEntitiesOrNull = CreateChatMessageEntity(pool.ExplanationEntities);
+                        }
+
+                        chatUpdatePollOrNull = new(
+                            pool.Id,
+                            pool.Question,
+                            optionsOrNull,
+                            pool.TotalVoterCount,
+                            pool.IsClosed,
+                            pool.IsAnonymous,
+                            pool.Type,
+                            pool.AllowsMultipleAnswers,
+                            pool.CorrectOptionId,
+                            pool.Explanation,
+                            explanationEntitiesOrNull,
+                            pool.OpenPeriod,
+                            pool.CloseDate
+                            );
+                    }
+                }
+                break;
+
+            case UpdateType.PollAnswer:
+                {
+                    if (update.PollAnswer.IsNotNull())
+                    {
+                        var poolAnswer = update.PollAnswer;
+
+                        pollAnswerOrNull = new(poolAnswer!.PollId, CreateUser(poolAnswer.User), poolAnswer.OptionIds);
+                    }
+                }
+                break;
+
+            case UpdateType.ShippingQuery:
+                {
+                    if (update.ShippingQuery.IsNotNull())
+                    {
+                        var shippingQuery = update.ShippingQuery;
+
+                        shippingQueryOrNull = new(
+                            shippingQuery!.Id,
+                            CreateUser(shippingQuery.From),
+                            shippingQuery.InvoicePayload,
+                            CreateChatMessageShippingAddress(shippingQuery!.ShippingAddress));
+                    }
+                }
+                break;
+
+            case UpdateType.PreCheckoutQuery:
+                {
+                    if (update.PreCheckoutQuery.IsNotNull())
+                    {
+                        var pre = update.PreCheckoutQuery;
+                        ChatOrderInfo orderInfoOrNull = null;
+
+                        if (pre!.OrderInfo.IsNotNull())
+                        {
+                            var orderInfo = pre!.OrderInfo;
+
+                            orderInfoOrNull = new(orderInfo!.Name, orderInfo.PhoneNumber, orderInfo.Email, CreateChatMessageShippingAddress(orderInfo!.ShippingAddress));
+                        }
+
+                        preCheckoutQueryOrNull = new(
+                            pre.Id,
+                            CreateUser(pre.From),
+                            pre.Currency,
+                            pre.TotalAmount,
+                            pre.InvoicePayload,
+                            pre.ShippingOptionId,
+                            orderInfoOrNull
+                            );
+                    }
+                }
+                break;
+
+            case UpdateType.Unknown:
+                break;
         }
 
         var chatUpdateType = update.Type switch

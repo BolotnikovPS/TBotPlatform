@@ -126,7 +126,7 @@ internal partial class TelegramChatHandler
         if (chat.PinnedMessage.IsNotNull())
         {
             var pinMessage = chat.PinnedMessage;
-            
+
             telegramPinMessage = new(pinMessage.MessageId, pinMessage.Date, pinMessage.Text);
         }
 
@@ -271,7 +271,7 @@ internal partial class TelegramChatHandler
         {
             if (button.CallbackData!.TryParseJson<MarkupNextState>(out var newMarkupNextState))
             {
-                return new InlineMarkupState(button.Text, newMarkupNextState.State, newMarkupNextState.Data);
+                return new InlineMarkupState(button.Text, newMarkupNextState);
             }
         }
 

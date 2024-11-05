@@ -7,7 +7,7 @@ internal partial class StateContext
 {
     public Task PinChatMessageAsync(int messageId, bool disableNotification, CancellationToken cancellationToken)
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -17,7 +17,7 @@ internal partial class StateContext
             throw new MessageIdArgException();
         }
 
-        return telegramContext.PinChatMessageAsync(chatId, messageId, disableNotification, cancellationToken);
+        return telegramContext.PinChatMessageAsync(ChatId, messageId, disableNotification, cancellationToken);
     }
 
     public Task PinChatMessageAsync(int messageId, CancellationToken cancellationToken)
@@ -25,7 +25,7 @@ internal partial class StateContext
 
     public Task UnpinChatMessageAsync(int messageId, CancellationToken cancellationToken)
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -35,16 +35,16 @@ internal partial class StateContext
             throw new MessageIdArgException();
         }
 
-        return telegramContext.UnpinChatMessageAsync(chatId, messageId, cancellationToken);
+        return telegramContext.UnpinChatMessageAsync(ChatId, messageId, cancellationToken);
     }
 
     public Task UnpinAllChatMessages(CancellationToken cancellationToken)
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
-        return telegramContext.UnpinAllChatMessagesAsync(chatId, cancellationToken);
+        return telegramContext.UnpinAllChatMessagesAsync(ChatId, cancellationToken);
     }
 }

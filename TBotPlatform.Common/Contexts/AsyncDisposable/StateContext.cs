@@ -29,12 +29,14 @@ internal partial class StateContext(
     public StateResult StateResult { get; set; }
     public MarkupNextState MarkupNextState { get; private set; }
     public ChatUpdate ChatUpdate { get; private set; }
+    
+    private long ChatId { get; set; } = chatId;
 
     private const string ChooseAction = "😊 Выберите действие";
 
     public void CreateStateContext(ChatUpdate chatUpdate, MarkupNextState markupNextState)
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -44,19 +46,43 @@ internal partial class StateContext(
         ChatUpdate = chatUpdate;
     }
 
+    public async Task<T> MakeRequestToOtherChatAsync<T>(long newChatId, Func<IStateContextMinimal, Task<T>> request)
+    {
+        if (newChatId.IsDefault())
+        {
+            throw new ChatIdArgException();
+        }
+
+        if (ChatId == newChatId)
+        {
+            return await request.Invoke(this);
+        }
+
+        var baseChatId = ChatId;
+        try
+        {
+            ChatId = newChatId;
+            return await request.Invoke(this);
+        }
+        finally
+        {
+            ChatId = baseChatId;
+        }
+    }
+
     public Guid GetCurrentOperation() => telegramContext.GetCurrentOperation();
 
     public ITelegramContext GetTelegramContext() => telegramContext;
 
     public Task BindStateAsync(CancellationToken cancellationToken)
-        => stateBindFactory.BindStateAsync(chatId, stateHistory, cancellationToken);
+        => stateBindFactory.BindStateAsync(ChatId, stateHistory, cancellationToken);
 
     public Task UnBindStateAsync(CancellationToken cancellationToken)
-        => stateBindFactory.UnBindStateAsync(chatId, cancellationToken);
+        => stateBindFactory.UnBindStateAsync(ChatId, cancellationToken);
 
     public async Task<ChatResult> SendDocumentAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -66,7 +92,7 @@ internal partial class StateContext(
         var inputFile = InputFile.FromStream(fileStream, documentData.Name);
 
         var result = await telegramContext.SendDocumentAsync(
-            chatId,
+            ChatId,
             inputFile,
             disableNotification,
             cancellationToken
@@ -80,7 +106,7 @@ internal partial class StateContext(
 
     public async Task<ChatResult> SendPhotoAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -90,7 +116,7 @@ internal partial class StateContext(
         var inputFile = InputFile.FromStream(fileStream, documentData.Name);
 
         var result = await telegramContext.SendPhotoAsync(
-            chatId,
+            ChatId,
             inputFile,
             disableNotification,
             cancellationToken
@@ -104,17 +130,17 @@ internal partial class StateContext(
 
     public Task SendChatActionAsync(ChatAction chatAction, CancellationToken cancellationToken)
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
 
-        return telegramContext.SendChatActionAsync(chatId, chatAction, cancellationToken);
+        return telegramContext.SendChatActionAsync(ChatId, chatAction, cancellationToken);
     }
 
     public async Task<ChatResult> RemoveMarkupAsync(string text, CancellationToken cancellationToken)
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -125,7 +151,7 @@ internal partial class StateContext(
         }
 
         var result = await telegramContext.SendTextMessageAsync(
-            chatId,
+            ChatId,
             text,
             new ReplyKeyboardRemove(),
             disableNotification: false,
@@ -135,12 +161,12 @@ internal partial class StateContext(
         return telegramMapping.MessageToResult(result);
     }
 
-    public Task<ChatResult> UpdateMarkupAsync(MainButtonMassiveList mainButtonMassiveList, CancellationToken cancellationToken)
-        => UpdateMarkupAsync(mainButtonMassiveList, ChooseAction, cancellationToken);
+    public Task<ChatResult> UpdateMainButtonsAsync(MainButtonMassiveList mainButtonMassiveList, CancellationToken cancellationToken)
+        => UpdateMainButtonsAsync(mainButtonMassiveList, ChooseAction, cancellationToken);
 
-    public async Task<ChatResult> UpdateMarkupAsync(MainButtonMassiveList mainButtonMassiveList, string text, CancellationToken cancellationToken)
+    public async Task<ChatResult> UpdateMainButtonsAsync(MainButtonMassiveList mainButtonMassiveList, string text, CancellationToken cancellationToken)
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -158,7 +184,7 @@ internal partial class StateContext(
         }
 
         var result = await telegramContext.SendTextMessageAsync(
-            chatId,
+            ChatId,
             text,
             newMarkup,
             disableNotification: false,
@@ -175,7 +201,7 @@ internal partial class StateContext(
             return Task.CompletedTask;
         }
 
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -203,7 +229,7 @@ internal partial class StateContext(
         if (ChatUpdate.CallbackQueryOrNull!.MessageWithImage)
         {
             return telegramContext.EditMessageCaptionAsync(
-                chatId,
+                ChatId,
                 ChatUpdate.CallbackQueryOrNull!.MessageId,
                 message,
                 cancellationToken
@@ -211,7 +237,7 @@ internal partial class StateContext(
         }
 
         return telegramContext.EditMessageTextAsync(
-            chatId,
+            ChatId,
             ChatUpdate.CallbackQueryOrNull!.MessageId,
             message,
             cancellationToken
@@ -223,7 +249,7 @@ internal partial class StateContext(
 
     public Task RemoveMessageAsync(int messageId, CancellationToken cancellationToken)
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -234,7 +260,7 @@ internal partial class StateContext(
         }
 
 
-        return telegramContext.DeleteMessageAsync(chatId, messageId, cancellationToken);
+        return telegramContext.DeleteMessageAsync(ChatId, messageId, cancellationToken);
     }
 
     public ValueTask DisposeAsync()

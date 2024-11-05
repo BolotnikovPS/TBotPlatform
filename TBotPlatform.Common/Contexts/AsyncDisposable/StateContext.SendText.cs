@@ -22,7 +22,7 @@ internal partial class StateContext
 
     private async Task<ChatResult> SendTextMessageAsync(string text, bool withReply, bool disableNotification, CancellationToken cancellationToken)
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -45,7 +45,7 @@ internal partial class StateContext
             };
 
         var result = await telegramContext.SendTextMessageAsync(
-            chatId,
+            ChatId,
             text,
             replyMarkup,
             disableNotification,
@@ -57,7 +57,7 @@ internal partial class StateContext
 
     public async Task SendLongTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -71,13 +71,13 @@ internal partial class StateContext
         {
             foreach (var tf in text.SplitByLength(StateContextConstant.TextLength))
             {
-                await telegramContext.SendTextMessageAsync(chatId, tf, disableNotification, cancellationToken);
+                await telegramContext.SendTextMessageAsync(ChatId, tf, disableNotification, cancellationToken);
             }
 
             return;
         }
 
-        await telegramContext.SendTextMessageAsync(chatId, text, disableNotification, cancellationToken);
+        await telegramContext.SendTextMessageAsync(ChatId, text, disableNotification, cancellationToken);
     }
 
     public Task SendLongTextMessageAsync(string text, CancellationToken cancellationToken)

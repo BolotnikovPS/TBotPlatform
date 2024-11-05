@@ -9,7 +9,7 @@ internal partial class StateContext
 {
     public async Task<ChatResult> ForwardMessageAsync(long fromChatId, int messageId, bool disableNotification, CancellationToken cancellationToken)
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -19,7 +19,7 @@ internal partial class StateContext
             throw new MessageIdArgException();
         }
 
-        var result = await telegramContext.ForwardMessageAsync(chatId, fromChatId, messageId, disableNotification, cancellationToken);
+        var result = await telegramContext.ForwardMessageAsync(ChatId, fromChatId, messageId, disableNotification, cancellationToken);
 
         return telegramMapping.MessageToResult(result);
     }
@@ -38,7 +38,7 @@ internal partial class StateContext
         CancellationToken cancellationToken
         )
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
@@ -54,7 +54,7 @@ internal partial class StateContext
         }
 
         var result = await telegramContext.CopyMessageAsync(
-            chatId,
+            ChatId,
             fromChatId,
             messageId,
             caption,

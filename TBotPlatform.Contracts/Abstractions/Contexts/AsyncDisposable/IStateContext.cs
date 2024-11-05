@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Contracts.Bots;
+﻿using TBotPlatform.Contracts.Abstractions.Factories;
+using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.State;
 
@@ -20,6 +21,15 @@ public interface IStateContext : IStateContextMinimal
     /// Информация о состоянии входящей кнопки inline меню
     /// </summary>
     MarkupNextState MarkupNextState { get; }
+
+    /// <summary>
+    /// Осуществляет запрос в чат, отличающийся от заданного в <see cref="IStateContextFactory"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="newChatId"></param>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    Task<T> MakeRequestToOtherChatAsync<T>(long newChatId, Func<IStateContextMinimal, Task<T>> request);
 
     /// <summary>
     /// Устанавливает необходимость зафиксировать состояние

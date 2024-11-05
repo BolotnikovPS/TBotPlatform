@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using TBotPlatform.Contracts.Bots.Users;
 
 namespace TBotPlatform.Contracts.Bots.ChatUpdate.Enums;
 
@@ -59,7 +60,7 @@ public enum EChatEntityType
     TextLink,
 
     /// <summary>
-    /// Mentions for a <see cref="User"/> without <see cref="User.Username"/>
+    /// Mentions for a <see cref="TelegramUser"/> without <see cref="TelegramUser.UserName"/>
     /// </summary>
     TextMention,
 

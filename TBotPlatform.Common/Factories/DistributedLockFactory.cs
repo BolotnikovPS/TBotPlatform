@@ -13,6 +13,6 @@ internal class DistributedLockFactory(ICacheService cacheService) : IDistributed
     public Task<bool> IsLockedAsync(string key, CancellationToken cancellationToken)
         => cacheService.KeyExistsAsync(CreateKey(key), cancellationToken);
 
-    public static string CreateKey(string baseKey)
+    private static string CreateKey(string baseKey)
         => $"Locker_{baseKey}";
 }

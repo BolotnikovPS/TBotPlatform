@@ -60,6 +60,6 @@ internal partial class StateContext
             throw new ChatIdArgException();
         }
 
-        return telegramContext.LeaveChatAsync(chatId, cancellationToken);
+        return telegramContext.LeaveChatAsync(ChatId, cancellationToken);
     }
 }

@@ -4,9 +4,9 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TBotPlatform.Common.Contracts;
+namespace TBotPlatform.Contracts.Statistics;
 
-internal class TelegramContextLogMessageData
+public class TelegramContextLogMessageData
 {
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public long FromChatId { get; set; }

@@ -13,7 +13,7 @@ internal partial class TelegramContext
             OperationGuid = _operationGuid,
             OperationType = nameof(GetChatMemberCountAsync),
             ChatId = chatId,
-            MessageBody = "",
+            MessageBody = new(),
         };
 
         var task = _botClient.GetChatMemberCountAsync(chatId, cancellationToken);
@@ -28,7 +28,7 @@ internal partial class TelegramContext
             OperationGuid = _operationGuid,
             OperationType = nameof(GetChatMemberAsync),
             ChatId = chatId,
-            MessageBody = "",
+            MessageBody = new(),
         };
 
         var task = _botClient.GetChatMemberAsync(chatId, userId, cancellationToken);
@@ -43,7 +43,7 @@ internal partial class TelegramContext
             OperationGuid = _operationGuid,
             OperationType = nameof(GetChatAdministratorsAsync),
             ChatId = chatId,
-            MessageBody = "",
+            MessageBody = new(),
         };
 
         var task = _botClient.GetChatAdministratorsAsync(chatId, cancellationToken);
@@ -58,7 +58,7 @@ internal partial class TelegramContext
             OperationGuid = _operationGuid,
             OperationType = nameof(GetChatAsync),
             ChatId = chatId,
-            MessageBody = "",
+            MessageBody = new(),
         };
 
         var task = _botClient.GetChatAsync(chatId, cancellationToken);
@@ -73,7 +73,7 @@ internal partial class TelegramContext
             OperationGuid = _operationGuid,
             OperationType = nameof(LeaveChatAsync),
             ChatId = chatId,
-            MessageBody = "",
+            MessageBody = new(),
         };
 
         var task = _botClient.LeaveChatAsync(chatId, cancellationToken);

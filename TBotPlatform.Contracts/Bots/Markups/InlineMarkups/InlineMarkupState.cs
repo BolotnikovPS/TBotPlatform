@@ -8,6 +8,11 @@ namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 public class InlineMarkupState(string buttonName, string state, string data = null)
     : InlineMarkupBase(buttonName)
 {
+    public InlineMarkupState(string buttonName, MarkupNextState markupNextState)
+        : this(buttonName, markupNextState.State, markupNextState.Data)
+    {
+    }
+
     /// <summary>
     /// Данные на inline кнопке
     /// </summary>

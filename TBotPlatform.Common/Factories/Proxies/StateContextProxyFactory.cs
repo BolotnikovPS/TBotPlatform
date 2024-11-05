@@ -2,42 +2,46 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TBotPlatform.Common.Contexts.AsyncDisposable;
-using TBotPlatform.Contracts.Abstractions.Contexts;
+using TBotPlatform.Common.Handlers;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
+using TBotPlatform.Contracts.Abstractions.Contexts.Proxies;
 using TBotPlatform.Contracts.Abstractions.Factories;
+using TBotPlatform.Contracts.Abstractions.Factories.Proxies;
 using TBotPlatform.Contracts.Abstractions.Handlers;
 using TBotPlatform.Contracts.Abstractions.State;
 using TBotPlatform.Contracts.Attributes;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
+using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Contracts.Bots.Users;
 using TBotPlatform.Contracts.State;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TBotPlatform.Common.Factories;
+namespace TBotPlatform.Common.Factories.Proxies;
 
-internal class StateContextFactory(
-    ILogger<StateContextFactory> logger,
-    ITelegramContext telegramContext,
-    IStateBindFactory stateBindFactory,
-    ITelegramUpdateHandler telegramUpdateHandler,
-    ITelegramMappingHandler telegramMappingHandler,
-    IServiceScopeFactory serviceScopeFactory
-    ) : BaseStateContextFactory, IStateContextFactory
+internal class StateContextProxyFactory(ILogger<StateContextFactory> logger, IStateBindFactory stateBindFactory, IServiceScopeFactory serviceScopeFactory) 
+    : BaseStateContextFactory, IStateContextProxyFactory
 {
-    public IStateContextMinimal CreateStateContext<T>(T user) where T : UserBase
+    private ITelegramContextProxy? TelegramContextProxy { get; set; }
+
+    public void SetBot(ITelegramContextProxy telegramContextProxy)
+    {
+        TelegramContextProxy = telegramContextProxy;
+    }
+
+    public IStateContextProxyMinimal CreateStateContext<T>(T user) where T : UserBase
         => CreateStateContext(user.ChatId);
 
-    public IStateContextMinimal CreateStateContext(long chatId)
+    public IStateContextProxyMinimal CreateStateContext(long chatId)
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        return new StateContext(stateHistory: null, stateBindFactory, telegramMappingHandler, telegramContext, chatId);
+        return new StateContext(stateHistory: null, stateBindFactory, GetTelegramMappingHandler, GetTelegramContextProxyOrThrow, chatId);
     }
 
-    public Task<IStateContextMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
+    public Task<IStateContextProxyMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(user);
@@ -47,7 +51,7 @@ internal class StateContextFactory(
         return CreateStateContextAsync(user, stateHistory, update, markupNextState: null, cancellationToken);
     }
 
-    public Task<IStateContextMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, ChatUpdate chatUpdate, CancellationToken cancellationToken)
+    public Task<IStateContextProxyMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, ChatUpdate chatUpdate, CancellationToken cancellationToken)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(user);
@@ -57,7 +61,7 @@ internal class StateContextFactory(
         return CreateStateContextAsync(user, stateHistory, chatUpdate, markupNextState: null, cancellationToken);
     }
 
-    public async Task<IStateContextMinimal> CreateStateContextAsync<T>(
+    public async Task<IStateContextProxyMinimal> CreateStateContextAsync<T>(
         T user,
         StateHistory stateHistory,
         Update update,
@@ -70,14 +74,14 @@ internal class StateContextFactory(
         ArgumentNullException.ThrowIfNull(stateHistory);
         ArgumentNullException.ThrowIfNull(update);
 
-        var chatMessage = await telegramUpdateHandler.GetChatMessageAsync(user.ChatId, update, cancellationToken);
+        var chatMessage = await new TelegramChatHandler(GetTelegramContextProxyOrThrow).GetChatMessageAsync(user.ChatId, update, cancellationToken);
 
         ArgumentNullException.ThrowIfNull(chatMessage);
 
         return await CreateStateContextAsync(user, stateHistory, chatMessage, markupNextState, cancellationToken);
     }
 
-    public async Task<IStateContextMinimal> CreateStateContextAsync<T>(
+    public async Task<IStateContextProxyMinimal> CreateStateContextAsync<T>(
         T user,
         StateHistory stateHistory,
         ChatUpdate chatUpdate,
@@ -90,7 +94,7 @@ internal class StateContextFactory(
         ArgumentNullException.ThrowIfNull(stateHistory);
         ArgumentNullException.ThrowIfNull(chatUpdate);
 
-        var stateContext = new StateContext(stateHistory, stateBindFactory, telegramMappingHandler, telegramContext, user.ChatId);
+        var stateContext = new StateContext(stateHistory, stateBindFactory, GetTelegramMappingHandler, GetTelegramContextProxyOrThrow, user.ChatId);
         stateContext.CreateStateContext(chatUpdate, markupNextState);
 
         await RequestAsync(stateContext, user, stateHistory, cancellationToken);
@@ -98,7 +102,7 @@ internal class StateContextFactory(
         return stateContext;
     }
 
-    public StateResult? GetStateResult(IStateContextMinimal stateContext)
+    public StateResult? GetStateResult(IStateContextProxyMinimal stateContext)
         => stateContext is StateContext context
             ? context.StateResult
             : default;
@@ -156,15 +160,6 @@ internal class StateContextFactory(
 
         try
         {
-            await stateContext.SendTextMessageAsync(ErrorText, cancellationToken);
-        }
-        catch
-        {
-            // ignored
-        }
-
-        try
-        {
             await state!.HandleErrorAsync(stateContext, user, exception, cancellationToken);
         }
         catch (Exception ex)
@@ -172,4 +167,8 @@ internal class StateContextFactory(
             logger.LogError(ex, ErrorText);
         }
     }
+
+    private ITelegramMappingHandler GetTelegramMappingHandler => new TelegramChatHandler(GetTelegramContextProxyOrThrow);
+
+    private ITelegramContextProxy GetTelegramContextProxyOrThrow => TelegramContextProxy ?? throw new TelegramContextProxyException();
 }

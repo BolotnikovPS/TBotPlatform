@@ -10,16 +10,16 @@ namespace TBotPlatform.Common.Factories;
 
 internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMenuButtonFactory
 {
-    public Task UpdateMarkupByStateAsync<T>(T user, IStateContextMinimal stateContext, StateHistory stateHistory, CancellationToken cancellationToken)
+    public Task UpdateMainButtonsByStateAsync<T>(T user, IStateContextMinimal stateContext, StateHistory stateHistory, CancellationToken cancellationToken)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(stateHistory);
         ArgumentNullException.ThrowIfNull(stateHistory.MenuStateType);
 
-        return UpdateMarkupByStateAsync(user, stateContext, stateHistory.MenuStateType, cancellationToken);
+        return UpdateMainButtonsByStateAsync(user, stateContext, stateHistory.MenuStateType, cancellationToken);
     }
 
-    public async Task UpdateMarkupByStateAsync<T>(T user, IStateContextMinimal stateContext, Type menuStateType, CancellationToken cancellationToken)
+    public async Task UpdateMainButtonsByStateAsync<T>(T user, IStateContextMinimal stateContext, Type menuStateType, CancellationToken cancellationToken)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(user);
@@ -41,7 +41,7 @@ internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMe
             throw new("Не смог активировать меню");
         }
 
-        var menu = await menuButtons!.GetMarkUpAsync(user);
-        await stateContext.UpdateMarkupAsync(menu, cancellationToken);
+        var mainButtons = await menuButtons!.GetMainButtonsAsync(user);
+        await stateContext.UpdateMainButtonsAsync(mainButtons, cancellationToken);
     }
 }

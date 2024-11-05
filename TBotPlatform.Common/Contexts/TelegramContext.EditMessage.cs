@@ -1,5 +1,4 @@
-﻿using TBotPlatform.Common.Contracts;
-using TBotPlatform.Contracts.Statistics;
+﻿using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;

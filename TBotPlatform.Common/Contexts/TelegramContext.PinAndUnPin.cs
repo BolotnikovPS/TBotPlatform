@@ -1,5 +1,4 @@
-﻿using TBotPlatform.Common.Contracts;
-using TBotPlatform.Contracts.Statistics;
+﻿using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
 
 namespace TBotPlatform.Common.Contexts;
@@ -53,7 +52,7 @@ internal partial class TelegramContext
             OperationGuid = _operationGuid,
             OperationType = nameof(UnpinAllChatMessagesAsync),
             ChatId = chatId,
-            MessageBody = "",
+            MessageBody = new(),
         };
 
         var task = _botClient.UnpinAllChatMessages(chatId, cancellationToken);

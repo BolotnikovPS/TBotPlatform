@@ -1,4 +1,5 @@
 ﻿using TBotPlatform.Contracts.Bots;
+using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.StateFactory;
 using TBotPlatform.Extension;
 
@@ -11,7 +12,7 @@ internal partial class StateFactory
         var state = stateFactoryDataCollection
            .FirstOrDefault(
                 q => q.CommandsTypes.CheckAny()
-                     && q.CommandsTypes.Any(x => x.In("/start"))
+                     && q.CommandsTypes.Any(x => x.In(CommandTypesConstant.StartCommand))
                 );
 
         return Convert(state!);

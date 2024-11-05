@@ -1,6 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using TBotPlatform.Common.Contracts;
-using TBotPlatform.Contracts.Abstractions.Contexts;
+﻿using TBotPlatform.Contracts.Abstractions.Contexts;
+using TBotPlatform.Contracts.Abstractions.Contexts.Proxies;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
@@ -9,11 +8,11 @@ using PMode = Telegram.Bot.Types.Enums.ParseMode;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog) : ITelegramContext
+internal partial class TelegramContext(HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog) : ITelegramContextProxy
 {
     private const PMode ParseMode = PMode.Html;
 
-    private readonly TelegramBotClient _botClient = new(telegramSettings.Token, client);
+    private readonly TelegramBotClient _botClient = new(GetTelegramToken(telegramSettings), client);
     private readonly Guid _operationGuid = Guid.NewGuid();
 
     public Guid GetCurrentOperation() => _operationGuid;
@@ -68,5 +67,19 @@ internal partial class TelegramContext(ILogger<TelegramContext> logger, HttpClie
         var task = _botClient.SendChatActionAsync(chatId, chatAction, cancellationToken: cancellationToken);
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);
+    }
+
+    private static string GetTelegramToken(TelegramSettings telegramSettings)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(telegramSettings.Token);
+
+        return telegramSettings.Token;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        telegramSettings = null;
+
+        return ValueTask.CompletedTask;
     }
 }

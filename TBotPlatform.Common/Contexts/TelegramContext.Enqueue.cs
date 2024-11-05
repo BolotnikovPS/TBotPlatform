@@ -1,18 +1,14 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Contexts;
 
 internal partial class TelegramContext
 {
-    private static readonly SemaphoreSlim Semaphore = new(1);
     private static readonly Stopwatch Timer = new();
 
     private static int _iteration = 1;
-
-    private const int IterationWaitMilliSecond = 1 * 1000;
-    private const int MaxCountIteration = 29;
 
     /// <summary>
     /// Делает задержку при превышении лимита отправки сообщений в telegram
@@ -21,16 +17,11 @@ internal partial class TelegramContext
     /// <returns></returns>
     private async Task DelayAsync(CancellationToken cancellationToken)
     {
-        if (_iteration > MaxCountIteration)
+        if (_iteration > RateContextConstant.MaxCountIteration)
         {
             Timer.Stop();
 
             await telegramContextLog.HandleEnqueueLogAsync(_iteration, Timer.Elapsed.Seconds, _operationGuid, cancellationToken);
-
-            if (Timer.ElapsedMilliseconds <= IterationWaitMilliSecond)
-            {
-                await Task.Delay(IterationWaitMilliSecond, cancellationToken);
-            }
 
             _iteration = 0;
             Timer.Restart();
@@ -52,7 +43,6 @@ internal partial class TelegramContext
             throw new ArgumentException(nameof(execute));
         }
 
-        await Semaphore.WaitAsync(cancellationToken);
         try
         {
             Timer.Start();
@@ -61,16 +51,10 @@ internal partial class TelegramContext
 
             return await execute();
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Исключение при работе с telegram. OperationGuid: {operationGuid}", _operationGuid.ToString());
-            throw;
-        }
         finally
         {
             _iteration++;
             Timer.Stop();
-            Semaphore.Release();
         }
     }
 
@@ -88,7 +72,6 @@ internal partial class TelegramContext
             throw new ArgumentException(nameof(execute));
         }
 
-        await Semaphore.WaitAsync(cancellationToken);
         try
         {
             Timer.Start();
@@ -97,16 +80,10 @@ internal partial class TelegramContext
 
             await execute();
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Исключение при работе с telegram. OperationGuid: {operationGuid}", _operationGuid.ToString());
-            throw;
-        }
         finally
         {
             _iteration++;
             Timer.Stop();
-            Semaphore.Release();
         }
     }
 }

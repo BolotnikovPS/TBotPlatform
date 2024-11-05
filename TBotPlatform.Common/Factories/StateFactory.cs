@@ -129,18 +129,14 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
         var result = await GetLastStateWithMenuOrMainAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
 
-        return result.IsNotNull()
-            ? result
-            : default;
+        return result.IsNotNull() ? result : default;
     }
 
     public StateHistory GetLockState()
     {
         var state = stateFactoryDataCollection.FirstOrDefault(z => z.IsLockUserState);
 
-        return state.IsNotNull()
-            ? Convert(state)
-            : default;
+        return state.IsNotNull() ? Convert(state) : default;
     }
 
     public async Task<StateHistory> GetBindStateOrNullAsync(long chatId, CancellationToken cancellationToken)
@@ -151,9 +147,7 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
 
         var state = stateFactoryDataCollection.FirstOrDefault(z => z.StateTypeName == value);
 
-        return value.IsNotNull()
-            ? Convert(state)
-            : null;
+        return value.IsNotNull() ? Convert(state) : null;
     }
 
     public Task BindStateAsync(long chatId, StateHistory state, CancellationToken cancellationToken)

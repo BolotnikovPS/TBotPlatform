@@ -47,17 +47,17 @@ public class TelegramUser(
     public bool? AddedToAttachmentMenu { get; } = addedToAttachmentMenu;
 
     /// <summary>
-    /// Optional. <see langword="true"/>, if the bot can be invited to groups. Returned only in <see cref="Requests.GetMeRequest"/>
+    /// Optional. <see langword="true"/>, if the bot can be invited to groups.
     /// </summary>
     public bool? CanJoinGroups { get; } = canJoinGroups;
 
     /// <summary>
-    /// Optional. <see langword="true"/>, if privacy mode is disabled for the bot. Returned only in <see cref="Requests.GetMeRequest"/>
+    /// Optional. <see langword="true"/>, if privacy mode is disabled for the bot.
     /// </summary>
     public bool? CanReadAllGroupMessages { get; } = canReadAllGroupMessages;
 
     /// <summary>
-    /// Optional. <see langword="true"/>, if the bot supports inline queries. Returned only in <see cref="Requests.GetMeRequest"/>
+    /// Optional. <see langword="true"/>, if the bot supports inline queries.
     /// </summary>
     public bool? SupportsInlineQueries { get; } = supportsInlineQueries;
 

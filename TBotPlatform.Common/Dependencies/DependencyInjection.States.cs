@@ -3,6 +3,7 @@ using System.Reflection;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.State;
 using TBotPlatform.Contracts.Attributes;
+using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.StateFactory;
 using TBotPlatform.Contracts.Bots.Users;
 using TBotPlatform.Extension;
@@ -136,7 +137,7 @@ public static partial class DependencyInjection
         var stateStartCount = states
            .Count(
                 z => z.CommandsTypes.CheckAny()
-                     && z.CommandsTypes.Any(s => s.In("/start"))
+                     && z.CommandsTypes.Any(s => s.In(CommandTypesConstant.StartCommand))
                 );
 
         switch (stateStartCount)

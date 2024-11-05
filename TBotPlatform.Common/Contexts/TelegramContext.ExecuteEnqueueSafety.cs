@@ -29,7 +29,7 @@ internal partial class TelegramContext
 
         try
         {
-            await Enqueue(() => method, cancellationToken);
+            await Enqueue(() => method, cancellationToken); 
             await telegramContextLog.HandleLogAsync(fullLogMessage, cancellationToken);
         }
         catch (Exception ex)

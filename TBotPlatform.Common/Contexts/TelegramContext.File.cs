@@ -1,5 +1,4 @@
-﻿using TBotPlatform.Common.Contracts;
-using TBotPlatform.Contracts.Statistics;
+﻿using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -91,7 +90,7 @@ internal partial class TelegramContext
             OperationGuid = _operationGuid,
             OperationType = nameof(DownloadFileAsync),
             ChatId = chatId,
-            MessageBody = "",
+            MessageBody = new(),
         };
 
         var task = _botClient.DownloadFileAsync(filePath, destination, cancellationToken);
@@ -108,7 +107,7 @@ internal partial class TelegramContext
             OperationGuid = _operationGuid,
             OperationType = nameof(GetFileAsync),
             ChatId = chatId,
-            MessageBody = "",
+            MessageBody = new(),
         };
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);
@@ -123,7 +122,7 @@ internal partial class TelegramContext
             OperationGuid = _operationGuid,
             OperationType = nameof(GetFileAsync),
             ChatId = chatId,
-            MessageBody = "",
+            MessageBody = new(),
         };
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);

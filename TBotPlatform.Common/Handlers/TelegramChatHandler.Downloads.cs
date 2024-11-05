@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using TBotPlatform.Contracts.Bots.FileDatas;
+﻿using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 
@@ -51,31 +50,22 @@ internal partial class TelegramChatHandler
             return default;
         }
 
-        try
+        var file = await botClient.GetFileAsync(chatId, fileId, cancellationToken);
+
+        if (file.IsNull())
         {
-            var file = await botClient.GetFileAsync(chatId, fileId, cancellationToken);
-
-            if (file.IsNull())
-            {
-                return default;
-            }
-
-            await using var fileStream = new MemoryStream();
-
-            await botClient.DownloadFileAsync(chatId, file.FilePath!, fileStream, cancellationToken);
-
-            return new()
-            {
-                Bytes = fileStream.ToArray(),
-                Name = file.FilePath,
-                Size = file.FileSize!.Value,
-            };
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Ошибка скачивания {fileId}", fileId);
+            return default;
         }
 
-        return default;
+        await using var fileStream = new MemoryStream();
+
+        await botClient.DownloadFileAsync(chatId, file.FilePath!, fileStream, cancellationToken);
+
+        return new()
+        {
+            Bytes = fileStream.ToArray(),
+            Name = file.FilePath,
+            Size = file.FileSize!.Value,
+        };
     }
 }

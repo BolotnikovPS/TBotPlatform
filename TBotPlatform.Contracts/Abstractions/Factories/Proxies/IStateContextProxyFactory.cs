@@ -1,28 +1,31 @@
 ﻿#nullable enable
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
-using TBotPlatform.Contracts.Bots;
+using TBotPlatform.Contracts.Abstractions.Contexts.Proxies;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.Users;
+using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.State;
 using Telegram.Bot.Types;
 
-namespace TBotPlatform.Contracts.Abstractions.Factories;
+namespace TBotPlatform.Contracts.Abstractions.Factories.Proxies;
 
-public interface IStateContextFactory
+public interface IStateContextProxyFactory
 {
+    public void SetBot(ITelegramContextProxy telegramContextProxy);
     /// <summary>
     /// Создание контекста состояния. Базовым чатом указывается чат пользователя.
     /// </summary>
     /// <param name="user">Пользователь с которым будем взаимодействовать</param>
     /// <returns></returns>
-    IStateContextMinimal CreateStateContext<T>(T user) where T : UserBase;
+    /// 
+    IStateContextProxyMinimal CreateStateContext<T>(T user) where T : UserBase;
 
     /// <summary>
     /// Создание контекста состояния
     /// </summary>
     /// <param name="chatId">Id чата с которым будем взаимодействовать</param>
     /// <returns></returns>
-    IStateContextMinimal CreateStateContext(long chatId);
+    IStateContextProxyMinimal CreateStateContext(long chatId);
 
     /// <summary>
     /// Создание контекста состояния и вызов состояния. Базовым чатом указывается чат пользователя.
@@ -32,7 +35,7 @@ public interface IStateContextFactory
     /// <param name="update">Сообщение с telegram</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IStateContextMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
+    Task<IStateContextProxyMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
         where T : UserBase;
 
     /// <summary>
@@ -44,7 +47,7 @@ public interface IStateContextFactory
     /// <param name="chatUpdate">Форматированное сообщение с telegram</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IStateContextMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, ChatUpdate chatUpdate, CancellationToken cancellationToken)
+    Task<IStateContextProxyMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, ChatUpdate chatUpdate, CancellationToken cancellationToken)
         where T : UserBase;
 
     /// <summary>
@@ -57,7 +60,7 @@ public interface IStateContextFactory
     /// <param name="markupNextState">Данные с кнопки inline</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<IStateContextMinimal> CreateStateContextAsync<T>(
+    public Task<IStateContextProxyMinimal> CreateStateContextAsync<T>(
         T user,
         StateHistory stateHistory,
         ChatUpdate chatUpdate,
@@ -75,7 +78,7 @@ public interface IStateContextFactory
     /// <param name="markupNextState">Данные с кнопки inline</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IStateContextMinimal> CreateStateContextAsync<T>(
+    Task<IStateContextProxyMinimal> CreateStateContextAsync<T>(
         T user,
         StateHistory stateHistory,
         Update update,
@@ -89,5 +92,5 @@ public interface IStateContextFactory
     /// </summary>
     /// <param name="stateContext">Контекст состояния</param>
     /// <returns></returns>
-    StateResult? GetStateResult(IStateContextMinimal stateContext);
+    StateResult? GetStateResult(IStateContextProxyMinimal stateContext);
 }

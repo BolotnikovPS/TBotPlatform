@@ -15,7 +15,7 @@ public interface IMenuButtonFactory
     /// <param name="stateHistory">Вызываемое состояние</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task UpdateMarkupByStateAsync<T>(T user, IStateContextMinimal stateContext, StateHistory stateHistory, CancellationToken cancellationToken)
+    Task UpdateMainButtonsByStateAsync<T>(T user, IStateContextMinimal stateContext, StateHistory stateHistory, CancellationToken cancellationToken)
         where T : UserBase;
 
     /// <summary>
@@ -27,6 +27,6 @@ public interface IMenuButtonFactory
     /// <param name="menuStateType">Тип вызываемого меню</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task UpdateMarkupByStateAsync<T>(T user, IStateContextMinimal stateContext, Type menuStateType, CancellationToken cancellationToken)
+    Task UpdateMainButtonsByStateAsync<T>(T user, IStateContextMinimal stateContext, Type menuStateType, CancellationToken cancellationToken)
         where T : UserBase;
 }
