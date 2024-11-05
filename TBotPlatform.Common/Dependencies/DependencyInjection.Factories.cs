@@ -1,7 +1,5 @@
 ﻿#nullable enable
-using ComposableAsync;
 using Microsoft.Extensions.DependencyInjection;
-using RateLimiter;
 using System.Reflection;
 using TBotPlatform.Common.Factories;
 using TBotPlatform.Common.Factories.Proxies;
@@ -10,7 +8,6 @@ using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Abstractions.Factories.Proxies;
 using TBotPlatform.Contracts.Bots.Config;
-using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Dependencies;
@@ -52,24 +49,20 @@ public static partial class DependencyInjection
            .AddScoped<LoggingHttpHandler>()
            .AddScoped(typeof(ITelegramContextLog), typeof(TLog));
 
-        var limiterHandler = TimeLimiter
-                            .GetFromMaxCountByInterval(RateContextConstant.MaxCountIteration, TimeSpan.FromSeconds(1))
-                            .AsDelegatingHandler();
-
         if (httpClient.IsNotNull())
         {
             services
                .AddHttpClient<ITelegramContextProxyFactory, TelegramContextProxyFactory>(httpClient!)
+               .ConfigurePrimaryHttpMessageHandler(_ => GetLimeLimiter)
                .AddHttpMessageHandler<LoggingHttpHandler>()
-               .AddHttpMessageHandler(() => limiterHandler)
                .AddPolicyHandler(policy);
         }
         else
         {
             services
                .AddHttpClient<ITelegramContextProxyFactory, TelegramContextProxyFactory>()
+               .ConfigurePrimaryHttpMessageHandler(_ => GetLimeLimiter)
                .AddHttpMessageHandler<LoggingHttpHandler>()
-               .AddHttpMessageHandler(() => limiterHandler)
                .AddPolicyHandler(policy);
         }
 

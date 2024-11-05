@@ -33,24 +33,20 @@ public static partial class DependencyInjection
            .AddSingleton(telegramSettings)
            .AddScoped(typeof(ITelegramContextLog), typeof(TLog));
 
-        var limiterHandler = TimeLimiter
-                            .GetFromMaxCountByInterval(RateContextConstant.MaxCountIteration, TimeSpan.FromSeconds(1))
-                            .AsDelegatingHandler();
-
         if (httpClient.IsNotNull())
         {
             services
                .AddHttpClient<ITelegramContext, TelegramContext>(httpClient!)
+               .ConfigurePrimaryHttpMessageHandler(_ => GetLimeLimiter)
                .AddHttpMessageHandler<LoggingHttpHandler>()
-               .AddHttpMessageHandler(() => limiterHandler)
                .AddPolicyHandler(policy);
         }
         else
         {
             services
                .AddHttpClient<ITelegramContext, TelegramContext>()
+               .ConfigurePrimaryHttpMessageHandler(_ => GetLimeLimiter)
                .AddHttpMessageHandler<LoggingHttpHandler>()
-               .AddHttpMessageHandler(() => limiterHandler)
                .AddPolicyHandler(policy);
         }
 
@@ -94,4 +90,9 @@ public static partial class DependencyInjection
                (_, response, _) => response?.Result?.Headers.RetryAfter?.Delta ?? TimeSpan.FromMilliseconds(httpPolicy.RetryMilliSecondInterval),
                (_, _, _, _) => Task.CompletedTask
                );
+
+    private static DelegatingHandler GetLimeLimiter
+        => TimeLimiter
+          .GetFromMaxCountByInterval(RateContextConstant.MaxCountIteration, TimeSpan.FromSeconds(1))
+          .AsDelegatingHandler();
 }
