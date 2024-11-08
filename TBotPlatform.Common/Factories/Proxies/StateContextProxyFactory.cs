@@ -148,7 +148,7 @@ internal class StateContextProxyFactory(ILogger<StateContextFactory> logger, ISt
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, ErrorText);
+            logger.LogError(ex, "{stateName}. {errorText}", stateType.Name, ErrorText);
             exception = ex;
         }
 
@@ -157,14 +157,7 @@ internal class StateContextProxyFactory(ILogger<StateContextFactory> logger, ISt
             return;
         }
 
-        try
-        {
-            await state!.HandleErrorAsync(stateContext, user, exception, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, ErrorText);
-        }
+        await state!.HandleErrorAsync(stateContext, user, exception, cancellationToken);
     }
 
     private ITelegramMappingHandler GetTelegramMappingHandler => new TelegramChatHandler(GetTelegramContextProxyOrThrow);

@@ -1,4 +1,5 @@
-﻿namespace TBotPlatform.Contracts.Bots;
+﻿#nullable enable
+namespace TBotPlatform.Contracts.Bots;
 
 public class StateHistory
 {
@@ -10,17 +11,17 @@ public class StateHistory
     /// <summary>
     /// Тип кнопок состояния
     /// </summary>
-    public Type MenuStateType { get; }
+    public Type? MenuStateTypeOrNull { get; }
 
     /// <summary>
     /// Состояние вызывается только с inline кнопок
     /// </summary>
     public bool IsInlineState { get; }
 
-    public StateHistory(Type stateType, Type menuStateType = null, bool? isInlineState = null)
+    public StateHistory(Type stateType, Type? menuStateTypeOrNull = null, bool? isInlineState = null)
     {
         StateType = stateType;
-        MenuStateType = menuStateType;
+        MenuStateTypeOrNull = menuStateTypeOrNull;
 
         if (isInlineState.HasValue)
         {

@@ -145,7 +145,7 @@ internal class StateContextFactory(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, ErrorText);
+            logger.LogError(ex, "{stateName}. {errorText}", stateType.Name, ErrorText);
             exception = ex;
         }
 
@@ -163,13 +163,6 @@ internal class StateContextFactory(
             // ignored
         }
 
-        try
-        {
-            await state!.HandleErrorAsync(stateContext, user, exception, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, ErrorText);
-        }
+        await state!.HandleErrorAsync(stateContext, user, exception, cancellationToken);
     }
 }

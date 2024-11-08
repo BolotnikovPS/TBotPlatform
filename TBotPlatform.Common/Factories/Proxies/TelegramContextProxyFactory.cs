@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using TBotPlatform.Common.Contexts;
+using TBotPlatform.Common.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Factories.Proxies;
@@ -20,10 +20,10 @@ internal class TelegramContextProxyFactory(ILogger<TelegramContextProxyFactory> 
 
         logger.LogDebug($"Выполняем запрос для токена {botToken}");
 
-        return new TelegramContext(client, settings, telegramContextLog);
+        return new TelegramContextProxy(client, settings, telegramContextLog);
     }
 
-    public Task<T> MakeBotRequestAsync<T>(string botToken, bool protectContent, Func<ITelegramContext, Task<T>> request, CancellationToken cancellationToken)
+    public async Task<T> MakeBotRequestAsync<T>(string botToken, bool protectContent, Func<ITelegramContext, Task<T>> request, CancellationToken cancellationToken)
     {
         var settings = new TelegramSettings
         {
@@ -33,8 +33,8 @@ internal class TelegramContextProxyFactory(ILogger<TelegramContextProxyFactory> 
 
         logger.LogDebug($"Выполняем запрос для токена {botToken}");
 
-        var context = new TelegramContext(client, settings, telegramContextLog);
+        await using var context = new TelegramContextProxy(client, settings, telegramContextLog);
 
-        return request.Invoke(context);
+        return await request.Invoke(context);
     }
 }

@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using TBotPlatform.Common.Contexts;
 using TBotPlatform.Common.Factories;
 using TBotPlatform.Common.Factories.Proxies;
 using TBotPlatform.Common.Handlers;
@@ -69,11 +70,14 @@ public static partial class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddProxyFactories(this IServiceCollection services)
-    {
-        services
-           .AddScoped<IStateContextProxyFactory, StateContextProxyFactory>();
+    public static IServiceCollection AddTelegramContextProxyFactory(
+        this IServiceCollection services,
+        TelegramSettingsHttpPolicy? telegramSettingsHttpPolicy = null,
+        Action<HttpClient>? httpClient = null
+        )
+        => services.AddTelegramContextProxyFactory<TelegramContextLog>(telegramSettingsHttpPolicy, httpClient);
 
-        return services;
-    }
+    public static IServiceCollection AddProxyFactories(this IServiceCollection services)
+        => services
+           .AddScoped<IStateContextProxyFactory, StateContextProxyFactory>();
 }

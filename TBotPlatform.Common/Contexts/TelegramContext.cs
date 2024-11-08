@@ -1,5 +1,4 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Contexts;
-using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
@@ -8,7 +7,7 @@ using PMode = Telegram.Bot.Types.Enums.ParseMode;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal partial class TelegramContext(HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog) : ITelegramContextProxy
+internal partial class TelegramContext(HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog) : ITelegramContext
 {
     private const PMode ParseMode = PMode.Html;
 

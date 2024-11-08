@@ -14,9 +14,9 @@ internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMe
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(stateHistory);
-        ArgumentNullException.ThrowIfNull(stateHistory.MenuStateType);
+        ArgumentNullException.ThrowIfNull(stateHistory.MenuStateTypeOrNull);
 
-        return UpdateMainButtonsByStateAsync(user, stateContext, stateHistory.MenuStateType, cancellationToken);
+        return UpdateMainButtonsByStateAsync(user, stateContext, stateHistory.MenuStateTypeOrNull, cancellationToken);
     }
 
     public async Task UpdateMainButtonsByStateAsync<T>(T user, IStateContextMinimal stateContext, Type menuStateType, CancellationToken cancellationToken)
