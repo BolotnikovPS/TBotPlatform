@@ -10,21 +10,28 @@ internal partial class TelegramContext
 
     private static int _iteration = 1;
 
+    private const int MaxCount = 1;
+    private static readonly SemaphoreSlim SemaphoreSlim = new(MaxCount, MaxCount);
+
     /// <summary>
-    /// Делает задержку при превышении лимита отправки сообщений в telegram
+    /// Пишет лог отправки сообщений в telegram
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    private async Task DelayAsync(CancellationToken cancellationToken)
+    private async Task LogAsync(CancellationToken cancellationToken)
     {
-        if (_iteration > RateContextConstant.MaxCountIteration)
+        if (_iteration > RateContextConstant.MaxCountIteration && SemaphoreSlim.CurrentCount == MaxCount)
         {
+            await SemaphoreSlim.WaitAsync(cancellationToken);
+
             Timer.Stop();
 
-            await telegramContextLog.HandleEnqueueLogAsync(_iteration, Timer.Elapsed.Seconds, _operationGuid, cancellationToken);
+            await telegramContextLog.HandleEnqueueLogAsync(_iteration, Timer.Elapsed.Milliseconds, _operationGuid, cancellationToken);
 
             _iteration = 0;
             Timer.Restart();
+
+            SemaphoreSlim.Release();
         }
     }
 
@@ -47,7 +54,7 @@ internal partial class TelegramContext
         {
             Timer.Start();
 
-            await DelayAsync(cancellationToken);
+            await LogAsync(cancellationToken);
 
             return await execute();
         }
@@ -76,7 +83,7 @@ internal partial class TelegramContext
         {
             Timer.Start();
 
-            await DelayAsync(cancellationToken);
+            await LogAsync(cancellationToken);
 
             await execute();
         }

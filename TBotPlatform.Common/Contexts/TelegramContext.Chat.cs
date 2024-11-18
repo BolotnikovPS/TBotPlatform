@@ -16,7 +16,7 @@ internal partial class TelegramContext
             MessageBody = new(),
         };
 
-        var task = _botClient.GetChatMemberCountAsync(chatId, cancellationToken);
+        var task = _botClient.GetChatMemberCount(chatId, cancellationToken);
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
@@ -31,7 +31,7 @@ internal partial class TelegramContext
             MessageBody = new(),
         };
 
-        var task = _botClient.GetChatMemberAsync(chatId, userId, cancellationToken);
+        var task = _botClient.GetChatMember(chatId, userId, cancellationToken);
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
@@ -46,12 +46,12 @@ internal partial class TelegramContext
             MessageBody = new(),
         };
 
-        var task = _botClient.GetChatAdministratorsAsync(chatId, cancellationToken);
+        var task = _botClient.GetChatAdministrators(chatId, cancellationToken);
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
-    public Task<Chat> GetChatAsync(long chatId, CancellationToken cancellationToken)
+    public Task<ChatFullInfo> GetChatAsync(long chatId, CancellationToken cancellationToken)
     {
         var log = new TelegramContextLogMessage
         {
@@ -61,7 +61,7 @@ internal partial class TelegramContext
             MessageBody = new(),
         };
 
-        var task = _botClient.GetChatAsync(chatId, cancellationToken);
+        var task = _botClient.GetChat(chatId, cancellationToken);
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
@@ -76,7 +76,7 @@ internal partial class TelegramContext
             MessageBody = new(),
         };
 
-        var task = _botClient.LeaveChatAsync(chatId, cancellationToken);
+        var task = _botClient.LeaveChat(chatId, cancellationToken);
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }

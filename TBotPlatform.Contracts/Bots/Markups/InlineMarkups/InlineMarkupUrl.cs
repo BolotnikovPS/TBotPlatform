@@ -1,9 +1,10 @@
-﻿using Telegram.Bot.Types.ReplyMarkups;
+﻿using TBotPlatform.Contracts.Bots.Markups.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 
 public class InlineMarkupUrl(string buttonName, string url)
-    : InlineMarkupBase(buttonName)
+    : InlineMarkupBase(buttonName, EInlineMarkupType.Url)
 {
     public override InlineKeyboardButton Format()
     {

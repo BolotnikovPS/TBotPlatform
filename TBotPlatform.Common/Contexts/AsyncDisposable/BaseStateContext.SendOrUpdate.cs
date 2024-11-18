@@ -1,6 +1,4 @@
 ﻿using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
-using TBotPlatform.Contracts.Bots.Constant;
-using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Extension;
@@ -9,7 +7,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
-internal partial class StateContext
+internal partial class BaseStateContext
 {
     public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileDataBase photoData, bool disableNotification, CancellationToken cancellationToken)
     {
@@ -90,20 +88,14 @@ internal partial class StateContext
 
     private async Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineKeyboardMarkup inlineKeyboard, FileDataBase photoData, bool disableNotification, CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
-        {
-            throw new ChatIdArgException();
-        }
+        ChatIdValidOrThrow();
 
         if (text.IsNull())
         {
             return default;
         }
 
-        if (text.Length > StateContextConstant.TextLength)
-        {
-            throw new TextLengthException(text.Length, StateContextConstant.TextLength);
-        }
+        TextLengthValidOrThrow(text);
 
         if (photoData.IsNotNull())
         {
@@ -112,10 +104,7 @@ internal partial class StateContext
 
             if (checkToDelete)
             {
-                if (ChatUpdate.CallbackQueryOrNull.IsNull())
-                {
-                    throw new CallbackQueryMessageIdOrNullArgException();
-                }
+                CallbackQueryValidOrThrow(ChatUpdate.CallbackQueryOrNull);
 
                 await telegramContext.DeleteMessageAsync(ChatId, ChatUpdate.CallbackQueryOrNull.MessageId, cancellationToken);
             }
@@ -146,10 +135,7 @@ internal partial class StateContext
             return telegramMapping.MessageToResult(resultSendText);
         }
 
-        if (ChatUpdate.CallbackQueryOrNull.IsNull())
-        {
-            throw new CallbackQueryMessageIdOrNullArgException();
-        }
+        CallbackQueryValidOrThrow(ChatUpdate.CallbackQueryOrNull);
 
         var result = ChatUpdate.CallbackQueryOrNull!.MessageWithImage
             ? await telegramContext.EditMessageCaptionAsync(ChatId, ChatUpdate.CallbackQueryOrNull.MessageId, text, inlineKeyboard, cancellationToken)

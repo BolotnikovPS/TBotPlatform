@@ -99,7 +99,7 @@ internal class StateContextFactory(
     }
 
     public StateResult? GetStateResult(IStateContextMinimal stateContext)
-        => stateContext is StateContext context
+        => stateContext is BaseStateContext context
             ? context.StateResult
             : default;
 

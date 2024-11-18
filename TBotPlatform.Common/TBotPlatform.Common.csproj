@@ -9,13 +9,13 @@
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	<RepositoryUrl>https://github.com/BolotnikovPS/TBotPlatform</RepositoryUrl>
 	<Description>C# библиотека для облегчения создания бота Telegram</Description>
-	<Version>1.0.7-beta3</Version>
+	<Version>1.0.7-beta7</Version>
 	<IncludeSymbols>True</IncludeSymbols>
   </PropertyGroup>
 
 	<ItemGroup>
-		<Compile Update="**\StateContext.*.cs">
-			<DependentUpon>StateContext.cs</DependentUpon>
+		<Compile Update="**\BaseStateContext.*.cs">
+			<DependentUpon>BaseStateContext.cs</DependentUpon>
 		</Compile>
 		<Compile Update="**\StateFactory.*.cs">
 			<DependentUpon>StateFactory.cs</DependentUpon>

@@ -1,12 +1,13 @@
 ﻿using System.Text;
 using TBotPlatform.Contracts.Bots.Constant;
+using TBotPlatform.Contracts.Bots.Markups.Enums;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 
 public class InlineMarkupState(string buttonName, string state, string data = null)
-    : InlineMarkupBase(buttonName)
+    : InlineMarkupBase(buttonName, EInlineMarkupType.CallbackData)
 {
     public InlineMarkupState(string buttonName, MarkupNextState markupNextState)
         : this(buttonName, markupNextState.State, markupNextState.Data)

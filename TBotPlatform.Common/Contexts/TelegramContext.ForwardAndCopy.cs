@@ -24,7 +24,7 @@ internal partial class TelegramContext
             MessageBody = logMessageData,
         };
 
-        var task = _botClient.ForwardMessageAsync(
+        var task = _botClient.ForwardMessage(
             chatId,
             fromChatId,
             messageId,
@@ -65,20 +65,21 @@ internal partial class TelegramContext
             ChatId = chatId,
             MessageBody = logMessageData,
         };
-
-        var task = _botClient.CopyMessageAsync(
+        var replyParameters = new ReplyParameters { MessageId = replyToMessageId };
+        var task = _botClient.CopyMessage(
             chatId,
             fromChatId,
             messageId,
-            messageThreadId: null,
             caption,
             ParseMode,
+            replyParameters,
+            replyMarkup,
+            messageThreadId: null,
             captionEntities: null,
+            false,
             disableNotification,
             telegramSettings.ProtectContent,
-            replyToMessageId,
             allowSendingWithoutReply,
-            replyMarkup,
             cancellationToken
             );
 

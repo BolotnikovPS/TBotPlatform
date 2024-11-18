@@ -1,9 +1,10 @@
-﻿using Telegram.Bot.Types.ReplyMarkups;
+﻿using TBotPlatform.Contracts.Bots.Markups.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 
 public class InlineMarkupSwitchInlineQuery(string buttonName, string query)
-    : InlineMarkupBase(buttonName)
+    : InlineMarkupBase(buttonName, EInlineMarkupType.SwitchInlineQuery)
 {
     public override InlineKeyboardButton Format()
     {

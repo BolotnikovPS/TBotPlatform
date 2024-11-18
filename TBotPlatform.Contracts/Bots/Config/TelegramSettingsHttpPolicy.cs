@@ -1,6 +1,6 @@
 ﻿#nullable enable
-using System.Net;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace TBotPlatform.Contracts.Bots.Config;
 
@@ -23,4 +23,13 @@ public class TelegramSettingsHttpPolicy
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public int RetryMilliSecondInterval { get; set; } = 1000;
+
+    /// <summary>
+    /// Интервал между отправкой запросов в телеграм
+    /// У telegram ограничение, не более 30 обращений в 1 секунду.
+    /// Но часто при установке минимального значения в 1 секунду возникают проблемы взаимодействия, ответ с <see cref="HttpStatusCode.TooManyRequests"/>.
+    /// Для более точной настройки взаимодействия, подберите наиболее подходящий для вас интервал запросов
+    /// </summary>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int TelegramRequestMilliSecondInterval { get; set; } = 1000;
 }

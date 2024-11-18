@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using Newtonsoft.Json;
-using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -30,7 +29,7 @@ public class TelegramContextLogMessageData
     public ChatAction? ChatAction { get; set; }
 
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    public InputFile? InputFile { get; set; }
+    public FileType? FileType { get; set; }
 
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public bool? DisableNotification { get; set; }

@@ -13,7 +13,7 @@ internal partial class TelegramContext
         var logMessageData = new TelegramContextLogMessageData
         {
             ReplyMarkup = replyMarkup,
-            InputFile = document,
+            FileType = document?.FileType,
             DisableNotification = disableNotification,
         };
 
@@ -25,9 +25,9 @@ internal partial class TelegramContext
             MessageBody = logMessageData,
         };
 
-        var task = _botClient.SendDocumentAsync(
+        var task = _botClient.SendDocument(
             chatId,
-            document,
+            document!,
             parseMode: ParseMode,
             disableNotification: disableNotification,
             protectContent: telegramSettings.ProtectContent,
@@ -54,7 +54,7 @@ internal partial class TelegramContext
         {
             ReplyMarkup = replyMarkup,
             Caption = caption,
-            InputFile = photo,
+            FileType = photo?.FileType,
             DisableNotification = disableNotification,
         };
 
@@ -66,7 +66,7 @@ internal partial class TelegramContext
             MessageBody = logMessageData,
         };
 
-        var task = _botClient.SendPhotoAsync(
+        var task = _botClient.SendPhoto(
             chatId,
             photo,
             caption: caption,
@@ -93,14 +93,14 @@ internal partial class TelegramContext
             MessageBody = new(),
         };
 
-        var task = _botClient.DownloadFileAsync(filePath, destination, cancellationToken);
+        var task = _botClient.DownloadFile(filePath, destination, cancellationToken);
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
     public Task<File> GetFileAsync(long chatId, string fileId, CancellationToken cancellationToken)
     {
-        var task = _botClient.GetFileAsync(fileId, cancellationToken);
+        var task = _botClient.GetFile(fileId, cancellationToken);
 
         var log = new TelegramContextLogMessage
         {
@@ -115,7 +115,7 @@ internal partial class TelegramContext
 
     public Task<File> GetInfoAndDownloadFileAsync(long chatId, string fileId, Stream destination, CancellationToken cancellationToken)
     {
-        var task = _botClient.GetInfoAndDownloadFileAsync(fileId, destination, cancellationToken);
+        var task = _botClient.GetInfoAndDownloadFile(fileId, destination, cancellationToken);
 
         var log = new TelegramContextLogMessage
         {

@@ -1,23 +1,14 @@
 ﻿using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
-using TBotPlatform.Contracts.Bots.Exceptions;
-using TBotPlatform.Extension;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
-internal partial class StateContext
+internal partial class BaseStateContext
 {
     public async Task<ChatResult> ForwardMessageAsync(long fromChatId, int messageId, bool disableNotification, CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
-        {
-            throw new ChatIdArgException();
-        }
-
-        if (messageId.IsDefault())
-        {
-            throw new MessageIdArgException();
-        }
+        ChatIdValidOrThrow();
+        MessageIdValidOrThrow(messageId);
 
         var result = await telegramContext.ForwardMessageAsync(ChatId, fromChatId, messageId, disableNotification, cancellationToken);
 
@@ -38,20 +29,9 @@ internal partial class StateContext
         CancellationToken cancellationToken
         )
     {
-        if (ChatId.IsDefault())
-        {
-            throw new ChatIdArgException();
-        }
-
-        if (fromChatId.IsDefault())
-        {
-            throw new ChatIdArgException();
-        }
-
-        if (messageId.IsDefault())
-        {
-            throw new MessageIdArgException();
-        }
+        ChatIdValidOrThrow();
+        ChatIdValidOrThrow(fromChatId);
+        MessageIdValidOrThrow(messageId);
 
         var result = await telegramContext.CopyMessageAsync(
             ChatId,

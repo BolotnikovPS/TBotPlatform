@@ -1,15 +1,17 @@
-﻿using TBotPlatform.Contracts.Bots.Buttons;
+﻿using TBotPlatform.Contracts.Bots.Account;
+using TBotPlatform.Contracts.Bots.Buttons;
 using TBotPlatform.Contracts.Bots.Chats;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
 using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.Bots.Markups;
+using TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 
-public interface IStateContextProxyMinimal : IAsyncDisposable
+public interface IStateContextBase
 {
     /// <summary>
     /// Отправляет документы в чат
@@ -333,7 +335,7 @@ public interface IStateContextProxyMinimal : IAsyncDisposable
     /// <param name="chatIdToCheck"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<TelegramChat> GetChatAsync(long chatIdToCheck, CancellationToken cancellationToken);
+    Task<TelegramChatFullInfo> GetChatAsync(long chatIdToCheck, CancellationToken cancellationToken);
 
     /// <summary>
     /// Покидает чат
@@ -342,4 +344,30 @@ public interface IStateContextProxyMinimal : IAsyncDisposable
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task LeaveChatAsync(long chatIdToLeave, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получает информацию о связи бота с бизнес-аккаунтом
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<TelegramBusinessInfo> GetBusinessInfoAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отправляет ответ клиенту на запросы типа callback
+    /// </summary>
+    /// <param name="text">Текст уведомления</param>
+    /// <param name="showAlert">Если true, вместо уведомления в верхней части экрана чата клиент будет показывать оповещение</param>
+    /// <param name="url">URL, который будет открыт клиентом пользователя. Если вы создали <see cref="InlineMarkupCallBackGame"/> и приняли условия через <a href="https://t.me/botfather">@BotFather</a>, укажите URL, который открывает вашу игру.
+    /// В противном случае вы можете использовать ссылки типа <c>t.me/your_bot?start=XXXX</c>, которые открывают вашего бота с параметром.</param>
+    /// <param name="cacheTime">Максимальное время в секундах, в течение которого результат запроса обратного вызова может отображаться на стороне клиента</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <returns></returns>
+    public Task AnswerCallbackQueryAsync(
+        string text,
+        bool showAlert,
+        string url,
+        int? cacheTime,
+        CancellationToken cancellationToken
+        );
 }

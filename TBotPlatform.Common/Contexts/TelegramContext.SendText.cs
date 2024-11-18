@@ -24,13 +24,14 @@ internal partial class TelegramContext
             MessageBody = logMessageData,
         };
 
-        var task = _botClient.SendTextMessageAsync(
+        var task = _botClient.SendMessage(
             chatId,
             text,
             parseMode: ParseMode,
             disableNotification: disableNotification,
             protectContent: telegramSettings.ProtectContent,
             replyMarkup: replyMarkup,
+            businessConnectionId: telegramSettings?.BusinessConnectionId,
             cancellationToken: cancellationToken
             );
 

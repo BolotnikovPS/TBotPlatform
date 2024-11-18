@@ -24,7 +24,7 @@ internal class TelegramContextHostedService(
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var result = await telegramContext.MakeRequestAsync(request => request.GetMeAsync(stoppingToken), stoppingToken);
+        var result = await telegramContext.MakeRequestAsync(request => request.GetMe(stoppingToken), stoppingToken);
 
         logger.LogDebug("Запущен бот {name}", result.FirstName);
 
@@ -39,7 +39,7 @@ internal class TelegramContextHostedService(
             try
             {
                 var updates = await telegramContext.MakeRequestAsync(
-                    request => request.GetUpdatesAsync(offset, allowedUpdates: updateType, cancellationToken: stoppingToken),
+                    request => request.GetUpdates(offset, allowedUpdates: updateType, cancellationToken: stoppingToken),
                     stoppingToken
                     );
 

@@ -139,6 +139,13 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
         return state.IsNotNull() ? Convert(state) : default;
     }
 
+    public StateHistory GetRegistrationState()
+    {
+        var state = stateFactoryDataCollection.FirstOrDefault(z => z.IsRegistrationState);
+
+        return state.IsNotNull() ? Convert(state) : default;
+    }
+
     public async Task<StateHistory> GetBindStateOrNullAsync(long chatId, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(chatId);

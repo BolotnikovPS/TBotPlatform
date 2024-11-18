@@ -1,11 +1,12 @@
-﻿using System.Net;
-using System.Text;
+﻿using ComposableAsync;
 using Microsoft.Extensions.Logging;
+using System.Net;
+using System.Text;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Handlers;
 
-public class LoggingHttpHandler(ILogger<LoggingHttpHandler> logger)
+internal class LoggingHttpHandler(ILogger<LoggingHttpHandler> logger, IDispatcher dispatcher)
     : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -19,8 +20,9 @@ public class LoggingHttpHandler(ILogger<LoggingHttpHandler> logger)
                 var resultRequest = await request.Content!.ReadAsStringAsync(cancellationToken);
                 sbLog.AppendLine(resultRequest.ToJson());
             }
-
-            var response = await base.SendAsync(request, cancellationToken);
+            
+            var response = await dispatcher.Enqueue(() => base.SendAsync(request, cancellationToken), cancellationToken);
+            //var response = await base.SendAsync(request, cancellationToken);
 
             sbLog.AppendLine($"Response: {response.ToJson()}");
 

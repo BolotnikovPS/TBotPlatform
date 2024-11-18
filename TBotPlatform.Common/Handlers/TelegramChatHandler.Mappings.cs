@@ -89,6 +89,24 @@ internal partial class TelegramChatHandler
             return default;
         }
 
+        return new(
+            chat.Id,
+            CreateChatType(chat.Type),
+            chat.Title,
+            chat.Username,
+            chat.FirstName,
+            chat.LastName,
+            chat.IsForum
+            );
+    }
+
+    private static TelegramChatFullInfo CreateChat(ChatFullInfo chat)
+    {
+        if (chat.IsNull())
+        {
+            return default;
+        }
+
         TelegramChatPhoto telegramChatPhoto = null;
 
         if (chat.Photo.IsNotNull())
@@ -282,15 +300,22 @@ internal partial class TelegramChatHandler
 
         if (button.LoginUrl.IsNotNull())
         {
-            return new InlineMarkupLoginUrl(button.Text, button.LoginUrl);
+            var loginUrl = button.LoginUrl;
+            return new InlineMarkupLoginUrl(
+                button.Text,
+                loginUrl?.Url,
+                loginUrl?.ForwardText,
+                loginUrl?.BotUsername,
+                loginUrl?.RequestWriteAccess ?? false
+                );
         }
 
         if (button.CallbackGame.IsNotNull())
         {
-            return new InlineMarkupCallBackGame(button.Text, button.CallbackGame);
+            return new InlineMarkupCallBackGame(button.Text);
         }
 
-        if (button.Pay == true)
+        if (button.Pay)
         {
             return new InlineMarkupPayment(button.Text);
         }
@@ -302,7 +327,15 @@ internal partial class TelegramChatHandler
 
         if (button.SwitchInlineQueryChosenChat.IsNotNull())
         {
-            return new InlineMarkupSwitchInlineQueryChosenChat(button.Text, button.SwitchInlineQueryChosenChat);
+            var switchInlineQueryChosenChat = button.SwitchInlineQueryChosenChat;
+            return new InlineMarkupSwitchInlineQueryChosenChat(
+                button.Text,
+                switchInlineQueryChosenChat?.Query,
+                switchInlineQueryChosenChat?.AllowUserChats ?? false,
+                switchInlineQueryChosenChat?.AllowBotChats ?? false,
+                switchInlineQueryChosenChat?.AllowGroupChats ?? false,
+                switchInlineQueryChosenChat?.AllowChannelChats ?? false
+                );
         }
 
         if (button.SwitchInlineQueryCurrentChat.IsNotNull())
@@ -315,7 +348,12 @@ internal partial class TelegramChatHandler
             return new InlineMarkupWebApp(button.Text, button.WebApp!.Url);
         }
 
-        return default;
+        if (button.CopyText.IsNotNull())
+        {
+            return new InlineMarkupCopyText(button.Text, button.CopyText?.Text);
+        }
+
+        return new InlineMarkupStateDefault(button.Text);
     }
 
     private static ChatWebAppData CreateWebAppData(WebAppData data)
@@ -331,7 +369,8 @@ internal partial class TelegramChatHandler
     private static ChatEntity[] CreateChatMessageEntity(MessageEntity[] entity)
     {
         if (entity.IsNull()
-            || !entity.CheckAny())
+            || !entity.CheckAny()
+            )
         {
             return default;
         }

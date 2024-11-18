@@ -1,8 +1,8 @@
 ﻿#nullable enable
-using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
+using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable.Proxies;
+using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.Users;
-using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.State;
 using Telegram.Bot.Types;
 
@@ -10,13 +10,17 @@ namespace TBotPlatform.Contracts.Abstractions.Factories.Proxies;
 
 public interface IStateContextProxyFactory
 {
+    /// <summary>
+    /// Устанавливает бота с которого будут отправляться запросы
+    /// </summary>
+    /// <param name="telegramContextProxy"></param>
     public void SetBot(ITelegramContextProxy telegramContextProxy);
+
     /// <summary>
     /// Создание контекста состояния. Базовым чатом указывается чат пользователя.
     /// </summary>
     /// <param name="user">Пользователь с которым будем взаимодействовать</param>
     /// <returns></returns>
-    /// 
     IStateContextProxyMinimal CreateStateContext<T>(T user) where T : UserBase;
 
     /// <summary>

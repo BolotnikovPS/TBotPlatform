@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Contracts.Statistics;
+﻿#nullable enable
+using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -295,7 +296,7 @@ public interface ITelegramContext
     /// <summary>
     /// Подсчитывает число участников чата
     /// </summary>
-    /// <param name="chatId"></param>
+    /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<int> GetChatMemberCountAsync(long chatId, CancellationToken cancellationToken);
@@ -303,8 +304,8 @@ public interface ITelegramContext
     /// <summary>
     /// Получает информацию для пользователя по чату
     /// </summary>
-    /// <param name="chatId"></param>
-    /// <param name="userId"></param>
+    /// <param name="chatId">Id чата</param>
+    /// <param name="userId">Id пользователя</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<ChatMember> GetChatMemberAsync(long chatId, long userId, CancellationToken cancellationToken);
@@ -312,7 +313,7 @@ public interface ITelegramContext
     /// <summary>
     /// Получает информацию о списке администраторов чата
     /// </summary>
-    /// <param name="chatId"></param>
+    /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<ChatMember[]> GetChatAdministratorsAsync(long chatId, CancellationToken cancellationToken);
@@ -320,16 +321,43 @@ public interface ITelegramContext
     /// <summary>
     /// Получает информацию о чате
     /// </summary>
-    /// <param name="chatId"></param>
+    /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Chat> GetChatAsync(long chatId, CancellationToken cancellationToken);
+    Task<ChatFullInfo> GetChatAsync(long chatId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Покидает чат
     /// </summary>
-    /// <param name="chatId"></param>
+    /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task LeaveChatAsync(long chatId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получает информацию о связи бота с бизнес-аккаунтом
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<BusinessConnection> GetBusinessConnectionAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отправляет ответ клиенту на запросы типа callback
+    /// </summary>
+    /// <param name="callbackQueryId">Id callback на который необходимо ответить</param>
+    /// <param name="text">Текст уведомления</param>
+    /// <param name="showAlert">Если true, вместо уведомления в верхней части экрана чата клиент будет показывать оповещение</param>
+    /// <param name="url">URL, который будет открыт клиентом пользователя. Если вы создали <see cref="Game"/> и приняли условия через <a href="https://t.me/botfather">@BotFather</a>, укажите URL, который открывает вашу игру - обратите внимание, что это сработает только в том случае, если запрос поступает от кнопки <see cref="InlineKeyboardButton"><em>CallbackGame</em></see>.
+    /// В противном случае вы можете использовать ссылки типа <c>t.me/your_bot?start=XXXX</c>, которые открывают вашего бота с параметром.</param>
+    /// <param name="cacheTime">Максимальное время в секундах, в течение которого результат запроса обратного вызова может отображаться на стороне клиента</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public Task AnswerCallbackQueryAsync(
+        string callbackQueryId,
+        string? text,
+        bool showAlert,
+        string? url,
+        int? cacheTime,
+        CancellationToken cancellationToken
+        );
 }

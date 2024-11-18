@@ -66,4 +66,10 @@ public interface IStateFactory : IStateBindFactory
     /// </summary>
     /// <returns></returns>
     StateHistory GetLockState();
+
+    /// <summary>
+    /// Получает состояние для заблокированных пользователей
+    /// </summary>
+    /// <returns></returns>
+    StateHistory GetRegistrationState();
 }

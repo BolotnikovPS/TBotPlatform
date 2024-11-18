@@ -44,9 +44,11 @@ public static partial class DependencyInjection
         )
         where TLog : ITelegramContextLog
     {
-        var policy = GetRetryPolicy(telegramSettingsHttpPolicy ?? new());
+        telegramSettingsHttpPolicy ??= new();
+        var policy = GetRetryPolicy(telegramSettingsHttpPolicy);
 
         services
+           .AddSingleton(_ => GetLimeLimiter(telegramSettingsHttpPolicy.TelegramRequestMilliSecondInterval))
            .AddScoped<LoggingHttpHandler>()
            .AddScoped(typeof(ITelegramContextLog), typeof(TLog));
 
@@ -54,7 +56,6 @@ public static partial class DependencyInjection
         {
             services
                .AddHttpClient<ITelegramContextProxyFactory, TelegramContextProxyFactory>(httpClient!)
-               .ConfigurePrimaryHttpMessageHandler(_ => GetLimeLimiter)
                .AddHttpMessageHandler<LoggingHttpHandler>()
                .AddPolicyHandler(policy);
         }
@@ -62,7 +63,6 @@ public static partial class DependencyInjection
         {
             services
                .AddHttpClient<ITelegramContextProxyFactory, TelegramContextProxyFactory>()
-               .ConfigurePrimaryHttpMessageHandler(_ => GetLimeLimiter)
                .AddHttpMessageHandler<LoggingHttpHandler>()
                .AddPolicyHandler(policy);
         }
@@ -79,5 +79,6 @@ public static partial class DependencyInjection
 
     public static IServiceCollection AddProxyFactories(this IServiceCollection services)
         => services
-           .AddScoped<IStateContextProxyFactory, StateContextProxyFactory>();
+          .AddScoped<IStateContextProxyFactory, StateContextProxyFactory>()
+          .AddScoped<IStateProxyFactory, StateProxyFactory>();
 }

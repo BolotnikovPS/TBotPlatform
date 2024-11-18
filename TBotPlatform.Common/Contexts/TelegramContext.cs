@@ -43,7 +43,7 @@ internal partial class TelegramContext(HttpClient client, TelegramSettings teleg
             MessageBody = logMessageData,
         };
 
-        var task = _botClient.DeleteMessageAsync(chatId, messageId, cancellationToken);
+        var task = _botClient.DeleteMessage(chatId, messageId, cancellationToken);
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
@@ -63,7 +63,7 @@ internal partial class TelegramContext(HttpClient client, TelegramSettings teleg
             MessageBody = logMessageData,
         };
 
-        var task = _botClient.SendChatActionAsync(chatId, chatAction, cancellationToken: cancellationToken);
+        var task = _botClient.SendChatAction(chatId, chatAction, cancellationToken: cancellationToken);
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }

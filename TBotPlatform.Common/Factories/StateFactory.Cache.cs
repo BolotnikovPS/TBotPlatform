@@ -5,9 +5,16 @@ namespace TBotPlatform.Common.Factories;
 
 internal partial class StateFactory
 {
-    private const string CacheCollectionKeyName = "UserStates";
-    private const string CacheBindCollectionKeyName = "UserStatesBind";
+    private string CacheCollectionKeyName { get; set; } = "UserStates";
+    private string CacheBindCollectionKeyName { get; set; } = "UserStatesBind";
+
     private const int MaxState = 10;
+
+    internal void SetCacheKeyPrefix(string prefix)
+    {
+        CacheCollectionKeyName = $"{prefix}_{CacheCollectionKeyName}";
+        CacheBindCollectionKeyName = $"{prefix}_{CacheBindCollectionKeyName}";
+    }
 
     private async Task<List<string>> GetStatesInCacheOrEmptyAsync(long chatId, CancellationToken cancellationToken)
     {

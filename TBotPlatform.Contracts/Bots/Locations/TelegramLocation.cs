@@ -3,7 +3,7 @@
 public class TelegramLocation(
     double longitude,
     double latitude,
-    float? horizontalAccuracy,
+    double? horizontalAccuracy,
     int? livePeriod,
     int? heading,
     int? proximityAlertRadius
@@ -22,7 +22,7 @@ public class TelegramLocation(
     /// <summary>
     /// Optional. The radius of uncertainty for the location, measured in meters; 0-1500
     /// </summary>
-    public float? HorizontalAccuracyOrNull { get; } = horizontalAccuracy;
+    public double? HorizontalAccuracyOrNull { get; } = horizontalAccuracy;
 
     /// <summary>
     /// Optional. Time relative to the message sending date, during which the location can be updated, in seconds. For active live locations only.

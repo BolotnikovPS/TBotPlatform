@@ -23,7 +23,7 @@ internal class TelegramContextLog(ILogger<TelegramContextLog> logger) : ITelegra
 
     public Task HandleEnqueueLogAsync(int requestCount, int elapsedSeconds, Guid operationGuid, CancellationToken cancellationToken)
     {
-        logger.LogDebug("Отправлено {count} запросов в telegram за {second} секунд. OperationGuid: {operationGuid}", requestCount, elapsedSeconds, operationGuid.ToString());
+        logger.LogDebug("Отправлено {count} запросов в telegram за {second} миллисекунд. OperationGuid: {operationGuid}", requestCount, elapsedSeconds, operationGuid.ToString());
 
         return Task.CompletedTask;
     }

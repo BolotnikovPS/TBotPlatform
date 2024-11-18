@@ -74,7 +74,7 @@ public class StateFactoryData
 
         if (isRegistrationState.HasValue)
         {
-            IsLockUserState = isRegistrationState.Value;
+            IsRegistrationState = isRegistrationState.Value;
         }
     }
 }

@@ -29,15 +29,15 @@ public static partial class DependencyInjection
         var policy = GetRetryPolicy(telegramSettings.HttpPolicy);
 
         services
-           .AddScoped<LoggingHttpHandler>()
            .AddSingleton(telegramSettings)
+           .AddSingleton(_ => GetLimeLimiter(telegramSettings.HttpPolicy.TelegramRequestMilliSecondInterval))
+           .AddScoped<LoggingHttpHandler>()
            .AddScoped(typeof(ITelegramContextLog), typeof(TLog));
 
         if (httpClient.IsNotNull())
         {
             services
                .AddHttpClient<ITelegramContext, TelegramContext>(httpClient!)
-               .ConfigurePrimaryHttpMessageHandler(_ => GetLimeLimiter)
                .AddHttpMessageHandler<LoggingHttpHandler>()
                .AddPolicyHandler(policy);
         }
@@ -45,7 +45,6 @@ public static partial class DependencyInjection
         {
             services
                .AddHttpClient<ITelegramContext, TelegramContext>()
-               .ConfigurePrimaryHttpMessageHandler(_ => GetLimeLimiter)
                .AddHttpMessageHandler<LoggingHttpHandler>()
                .AddPolicyHandler(policy);
         }
@@ -91,8 +90,6 @@ public static partial class DependencyInjection
                (_, _, _, _) => Task.CompletedTask
                );
 
-    private static DelegatingHandler GetLimeLimiter
-        => TimeLimiter
-          .GetFromMaxCountByInterval(RateContextConstant.MaxCountIteration, TimeSpan.FromSeconds(1))
-          .AsDelegatingHandler();
+    private static IDispatcher GetLimeLimiter(int telegramRequestMilliSecondInterval)
+        => TimeLimiter.GetFromMaxCountByInterval(RateContextConstant.MaxCountIteration, TimeSpan.FromMilliseconds(telegramRequestMilliSecondInterval));
 }

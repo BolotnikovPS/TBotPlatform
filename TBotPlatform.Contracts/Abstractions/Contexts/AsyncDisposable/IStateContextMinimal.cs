@@ -1,6 +1,6 @@
 ﻿namespace TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 
-public interface IStateContextMinimal : IStateContextProxyMinimal
+public interface IStateContextMinimal : IStateContextBase, IAsyncDisposable
 {
     /// <summary>
     /// Получает OperationGuid текущих пулов запросов к telegram

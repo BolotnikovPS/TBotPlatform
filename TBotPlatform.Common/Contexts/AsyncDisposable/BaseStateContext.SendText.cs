@@ -1,12 +1,11 @@
 ﻿using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
 using TBotPlatform.Contracts.Bots.Constant;
-using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
-internal partial class StateContext
+internal partial class BaseStateContext
 {
     public Task<ChatResult> SendTextMessageWithReplyAsync(string text, bool disableNotification, CancellationToken cancellationToken)
         => SendTextMessageAsync(text, withReply: true, disableNotification, cancellationToken);
@@ -22,20 +21,14 @@ internal partial class StateContext
 
     private async Task<ChatResult> SendTextMessageAsync(string text, bool withReply, bool disableNotification, CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
-        {
-            throw new ChatIdArgException();
-        }
+        ChatIdValidOrThrow();
 
         if (text.IsNull())
         {
             return default;
         }
 
-        if (text.Length > StateContextConstant.TextLength)
-        {
-            throw new TextLengthException(text.Length, StateContextConstant.TextLength);
-        }
+        TextLengthValidOrThrow(text);
 
         var replyMarkup = !withReply
             ? null
@@ -57,10 +50,7 @@ internal partial class StateContext
 
     public async Task SendLongTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
-        {
-            throw new ChatIdArgException();
-        }
+        ChatIdValidOrThrow();
 
         if (text.IsNull())
         {

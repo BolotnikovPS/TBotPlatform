@@ -30,7 +30,7 @@ internal partial class TelegramContext
             MessageBody = logMessageData,
         };
 
-        var task = _botClient.EditMessageTextAsync(
+        var task = _botClient.EditMessageText(
             chatId,
             messageId,
             text,
@@ -62,7 +62,7 @@ internal partial class TelegramContext
             MessageBody = logMessageData,
         };
 
-        var task = _botClient.EditMessageCaptionAsync(
+        var task = _botClient.EditMessageCaption(
             chatId,
             messageId,
             caption,
@@ -97,11 +97,12 @@ internal partial class TelegramContext
             ChatId = chatId,
             MessageBody = logMessageData,
         };
-
-        var task = _botClient.EditMessageReplyMarkupAsync(
+        
+        var task = _botClient.EditMessageReplyMarkup(
             chatId,
             messageId,
             replyMarkup,
+            telegramSettings?.BusinessConnectionId,
             cancellationToken
             );
 

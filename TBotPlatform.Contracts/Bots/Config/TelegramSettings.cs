@@ -17,6 +17,12 @@ public class TelegramSettings
     public bool ProtectContent { get; init; }
 
     /// <summary>
+    /// Идентификатор бизнес аккаунта
+    /// </summary>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string? BusinessConnectionId { get; init; }
+
+    /// <summary>
     /// Типы обновлений которые будет получать бот
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]

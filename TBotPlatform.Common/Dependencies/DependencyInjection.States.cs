@@ -13,6 +13,9 @@ namespace TBotPlatform.Common.Dependencies;
 public static partial class DependencyInjection
 {
     public static IServiceCollection AddStates(this IServiceCollection services, Assembly executingAssembly, string botType = "")
+        => services.AddStates(executingAssembly, botTypes: botType);
+
+    public static IServiceCollection AddStates(this IServiceCollection services, Assembly executingAssembly, params string[] botTypes)
     {
         if (executingAssembly.IsNull())
         {
@@ -46,7 +49,7 @@ public static partial class DependencyInjection
 
             var attr = stateType.GetCustomAttributes(typeof(StateActivatorBaseAttribute), inherit: true).FirstOrDefault() as StateActivatorBaseAttribute;
 
-            if (!attr!.OnlyForBot.In("None", botType) && attr.OnlyForBot.CheckAny())
+            if (attr!.OnlyForBot.CheckAny() && (attr.OnlyForBot.NotIn("None", "") || attr.OnlyForBot.NotIn(botTypes)))
             {
                 continue;
             }

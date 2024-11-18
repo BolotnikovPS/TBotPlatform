@@ -1,16 +1,15 @@
 ﻿#nullable enable
-using Telegram.Bot.Types;
+using TBotPlatform.Contracts.Bots.Markups.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 
-public class InlineMarkupCallBackGame(string buttonName, CallbackGame? callbackGame = default)
-    : InlineMarkupBase(buttonName)
+public class InlineMarkupCallBackGame(string buttonName)
+    : InlineMarkupBase(buttonName, EInlineMarkupType.CallbackGame)
 {
     public override InlineKeyboardButton Format()
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(ButtonName);
-
-        return InlineKeyboardButton.WithCallBackGame(ButtonName, callbackGame);
+        return InlineKeyboardButton.WithCallbackGame(ButtonName);
     }
 }

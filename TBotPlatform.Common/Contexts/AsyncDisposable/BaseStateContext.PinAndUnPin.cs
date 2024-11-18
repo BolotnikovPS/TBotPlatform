@@ -1,21 +1,11 @@
-﻿using TBotPlatform.Contracts.Bots.Exceptions;
-using TBotPlatform.Extension;
+﻿namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
-namespace TBotPlatform.Common.Contexts.AsyncDisposable;
-
-internal partial class StateContext
+internal partial class BaseStateContext
 {
     public Task PinChatMessageAsync(int messageId, bool disableNotification, CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
-        {
-            throw new ChatIdArgException();
-        }
-
-        if (messageId.IsDefault())
-        {
-            throw new MessageIdArgException();
-        }
+        ChatIdValidOrThrow();
+        MessageIdValidOrThrow(messageId);
 
         return telegramContext.PinChatMessageAsync(ChatId, messageId, disableNotification, cancellationToken);
     }
@@ -25,25 +15,15 @@ internal partial class StateContext
 
     public Task UnpinChatMessageAsync(int messageId, CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
-        {
-            throw new ChatIdArgException();
-        }
-
-        if (messageId.IsDefault())
-        {
-            throw new MessageIdArgException();
-        }
+        ChatIdValidOrThrow();
+        MessageIdValidOrThrow(messageId);
 
         return telegramContext.UnpinChatMessageAsync(ChatId, messageId, cancellationToken);
     }
 
     public Task UnpinAllChatMessages(CancellationToken cancellationToken)
     {
-        if (ChatId.IsDefault())
-        {
-            throw new ChatIdArgException();
-        }
+        ChatIdValidOrThrow();
 
         return telegramContext.UnpinAllChatMessagesAsync(ChatId, cancellationToken);
     }

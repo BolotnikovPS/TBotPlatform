@@ -1,5 +1,6 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Handlers;
+using TBotPlatform.Contracts.Bots.Account;
 using TBotPlatform.Contracts.Bots.Chats;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
@@ -126,6 +127,7 @@ internal partial class TelegramChatHandler(ITelegramContext botClient)
                         if (callbackQueryMessageOrNull.IsNotNull())
                         {
                             callbackQueryOrNull = new(
+                                update.CallbackQuery.Id,
                                 callbackQueryMessageOrNull!,
                                 callbackQueryMessageWithImage,
                                 callbackQueryMessage.MessageId,
@@ -350,5 +352,15 @@ internal partial class TelegramChatHandler(ITelegramContext botClient)
 
     public ChatMemberData ChatMemberToData(ChatMember chatMember) => CreateChatMessageMember(chatMember);
 
-    public TelegramChat ChatToTelegramChat(Chat chat) => CreateChat(chat);
+    public TelegramChatFullInfo ChatToTelegramChat(ChatFullInfo chat) => CreateChat(chat);
+
+    public TelegramBusinessInfo GetTelegramBusinessInfo(BusinessConnection connection)
+        => new(
+            connection.Id,
+            CreateUser(connection.User),
+            connection.UserChatId,
+            connection.Date,
+            connection.CanReply,
+            connection.IsEnabled
+            );
 }
