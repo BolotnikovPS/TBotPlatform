@@ -8,9 +8,10 @@ Project targets .NET 8 at minimum.
 
 <h2>Термины</h2>
  - <b>Состояние</b> - класс выполняющий обработку данных запроса конкретного пользователя. Вызов определяется атрибутом состояния.
- <br/>- <b>Атрибут состояния</b> - атрибут определяющий поведение получения состояния, на команду от пользователя
+ <br/>- <b>Атрибут состояния</b> - атрибут определяющий поведение получения состояния, на команду от пользователя.
+ <br/>- <b>Прокси</b> - механизмы взаимодействия с telegram по множеству токенов.
 
- <h2>Интерфейсы</h2>
+<h2>Интерфейсы</h2>
   - <b>IState</b> - методы состояния для обработки запроса
   <br/>- <b>IStateFactory</b> - помошник, помогает определить состояние по атрибуту состояния
   <br/>- <b>IStateBind</b> - помошник, помогает работать с зафиксированными состояниями
@@ -26,6 +27,12 @@ Project targets .NET 8 at minimum.
   <br/>- <b>ITelegramMappingHandler</b> - Маппирует запрос от telegram в формат данных проекта
   <br/>- <b>ITelegramUpdateHandler</b> - Маппирует данные от telegram в формат данных проекта
 
+<h3>Прокси интерфейсы</h3>
+  - <b>ITelegramContextProxy</b> - Прокси контекст. Функциональность <b>ITelegramContext</b>
+  <br/>- <b>ITelegramContextProxyFactory</b> - Прокси фабрика для <b>ITelegramContextProxy</b>
+  <br/>- <b>IStateContextProxyFactory</b> - Прокси фабрика. Функциональность <b>IStateContextFactory</b>
+  <br/>- <b>IStateProxyFactory</b> - Прокси фабрика. Функциональность <b>IStateFactory</b>
+
 <h2>Атрибут состояния</h2>
   - <b>StateActivatorBaseAttribute</b> - базовый атрибут включающий все переменные для определения состояния
   <br/>- <b>StateActivatorAttribute</b> - атрибут для состояний определяющих основое (нижнее) меню
@@ -35,9 +42,13 @@ Project targets .NET 8 at minimum.
   - <b>AddTelegramContext</b> - зависимости для работы с telegram. Включает инфтерфейсы: <b/>ITelegramContextLog</b>, <b/>ITelegramContext</b>, <b/>ITelegramUpdateHandler</b>, <b/>ITelegramMappingHandler</b>
   <br/>- <b>AddTelegramClientHostedService</b> - включает все зависимости <b>AddTelegramContext</b> и добавляет HostedService для обработки обновлений (не webhook)
   <br/>- <b>AddReceivingHandler</b> - добавляет зависимость для интерфейса <b>IStartReceivingHandler</b>
-  <br/>- <b>AddCache</b>, <b>AddCacheWithDistributedLock</b> - добавляение кеша для работы функционала состоний. Базовый кеш - Redis.
+  <br/>- <b>AddCache</b>, <b>AddCacheWithDistributedLock</b> - добавляение кеша для работы функционала состояний. Базовый кеш - Redis.
   <br/>- <b>AddFactories</b> - добавляение интерфейса фабрик: <b>IStateFactory</b>, <b>IStateBind</b>, <b>IStateContextFactory</b>, <b>IMenuButtonFactory</b>
   <br/>- <b>AddStates</b> - добавляет все доступные состояния по интерфейсу <b>IState</b>
+
+<h3>Прокси DI</h3>
+  - <b>AddProxyFactories</b> - добавляет интерфейсы прокси фабрик: <b>IStateContextProxyFactory</b>, <b>IStateProxyFactory</b>
+  <br/>- <b>AddTelegramContextProxyFactory</b> - зависимости для работы с telegram как прокси. Включает инфтерфейсы: <b/>ITelegramContextProxyFactory</b>, <b/>ITelegramContextProxy</b>
 
 
 
@@ -46,3 +57,4 @@ Project targets .NET 8 at minimum.
 
 <h2>Контакты</h2>
   - <a href="https://t.me/PBolDeveloper">Telegram</a>
+  
