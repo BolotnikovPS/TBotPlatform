@@ -20,7 +20,7 @@ internal class LoggingHttpHandler(ILogger<LoggingHttpHandler> logger, IDispatche
                 var resultRequest = await request.Content!.ReadAsStringAsync(cancellationToken);
                 sbLog.AppendLine(resultRequest.ToJson());
             }
-            
+
             var response = await dispatcher.Enqueue(() => base.SendAsync(request, cancellationToken), cancellationToken);
             //var response = await base.SendAsync(request, cancellationToken);
 

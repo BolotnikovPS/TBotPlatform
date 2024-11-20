@@ -1,40 +1,13 @@
 ﻿using System.Diagnostics;
-using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Contexts;
 
 internal partial class TelegramContext
 {
-    private static readonly Stopwatch Timer = new();
-
-    private static int _iteration = 1;
-
-    private const int MaxCount = 1;
-    private static readonly SemaphoreSlim SemaphoreSlim = new(MaxCount, MaxCount);
-
-    /// <summary>
-    /// Пишет лог отправки сообщений в telegram
-    /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    private async Task LogAsync(CancellationToken cancellationToken)
-    {
-        if (_iteration > RateContextConstant.MaxCountIteration && SemaphoreSlim.CurrentCount == MaxCount)
-        {
-            await SemaphoreSlim.WaitAsync(cancellationToken);
-
-            Timer.Stop();
-
-            await telegramContextLog.HandleEnqueueLogAsync(_iteration, Timer.Elapsed.Milliseconds, _operationGuid, cancellationToken);
-
-            _iteration = 0;
-            Timer.Restart();
-
-            SemaphoreSlim.Release();
-        }
-    }
-
+    private readonly Stopwatch _timer = new();
+    private int _iteration;
+    
     /// <summary>
     /// Исполнение метода в очереди
     /// </summary>
@@ -45,6 +18,8 @@ internal partial class TelegramContext
     /// <exception cref="ArgumentException"></exception>
     private async Task<T> Enqueue<T>(Func<Task<T>> execute, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+        
         if (execute.IsNull())
         {
             throw new ArgumentException(nameof(execute));
@@ -52,16 +27,14 @@ internal partial class TelegramContext
 
         try
         {
-            Timer.Start();
-
-            await LogAsync(cancellationToken);
+            _timer.Start();
 
             return await execute();
         }
         finally
         {
             _iteration++;
-            Timer.Stop();
+            _timer.Stop();
         }
     }
 
@@ -74,6 +47,8 @@ internal partial class TelegramContext
     /// <exception cref="ArgumentException"></exception>
     private async Task Enqueue(Func<Task> execute, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (execute.IsNull())
         {
             throw new ArgumentException(nameof(execute));
@@ -81,16 +56,14 @@ internal partial class TelegramContext
 
         try
         {
-            Timer.Start();
-
-            await LogAsync(cancellationToken);
+            _timer.Start();
 
             await execute();
         }
         finally
         {
             _iteration++;
-            Timer.Stop();
+            _timer.Stop();
         }
     }
 }

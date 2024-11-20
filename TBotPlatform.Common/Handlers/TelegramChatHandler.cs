@@ -347,6 +347,7 @@ internal partial class TelegramChatHandler(ITelegramContext botClient)
             message.MessageId,
             message.Text,
             CreateInlineMarkupList(message.ReplyMarkup),
+            message.MessageLink(),
             CreateChatMessageEntity(message.Entities)
             );
 

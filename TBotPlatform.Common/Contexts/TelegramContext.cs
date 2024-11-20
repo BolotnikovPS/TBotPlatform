@@ -7,7 +7,7 @@ using PMode = Telegram.Bot.Types.Enums.ParseMode;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal partial class TelegramContext(HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog) : ITelegramContext
+internal partial class TelegramContext(HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog) : ITelegramContext, IAsyncDisposable
 {
     private const PMode ParseMode = PMode.Html;
 
@@ -75,10 +75,15 @@ internal partial class TelegramContext(HttpClient client, TelegramSettings teleg
         return telegramSettings.Token;
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        telegramSettings = null;
-
-        return ValueTask.CompletedTask;
+        try
+        {
+            await telegramContextLog.HandleEnqueueLogAsync(_iteration, _timer.Elapsed.Milliseconds, _operationGuid, CancellationToken.None);
+        }
+        catch
+        {
+            // ignored
+        }
     }
 }

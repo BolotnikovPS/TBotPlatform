@@ -49,9 +49,12 @@ public static partial class DependencyInjection
 
             var attr = stateType.GetCustomAttributes(typeof(StateActivatorBaseAttribute), inherit: true).FirstOrDefault() as StateActivatorBaseAttribute;
 
-            if (attr!.OnlyForBot.CheckAny() && (attr.OnlyForBot.NotIn("None", "") || attr.OnlyForBot.NotIn(botTypes)))
+            if (attr!.OnlyForBot.CheckAny() && attr.OnlyForBot.NotIn("None", ""))
             {
-                continue;
+                if (attr.OnlyForBot.NotIn(botTypes))
+                {
+                    continue;
+                }
             }
 
             if (attr.ButtonsTypes.CheckAny())

@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using TBotPlatform.Contracts.Bots.Chats;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
+using TBotPlatform.Contracts.Bots.ChatUpdate.Enums;
 using TBotPlatform.Contracts.Bots.Markups;
 
 namespace TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
@@ -10,6 +11,7 @@ public class ChatResult(
     int messageId,
     string? text,
     InlineMarkupList? inlineMarkupListOrNull,
+    string? messageLinkOrNull,
     ChatEntity[]? messageEntities = null
     )
 {
@@ -37,4 +39,9 @@ public class ChatResult(
     /// Данные об объектах сообщения
     /// </summary>
     public ChatEntity[]? MessageEntities { get; } = messageEntities;
+
+    /// <summary>
+    /// Ссылка на сообщения если сообщение не с <see cref="EChatType.Supergroup"/> или <see cref="EChatType.Channel"/>, иначе null
+    /// </summary>
+    public string? MessageLinkOrNull { get; } = messageLinkOrNull;
 }

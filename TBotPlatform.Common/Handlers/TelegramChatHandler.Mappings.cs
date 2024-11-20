@@ -20,7 +20,7 @@ internal partial class TelegramChatHandler
     private async Task<ChatMessage> CreateChatUpdateMessageAsync(long chatId, Message message, CancellationToken cancellationToken)
     {
         ChatForward forwardOrNull = null;
-
+        
         if (message!.ForwardFromMessageId.IsNotNull()
             || message!.ForwardSignature.IsNotNull()
             || message!.ForwardSenderName.IsNotNull()
