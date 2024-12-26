@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
+﻿#nullable enable
+using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
 using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Extension;
@@ -9,9 +10,15 @@ namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class BaseStateContext
 {
-    public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileDataBase photoData, bool disableNotification, CancellationToken cancellationToken)
+    public Task<ChatResult> SendOrUpdateTextMessageAsync(
+        string text,
+        InlineMarkupList inlineMarkupList,
+        FileDataBase photoData,
+        bool disableNotification,
+        CancellationToken cancellationToken
+        )
     {
-        InlineKeyboardMarkup inlineKeyboard = null;
+        InlineKeyboardMarkup? inlineKeyboard = null;
 
         if (inlineMarkupList.CheckAny())
         {
@@ -29,12 +36,21 @@ internal partial class BaseStateContext
         return SendOrUpdateTextMessageAsync(text, inlineKeyboard, photoData, disableNotification, cancellationToken);
     }
 
-    public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileDataBase photoData, CancellationToken cancellationToken)
-        => SendOrUpdateTextMessageAsync(text, inlineMarkupList, photoData, disableNotification: false, cancellationToken);
+    public Task<ChatResult> SendOrUpdateTextMessageAsync(
+        string text,
+        InlineMarkupList inlineMarkupList,
+        FileDataBase photoData,
+        CancellationToken cancellationToken
+        ) => SendOrUpdateTextMessageAsync(text, inlineMarkupList, photoData, disableNotification: false, cancellationToken);
 
-    public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, bool disableNotification, CancellationToken cancellationToken)
+    public Task<ChatResult> SendOrUpdateTextMessageAsync(
+        string text,
+        InlineMarkupList inlineMarkupList,
+        bool disableNotification,
+        CancellationToken cancellationToken
+        )
     {
-        InlineKeyboardMarkup inlineKeyboard = null;
+        InlineKeyboardMarkup? inlineKeyboard = null;
 
         if (inlineMarkupList.CheckAny())
         {
@@ -55,9 +71,14 @@ internal partial class BaseStateContext
     public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, CancellationToken cancellationToken)
         => SendOrUpdateTextMessageAsync(text, inlineMarkupList, disableNotification: false, cancellationToken);
 
-    public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, bool disableNotification, CancellationToken cancellationToken)
+    public Task<ChatResult> SendOrUpdateTextMessageAsync(
+        string text,
+        InlineMarkupMassiveList? inlineMarkupMassiveList,
+        bool disableNotification,
+        CancellationToken cancellationToken
+        )
     {
-        InlineKeyboardMarkup inlineKeyboard = null;
+        InlineKeyboardMarkup? inlineKeyboard = null;
 
         if (inlineMarkupMassiveList.CheckAny())
         {
@@ -86,30 +107,31 @@ internal partial class BaseStateContext
             cancellationToken
             );
 
-    private async Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineKeyboardMarkup inlineKeyboard, FileDataBase photoData, bool disableNotification, CancellationToken cancellationToken)
+    private async Task<ChatResult> SendOrUpdateTextMessageAsync(
+        string text,
+        InlineKeyboardMarkup? inlineKeyboard,
+        FileDataBase? photoData,
+        bool disableNotification,
+        CancellationToken cancellationToken
+        )
     {
         ChatIdValidOrThrow();
-
-        if (text.IsNull())
-        {
-            return default;
-        }
-
         TextLengthValidOrThrow(text);
 
         if (photoData.IsNotNull())
         {
-            var checkToDelete = ChatUpdate.CallbackQueryOrNull.IsNotNull()
+            var checkToDelete = ChatUpdate.IsNotNull()
+                                && ChatUpdate!.CallbackQueryOrNull.IsNotNull()
                                 && (DateTime.UtcNow - ChatUpdate.CallbackQueryOrNull!.Date).TotalDays < 1;
 
             if (checkToDelete)
             {
-                CallbackQueryValidOrThrow(ChatUpdate.CallbackQueryOrNull);
+                CallbackQueryValidOrThrow(ChatUpdate?.CallbackQueryOrNull);
 
-                await telegramContext.DeleteMessageAsync(ChatId, ChatUpdate.CallbackQueryOrNull.MessageId, cancellationToken);
+                await telegramContext.DeleteMessageAsync(ChatId, ChatUpdate!.CallbackQueryOrNull!.MessageId, cancellationToken);
             }
 
-            await using var fileStream = new MemoryStream(photoData.Bytes);
+            await using var fileStream = new MemoryStream(photoData!.Bytes);
             var resultSendPhoto = await telegramContext.SendPhotoAsync(
                 ChatId,
                 InputFile.FromStream(fileStream),
@@ -135,7 +157,7 @@ internal partial class BaseStateContext
             return telegramMapping.MessageToResult(resultSendText);
         }
 
-        CallbackQueryValidOrThrow(ChatUpdate.CallbackQueryOrNull);
+        CallbackQueryValidOrThrow(ChatUpdate!.CallbackQueryOrNull);
 
         var result = ChatUpdate.CallbackQueryOrNull!.MessageWithImage
             ? await telegramContext.EditMessageCaptionAsync(ChatId, ChatUpdate.CallbackQueryOrNull.MessageId, text, inlineKeyboard, cancellationToken)

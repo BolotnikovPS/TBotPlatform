@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Contracts.Statistics;
+﻿#nullable enable
+using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -8,12 +9,19 @@ namespace TBotPlatform.Common.Contexts;
 
 internal partial class TelegramContext
 {
-    public Task<Message> SendDocumentAsync(long chatId, InputFile document, IReplyMarkup replyMarkup, bool disableNotification, CancellationToken cancellationToken)
+    public Task<Message> SendDocumentAsync(
+        long chatId,
+        InputFile document,
+        string? caption,
+        IReplyMarkup? replyMarkup,
+        bool disableNotification,
+        CancellationToken cancellationToken
+        )
     {
         var logMessageData = new TelegramContextLogMessageData
         {
             ReplyMarkup = replyMarkup,
-            FileType = document?.FileType,
+            FileType = document.FileType,
             DisableNotification = disableNotification,
         };
 
@@ -27,7 +35,7 @@ internal partial class TelegramContext
 
         var task = _botClient.SendDocument(
             chatId,
-            document!,
+            document,
             parseMode: ParseMode,
             disableNotification: disableNotification,
             protectContent: telegramSettings.ProtectContent,
@@ -38,14 +46,22 @@ internal partial class TelegramContext
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
+    public Task<Message> SendDocumentAsync(
+        long chatId,
+        InputFile document,
+        IReplyMarkup? replyMarkup,
+        bool disableNotification,
+        CancellationToken cancellationToken
+        ) => SendDocumentAsync(chatId, document, caption: null, replyMarkup: null, disableNotification, cancellationToken);
+
     public Task<Message> SendDocumentAsync(long chatId, InputFile document, bool disableNotification, CancellationToken cancellationToken)
         => SendDocumentAsync(chatId, document, replyMarkup: null, disableNotification, cancellationToken);
 
     public Task<Message> SendPhotoAsync(
         long chatId,
         InputFile photo,
-        string caption,
-        IReplyMarkup replyMarkup,
+        string? caption,
+        IReplyMarkup? replyMarkup,
         bool disableNotification,
         CancellationToken cancellationToken
         )
@@ -54,7 +70,7 @@ internal partial class TelegramContext
         {
             ReplyMarkup = replyMarkup,
             Caption = caption,
-            FileType = photo?.FileType,
+            FileType = photo.FileType,
             DisableNotification = disableNotification,
         };
 

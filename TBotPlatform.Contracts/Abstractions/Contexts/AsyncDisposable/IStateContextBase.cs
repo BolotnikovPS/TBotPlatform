@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Contracts.Bots.Account;
+﻿#nullable enable
+using TBotPlatform.Contracts.Bots.Account;
 using TBotPlatform.Contracts.Bots.Buttons;
 using TBotPlatform.Contracts.Bots.Chats;
 using TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
@@ -17,6 +18,16 @@ public interface IStateContextBase
     /// Отправляет документы в чат
     /// </summary>
     /// <param name="documentData">Файл документа</param>
+    /// <param name="caption">Подпись/текст к документу</param>
+    /// <param name="disableNotification"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<ChatResult> SendDocumentAsync(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отправляет документы в чат
+    /// </summary>
+    /// <param name="documentData">Файл документа</param>
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
@@ -29,6 +40,16 @@ public interface IStateContextBase
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<ChatResult> SendDocumentAsync(FileDataBase documentData, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отправляет фото в чат
+    /// </summary>
+    /// <param name="documentData">Файл документа</param>
+    /// <param name="caption">Подпись/текст к изображению</param>
+    /// <param name="disableNotification"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<ChatResult> SendPhotoAsync(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет фото в чат
@@ -56,7 +77,13 @@ public interface IStateContextBase
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileDataBase photoData, bool disableNotification, CancellationToken cancellationToken);
+    Task<ChatResult> SendOrUpdateTextMessageAsync(
+        string text,
+        InlineMarkupList inlineMarkupList,
+        FileDataBase photoData,
+        bool disableNotification,
+        CancellationToken cancellationToken
+        );
 
     /// <summary>
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
@@ -254,7 +281,7 @@ public interface IStateContextBase
     /// </summary>
     /// <param name="fromChatId">Id чата откуда берутся данные</param>
     /// <param name="messageId">Id сообщения</param>
-    /// <param name="caption">Подпись/текст к изображению</param>
+    /// <param name="caption">Подпись/текст к сообщению</param>
     /// <param name="replyToMessageId">Id сообщение на которое ответить</param>
     /// <param name="allowSendingWithoutReply">Разрешить отправку без ответа на сообщение</param>
     /// <param name="replyMarkup">Кнопки</param>

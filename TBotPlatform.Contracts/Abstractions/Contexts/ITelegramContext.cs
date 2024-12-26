@@ -74,7 +74,7 @@ public interface ITelegramContext
         long chatId,
         int messageId,
         string text,
-        InlineKeyboardMarkup replyMarkup,
+        InlineKeyboardMarkup? replyMarkup,
         CancellationToken cancellationToken
         );
 
@@ -107,7 +107,7 @@ public interface ITelegramContext
         long chatId,
         int messageId,
         string caption,
-        InlineKeyboardMarkup replyMarkup,
+        InlineKeyboardMarkup? replyMarkup,
         CancellationToken cancellationToken
         );
 
@@ -130,7 +130,7 @@ public interface ITelegramContext
     /// <param name="disableNotification">Отключить уведомление пользователю</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> SendTextMessageAsync(long chatId, string text, IReplyMarkup replyMarkup, bool disableNotification, CancellationToken cancellationToken);
+    Task<Message> SendTextMessageAsync(long chatId, string text, IReplyMarkup? replyMarkup, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет сообщение
@@ -156,11 +156,29 @@ public interface ITelegramContext
     /// </summary>
     /// <param name="chatId">Id чата</param>
     /// <param name="document">Файл документа</param>
+    /// <param name="caption">Подпись/текст к документу</param>
+    /// <param name="replyMarkup">Кнопки</param>
+    /// <param name="disableNotification">Отключить уведомление пользователю</param>
+    /// <param name="cancellationToken"></param>
+    Task<Message> SendDocumentAsync(
+        long chatId,
+        InputFile document,
+        string? caption,
+        IReplyMarkup? replyMarkup,
+        bool disableNotification,
+        CancellationToken cancellationToken
+        );
+
+    /// <summary>
+    /// Отправляет документ с основными кнопками
+    /// </summary>
+    /// <param name="chatId">Id чата</param>
+    /// <param name="document">Файл документа</param>
     /// <param name="replyMarkup">Кнопки</param>
     /// <param name="disableNotification">Отключить уведомление пользователю</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Message> SendDocumentAsync(long chatId, InputFile document, IReplyMarkup replyMarkup, bool disableNotification, CancellationToken cancellationToken);
+    Task<Message> SendDocumentAsync(long chatId, InputFile document, IReplyMarkup? replyMarkup, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет документ
@@ -185,8 +203,8 @@ public interface ITelegramContext
     Task<Message> SendPhotoAsync(
         long chatId,
         InputFile photo,
-        string caption,
-        IReplyMarkup replyMarkup,
+        string? caption,
+        IReplyMarkup? replyMarkup,
         bool disableNotification,
         CancellationToken cancellationToken
         );

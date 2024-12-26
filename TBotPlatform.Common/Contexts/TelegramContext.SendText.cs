@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Contracts.Statistics;
+﻿#nullable enable
+using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -7,7 +8,7 @@ namespace TBotPlatform.Common.Contexts;
 
 internal partial class TelegramContext
 {
-    public Task<Message> SendTextMessageAsync(long chatId, string text, IReplyMarkup replyMarkup, bool disableNotification, CancellationToken cancellationToken)
+    public Task<Message> SendTextMessageAsync(long chatId, string text, IReplyMarkup? replyMarkup, bool disableNotification, CancellationToken cancellationToken)
     {
         var logMessageData = new TelegramContextLogMessageData
         {

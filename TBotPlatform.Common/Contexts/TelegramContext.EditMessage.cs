@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Contracts.Statistics;
+﻿#nullable enable
+using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -11,7 +12,7 @@ internal partial class TelegramContext
         long chatId,
         int messageId,
         string text,
-        InlineKeyboardMarkup replyMarkup,
+        InlineKeyboardMarkup? replyMarkup,
         CancellationToken cancellationToken
         )
     {
@@ -45,7 +46,7 @@ internal partial class TelegramContext
     public Task<Message> EditMessageTextAsync(long chatId, int messageId, string text, CancellationToken cancellationToken)
         => EditMessageTextAsync(chatId, messageId, text, replyMarkup: null, cancellationToken);
 
-    public Task<Message> EditMessageCaptionAsync(long chatId, int messageId, string caption, InlineKeyboardMarkup replyMarkup, CancellationToken cancellationToken)
+    public Task<Message> EditMessageCaptionAsync(long chatId, int messageId, string caption, InlineKeyboardMarkup? replyMarkup, CancellationToken cancellationToken)
     {
         var logMessageData = new TelegramContextLogMessageData
         {

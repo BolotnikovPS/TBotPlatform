@@ -8,7 +8,7 @@ namespace TBotPlatform.Common.Contexts.AsyncDisposable.Proxies;
 
 internal class StateContextProxy(
     StateHistory stateHistory,
-    IStateProxyFactory stateBindFactory,
+    IStateProxyFactory stateProxyFactory,
     ITelegramMappingHandler telegramMapping,
     ITelegramContextProxy telegramContextProxy,
     long chatId
@@ -36,8 +36,8 @@ internal class StateContextProxy(
     }
 
     public Task BindStateAsync(CancellationToken cancellationToken)
-        => stateBindFactory.MakeRequestAsync(telegramContextProxy.GetBotPrefixName(), factory => factory.BindStateAsync(ChatId, stateHistory, cancellationToken), cancellationToken);
+        => stateProxyFactory.MakeRequestAsync(telegramContextProxy.GetBotPrefixName(), factory => factory.BindStateAsync(ChatId, stateHistory, cancellationToken), cancellationToken);
 
     public Task UnBindStateAsync(CancellationToken cancellationToken)
-        => stateBindFactory.MakeRequestAsync(telegramContextProxy.GetBotPrefixName(), factory => factory.UnBindStateAsync(ChatId, cancellationToken), cancellationToken);
+        => stateProxyFactory.MakeRequestAsync(telegramContextProxy.GetBotPrefixName(), factory => factory.UnBindStateAsync(ChatId, cancellationToken), cancellationToken);
 }

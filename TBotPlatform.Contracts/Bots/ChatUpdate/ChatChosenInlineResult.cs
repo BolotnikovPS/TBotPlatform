@@ -16,7 +16,7 @@ public class ChatChosenInlineResult(string resultId, TelegramUser fromUser, stri
     public TelegramUser FromUser { get; } = fromUser;
 
     /// <summary>
-    /// Optional. Identifier of the sent inline message. Available only if there is an inline keyboard attached
+    /// Optional. Identifier of the send inline message. Available only if there is an inline keyboard attached
     /// to the message. Will be also received in callback queries and can be used to edit the message.
     /// </summary>
     public string? InlineMessageId { get; } = inlineMessageId;

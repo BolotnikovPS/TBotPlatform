@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Contracts.Bots;
+﻿#nullable enable
+using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.StateFactory;
 using TBotPlatform.Extension;
@@ -15,12 +16,17 @@ internal partial class StateFactory
                      && q.CommandsTypes.Any(x => x.In(CommandTypesConstant.StartCommand))
                 );
 
-        return Convert(state!);
+        return Convert(state);
     }
 
-    private StateHistory Convert(StateFactoryData stateData)
+    private StateHistory Convert(StateFactoryData? stateData)
     {
-        var stateType = FindType(stateData.StateTypeName);
+        if (stateData.IsNull())
+        {
+            throw new("Состояние не найдено");
+        }
+
+        var stateType = FindType(stateData!.StateTypeName);
 
         if (stateType.IsNull())
         {
@@ -28,14 +34,14 @@ internal partial class StateFactory
         }
 
         return new(
-            stateType,
+            stateType!,
             stateData.MenuTypeName.IsNotNull()
                 ? FindType(stateData.MenuTypeName)
                 : null,
             stateData.IsInlineState
             );
 
-        Type FindType(string name)
+        Type? FindType(string name)
         {
             return Array.Find(
                 stateFactorySettings
@@ -46,7 +52,7 @@ internal partial class StateFactory
         }
     }
 
-    private StateHistory ConvertStateFactoryData(StateFactoryData stateFactoryData = null)
+    private StateHistory ConvertStateFactoryData(StateFactoryData? stateFactoryData = null)
         => stateFactoryData.IsNotNull()
             ? Convert(stateFactoryData)
             : CreateContextFunc();

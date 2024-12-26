@@ -24,9 +24,9 @@ internal partial class BaseStateContext
         }
     }
 
-    private static void TextLengthValidOrThrow(string text)
+    private static void TextLengthValidOrThrow(string? text)
     {
-        if (text.Length > StateContextConstant.TextLength)
+        if (text?.Length > StateContextConstant.TextLength)
         {
             throw new TextLengthException(text.Length, StateContextConstant.TextLength);
         }

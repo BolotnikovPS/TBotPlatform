@@ -9,7 +9,7 @@ public class ChatOrderInfo(
     )
 {
     /// <summary>
-    /// Optional. User name
+    /// Optional. UserName
     /// </summary>
     public string Name { get; } = name ?? "";
 

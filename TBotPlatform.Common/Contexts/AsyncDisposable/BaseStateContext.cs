@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿#nullable enable
+using System.Text;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Handlers;
@@ -20,19 +21,18 @@ namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 internal partial class BaseStateContext(ITelegramMappingHandler telegramMapping, ITelegramContext telegramContext, long chatId) 
     : IStateContextBase
 {
-    public StateResult StateResult { get; set; }
-    public MarkupNextState MarkupNextState { get; private set; }
-    public ChatUpdate ChatUpdate { get; private set; }
+    public StateResult StateResult { get; set; } = new();
+    public MarkupNextState? MarkupNextState { get; private set; }
+    public ChatUpdate? ChatUpdate { get; private set; }
 
     internal long ChatId { get; set; } = chatId;
 
     private const string ChooseAction = "😊 Выберите действие";
 
-    public void CreateStateContext(ChatUpdate chatUpdate, MarkupNextState markupNextState)
+    public void CreateStateContext(ChatUpdate chatUpdate, MarkupNextState? markupNextState)
     {
         ChatIdValidOrThrow();
 
-        StateResult = new();
         MarkupNextState = markupNextState;
         ChatUpdate = chatUpdate;
     }
@@ -41,7 +41,7 @@ internal partial class BaseStateContext(ITelegramMappingHandler telegramMapping,
 
     public ITelegramContext GetTelegramContext() => telegramContext;
 
-    public async Task<ChatResult> SendDocumentAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
+    public async Task<ChatResult> SendDocumentAsync(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
 
@@ -52,6 +52,8 @@ internal partial class BaseStateContext(ITelegramMappingHandler telegramMapping,
         var result = await telegramContext.SendDocumentAsync(
             ChatId,
             inputFile,
+            caption,
+            null,
             disableNotification,
             cancellationToken
             );
@@ -59,10 +61,13 @@ internal partial class BaseStateContext(ITelegramMappingHandler telegramMapping,
         return telegramMapping.MessageToResult(result);
     }
 
+    public Task<ChatResult> SendDocumentAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
+        => SendDocumentAsync(documentData, caption: null, disableNotification, cancellationToken);
+
     public Task<ChatResult> SendDocumentAsync(FileDataBase documentData, CancellationToken cancellationToken)
         => SendDocumentAsync(documentData, disableNotification: false, cancellationToken);
 
-    public async Task<ChatResult> SendPhotoAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
+    public async Task<ChatResult> SendPhotoAsync(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
 
@@ -73,12 +78,17 @@ internal partial class BaseStateContext(ITelegramMappingHandler telegramMapping,
         var result = await telegramContext.SendPhotoAsync(
             ChatId,
             inputFile,
+            caption,
+            null,
             disableNotification,
             cancellationToken
             );
 
         return telegramMapping.MessageToResult(result);
     }
+
+    public Task<ChatResult> SendPhotoAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
+        => SendPhotoAsync(documentData, caption: null, disableNotification: false, cancellationToken);
 
     public Task<ChatResult> SendPhotoAsync(FileDataBase documentData, CancellationToken cancellationToken)
         => SendPhotoAsync(documentData, disableNotification: false, cancellationToken);
@@ -134,13 +144,13 @@ internal partial class BaseStateContext(ITelegramMappingHandler telegramMapping,
 
     public Task UpdateMarkupTextAndDropButtonAsync(string text, CancellationToken cancellationToken)
     {
-        if (MarkupNextState.State.IsNull())
+        if (MarkupNextState?.State == null)
         {
             return Task.CompletedTask;
         }
 
         ChatIdValidOrThrow();
-        CallbackQueryValidOrThrow(ChatUpdate.CallbackQueryOrNull);
+        CallbackQueryValidOrThrow(ChatUpdate!.CallbackQueryOrNull);
         TextLengthValidOrThrow(text);
 
         var message = new StringBuilder(ChatUpdate.CallbackQueryOrNull!.Text)
@@ -190,7 +200,6 @@ internal partial class BaseStateContext(ITelegramMappingHandler telegramMapping,
     {
         ChatUpdate = null;
         MarkupNextState = null;
-        StateResult = null;
 
         return ValueTask.CompletedTask;
     }

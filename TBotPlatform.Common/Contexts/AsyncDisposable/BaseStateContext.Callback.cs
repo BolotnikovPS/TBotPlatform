@@ -1,4 +1,6 @@
-﻿namespace TBotPlatform.Common.Contexts.AsyncDisposable;
+﻿using TBotPlatform.Extension;
+
+namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class BaseStateContext
 {
@@ -10,8 +12,13 @@ internal partial class BaseStateContext
         CancellationToken cancellationToken
         )
     {
+        if (ChatUpdate.IsNull())
+        {
+            return Task.CompletedTask;
+        }
+
         ChatIdValidOrThrow();
-        CallbackQueryValidOrThrow(ChatUpdate.CallbackQueryOrNull);
+        CallbackQueryValidOrThrow(ChatUpdate!.CallbackQueryOrNull);
 
         return telegramContext.AnswerCallbackQueryAsync(
             ChatUpdate.CallbackQueryOrNull!.Id,
