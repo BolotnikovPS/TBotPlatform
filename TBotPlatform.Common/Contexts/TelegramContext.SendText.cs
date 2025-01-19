@@ -30,9 +30,9 @@ internal partial class TelegramContext
             text,
             parseMode: ParseMode,
             disableNotification: disableNotification,
-            protectContent: telegramSettings.ProtectContent,
+            protectContent: telegramSettings.Value.ProtectContent,
             replyMarkup: replyMarkup,
-            businessConnectionId: telegramSettings?.BusinessConnectionId,
+            businessConnectionId: telegramSettings.Value?.BusinessConnectionId,
             cancellationToken: cancellationToken
             );
 

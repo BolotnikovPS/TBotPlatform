@@ -23,7 +23,7 @@ public static partial class DependencyInjection
         }
 
         services
-           .AddSingleton(
+           .ConfigureOptions(
                 new StateFactorySettings
                 {
                     Assembly = executingAssembly,

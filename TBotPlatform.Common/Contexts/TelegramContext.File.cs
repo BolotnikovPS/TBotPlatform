@@ -38,7 +38,7 @@ internal partial class TelegramContext
             document,
             parseMode: ParseMode,
             disableNotification: disableNotification,
-            protectContent: telegramSettings.ProtectContent,
+            protectContent: telegramSettings.Value.ProtectContent,
             replyMarkup: replyMarkup,
             cancellationToken: cancellationToken
             );
@@ -88,7 +88,7 @@ internal partial class TelegramContext
             caption: caption,
             parseMode: ParseMode,
             disableNotification: disableNotification,
-            protectContent: telegramSettings.ProtectContent,
+            protectContent: telegramSettings.Value.ProtectContent,
             replyMarkup: replyMarkup,
             cancellationToken: cancellationToken
             );

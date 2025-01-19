@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Contracts.Abstractions.Contexts;
+﻿using Microsoft.Extensions.Options;
+using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
@@ -7,11 +8,11 @@ using PMode = Telegram.Bot.Types.Enums.ParseMode;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal partial class TelegramContext(HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog) : ITelegramContext, IAsyncDisposable
+internal partial class TelegramContext(HttpClient client, IOptions<TelegramSettings> telegramSettings, ITelegramContextLog telegramContextLog) : ITelegramContext, IAsyncDisposable
 {
     private const PMode ParseMode = PMode.Html;
 
-    private readonly TelegramBotClient _botClient = new(GetTelegramToken(telegramSettings), client);
+    private readonly TelegramBotClient _botClient = new(GetTelegramToken(telegramSettings.Value), client);
     private readonly Guid _operationGuid = Guid.NewGuid();
 
     public Guid GetCurrentOperation() => _operationGuid;

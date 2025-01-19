@@ -20,7 +20,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Factories.Proxies;
 
-internal class StateContextProxyFactory(ILogger<StateContextFactory> logger, IStateProxyFactory stateProxyFactory, IServiceScopeFactory serviceScopeFactory) 
+internal class StateContextProxyFactory(ILogger<StateContextProxyFactory> logger, IStateProxyFactory stateProxyFactory, IServiceScopeFactory serviceScopeFactory) 
     : BaseStateContextFactory, IStateContextProxyFactory
 {
     private ITelegramContextProxy? TelegramContextProxy { get; set; }

@@ -33,8 +33,8 @@ public static partial class DependencyInjection
         }
 
         services
-           .AddSingleton(
-                _ => new CacheSettings
+           .ConfigureOptions(
+                new CacheSettings
                 {
                     CachePrefix = prefix,
                 })

@@ -164,7 +164,7 @@ public static partial class DependencyInjection
         }
 
         var statesCollection = new StateFactoryDataCollection(states);
-        services.AddSingleton(statesCollection);
+        services.ConfigureOptions(statesCollection);
 
         return services;
     }

@@ -103,7 +103,7 @@ internal partial class TelegramContext
             chatId,
             messageId,
             replyMarkup,
-            telegramSettings?.BusinessConnectionId,
+            telegramSettings.Value?.BusinessConnectionId,
             cancellationToken
             );
 

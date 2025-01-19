@@ -43,5 +43,5 @@ public class ChatResult(
     /// <summary>
     /// Ссылка на сообщения если сообщение не с <see cref="EChatType.Supergroup"/> или <see cref="EChatType.Channel"/>, иначе null
     /// </summary>
-    public string? MessageLinkOrNull { get; } = messageLinkOrNull;
+    public string? MessageLinkOrNull { get; } = messageLinkOrNull; 
 }
