@@ -28,7 +28,7 @@ internal partial class TelegramContext
             chatId,
             fromChatId,
             messageId,
-            protectContent: telegramSettings.Value.ProtectContent,
+            protectContent: _telegramSettings.ProtectContent,
             cancellationToken: cancellationToken
             );
 
@@ -78,7 +78,7 @@ internal partial class TelegramContext
             captionEntities: null,
             false,
             disableNotification,
-            telegramSettings.Value.ProtectContent,
+            _telegramSettings.ProtectContent,
             allowSendingWithoutReply,
             cancellationToken
             );

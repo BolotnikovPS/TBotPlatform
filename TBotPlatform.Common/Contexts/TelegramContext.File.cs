@@ -3,7 +3,6 @@ using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
-using File = Telegram.Bot.Types.File;
 
 namespace TBotPlatform.Common.Contexts;
 
@@ -38,7 +37,7 @@ internal partial class TelegramContext
             document,
             parseMode: ParseMode,
             disableNotification: disableNotification,
-            protectContent: telegramSettings.Value.ProtectContent,
+            protectContent: _telegramSettings.ProtectContent,
             replyMarkup: replyMarkup,
             cancellationToken: cancellationToken
             );
@@ -88,7 +87,7 @@ internal partial class TelegramContext
             caption: caption,
             parseMode: ParseMode,
             disableNotification: disableNotification,
-            protectContent: telegramSettings.Value.ProtectContent,
+            protectContent: _telegramSettings.ProtectContent,
             replyMarkup: replyMarkup,
             cancellationToken: cancellationToken
             );
@@ -114,7 +113,7 @@ internal partial class TelegramContext
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
-    public Task<File> GetFileAsync(long chatId, string fileId, CancellationToken cancellationToken)
+    public Task<TGFile> GetFileAsync(long chatId, string fileId, CancellationToken cancellationToken)
     {
         var task = _botClient.GetFile(fileId, cancellationToken);
 
@@ -129,7 +128,7 @@ internal partial class TelegramContext
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
-    public Task<File> GetInfoAndDownloadFileAsync(long chatId, string fileId, Stream destination, CancellationToken cancellationToken)
+    public Task<TGFile> GetInfoAndDownloadFileAsync(long chatId, string fileId, Stream destination, CancellationToken cancellationToken)
     {
         var task = _botClient.GetInfoAndDownloadFile(fileId, destination, cancellationToken);
 

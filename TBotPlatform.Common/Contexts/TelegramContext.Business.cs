@@ -8,7 +8,7 @@ internal partial class TelegramContext
 {
     public Task<BusinessConnection> GetBusinessConnectionAsync(CancellationToken cancellationToken)
     {
-        ArgumentException.ThrowIfNullOrEmpty(telegramSettings.Value.BusinessConnectionId);
+        ArgumentException.ThrowIfNullOrEmpty(_telegramSettings.BusinessConnectionId);
 
         var log = new TelegramContextLogMessage
         {
@@ -18,7 +18,7 @@ internal partial class TelegramContext
             MessageBody = new(),
         };
 
-        var task = _botClient.GetBusinessConnection(telegramSettings.Value.BusinessConnectionId, cancellationToken);
+        var task = _botClient.GetBusinessConnection(_telegramSettings.BusinessConnectionId, cancellationToken);
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }

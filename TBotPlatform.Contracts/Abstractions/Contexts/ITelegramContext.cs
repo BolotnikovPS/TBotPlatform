@@ -4,7 +4,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using File = Telegram.Bot.Types.File;
+using File = Telegram.Bot.Types.FileBase;
 
 namespace TBotPlatform.Contracts.Abstractions.Contexts;
 
@@ -236,7 +236,7 @@ public interface ITelegramContext
     /// <param name="fileId">Id документа</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<File> GetFileAsync(long chatId, string fileId, CancellationToken cancellationToken);
+    Task<TGFile> GetFileAsync(long chatId, string fileId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Скачивает файл
@@ -246,7 +246,7 @@ public interface ITelegramContext
     /// <param name="destination">Стрим куда запишется файл</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<File> GetInfoAndDownloadFileAsync(long chatId, string fileId, Stream destination, CancellationToken cancellationToken);
+    Task<TGFile> GetInfoAndDownloadFileAsync(long chatId, string fileId, Stream destination, CancellationToken cancellationToken);
 
     /// <summary>
     /// Пересылает сообщение

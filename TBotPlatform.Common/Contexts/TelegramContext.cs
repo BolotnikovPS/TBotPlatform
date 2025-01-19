@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots.Config;
+using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Statistics;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
@@ -8,12 +9,25 @@ using PMode = Telegram.Bot.Types.Enums.ParseMode;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal partial class TelegramContext(HttpClient client, IOptions<TelegramSettings> telegramSettings, ITelegramContextLog telegramContextLog) : ITelegramContext, IAsyncDisposable
+internal partial class TelegramContext : ITelegramContext, IAsyncDisposable
 {
     private const PMode ParseMode = PMode.Html;
 
-    private readonly TelegramBotClient _botClient = new(GetTelegramToken(telegramSettings.Value), client);
+    private readonly TelegramBotClient _botClient;
+    private readonly ITelegramContextLog _telegramContextLog;
+    private readonly TelegramSettings _telegramSettings;
     private readonly Guid _operationGuid = Guid.NewGuid();
+
+    public TelegramContext(HttpClient client, IOptions<TelegramSettings> telegramSettings, ITelegramContextLog telegramContextLog)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(telegramSettings.Value.Token);
+
+        client.DefaultRequestHeaders.TryAddWithoutValidation(DefaultHeadersConstant.ContextOperation, _operationGuid.ToString());
+
+        _botClient = new(telegramSettings.Value.Token, client);
+        _telegramSettings = telegramSettings.Value;
+        _telegramContextLog = telegramContextLog;
+    }
 
     public Guid GetCurrentOperation() => _operationGuid;
 
@@ -69,18 +83,11 @@ internal partial class TelegramContext(HttpClient client, IOptions<TelegramSetti
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
 
-    private static string GetTelegramToken(TelegramSettings telegramSettings)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(telegramSettings.Token);
-
-        return telegramSettings.Token;
-    }
-
     public async ValueTask DisposeAsync()
     {
         try
         {
-            await telegramContextLog.HandleEnqueueLogAsync(_iteration, _timer.Elapsed.Milliseconds, _operationGuid, CancellationToken.None);
+            await _telegramContextLog.HandleEnqueueLogAsync(_iteration, _timer.Elapsed.Milliseconds, _operationGuid, CancellationToken.None);
         }
         catch
         {

@@ -20,7 +20,7 @@ internal partial class TelegramContext
             MessageBody = logMessageData,
         };
 
-        var task = _botClient.PinChatMessage(chatId, messageId, disableNotification, telegramSettings.Value?.BusinessConnectionId, cancellationToken);
+        var task = _botClient.PinChatMessage(chatId, messageId, disableNotification, _telegramSettings?.BusinessConnectionId, cancellationToken);
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }
@@ -40,7 +40,7 @@ internal partial class TelegramContext
             MessageBody = logMessageData,
         };
 
-        var task = _botClient.UnpinChatMessage(chatId, messageId, telegramSettings.Value?.BusinessConnectionId, cancellationToken);
+        var task = _botClient.UnpinChatMessage(chatId, messageId, _telegramSettings?.BusinessConnectionId, cancellationToken);
 
         return ExecuteEnqueueSafety(task, log, cancellationToken);
     }

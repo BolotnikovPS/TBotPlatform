@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text;
+using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Handlers;
@@ -11,6 +12,10 @@ internal class LoggingHttpHandler(ILogger<LoggingHttpHandler> logger, IDispatche
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
+        request.Headers.TryGetValues(DefaultHeadersConstant.ContextOperation, out var value);
+        Guid.TryParse(value?.FirstOrDefault(), out var operationGuid);
+        request.Headers.Remove(DefaultHeadersConstant.ContextOperation);
+
         Exception exception = null;
         var sbLog = new StringBuilder($"Request: {request.ToJson()}");
         try
@@ -22,7 +27,6 @@ internal class LoggingHttpHandler(ILogger<LoggingHttpHandler> logger, IDispatche
             }
 
             var response = await dispatcher.Enqueue(() => base.SendAsync(request, cancellationToken), cancellationToken);
-            //var response = await base.SendAsync(request, cancellationToken);
 
             sbLog.AppendLine($"Response: {response.ToJson()}");
 
@@ -54,7 +58,7 @@ internal class LoggingHttpHandler(ILogger<LoggingHttpHandler> logger, IDispatche
                 ? LogLevel.Error
                 : LogLevel.Debug;
 
-            logger.Log(logLevel, exception, sbLog.ToString());
+            logger.Log(logLevel, exception, "{operationGuid} {sbLog}", operationGuid, sbLog);
         }
     }
 }

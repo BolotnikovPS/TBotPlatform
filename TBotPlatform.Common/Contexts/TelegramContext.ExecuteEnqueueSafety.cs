@@ -30,11 +30,11 @@ internal partial class TelegramContext
         try
         {
             await Enqueue(() => method, cancellationToken); 
-            await telegramContextLog.HandleLogAsync(fullLogMessage, cancellationToken);
+            await _telegramContextLog.HandleLogAsync(fullLogMessage, cancellationToken);
         }
         catch (Exception ex)
         {
-            await telegramContextLog.HandleErrorLogAsync(fullLogMessage, ex, cancellationToken);
+            await _telegramContextLog.HandleErrorLogAsync(fullLogMessage, ex, cancellationToken);
             throw;
         }
     }
@@ -71,13 +71,13 @@ internal partial class TelegramContext
                 fullLogMessage.Result = result;
             }
 
-            await telegramContextLog.HandleLogAsync(fullLogMessage, cancellationToken);
+            await _telegramContextLog.HandleLogAsync(fullLogMessage, cancellationToken);
 
             return result;
         }
         catch (Exception ex)
         {
-            await telegramContextLog.HandleErrorLogAsync(fullLogMessage, ex, cancellationToken);
+            await _telegramContextLog.HandleErrorLogAsync(fullLogMessage, ex, cancellationToken);
             throw;
         }
     }
