@@ -6,7 +6,7 @@ using TBotPlatform.Contracts.Bots.Config;
 namespace TBotPlatform.Common.Contexts.AsyncDisposable.Proxies;
 
 internal class TelegramContextProxy(HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog, string botPrefixName)
-    : TelegramContext(client, Options.Create(telegramSettings), telegramContextLog), ITelegramContextProxy
+    : TelegramContext(client, telegramSettings, telegramContextLog), ITelegramContextProxy
 {
     public string GetBotPrefixName() => botPrefixName;
 }

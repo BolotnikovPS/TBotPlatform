@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using TBotPlatform.Contracts.Abstractions.Contexts;
+﻿using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Statistics;
@@ -18,14 +17,14 @@ internal partial class TelegramContext : ITelegramContext, IAsyncDisposable
     private readonly TelegramSettings _telegramSettings;
     private readonly Guid _operationGuid = Guid.NewGuid();
 
-    public TelegramContext(HttpClient client, IOptions<TelegramSettings> telegramSettings, ITelegramContextLog telegramContextLog)
+    public TelegramContext(HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog)
     {
-        ArgumentException.ThrowIfNullOrEmpty(telegramSettings.Value.Token);
+        ArgumentException.ThrowIfNullOrEmpty(telegramSettings.Token);
 
         client.DefaultRequestHeaders.TryAddWithoutValidation(DefaultHeadersConstant.ContextOperation, _operationGuid.ToString());
 
-        _botClient = new(telegramSettings.Value.Token, client);
-        _telegramSettings = telegramSettings.Value;
+        _botClient = new(telegramSettings.Token, client);
+        _telegramSettings = telegramSettings;
         _telegramContextLog = telegramContextLog;
     }
 

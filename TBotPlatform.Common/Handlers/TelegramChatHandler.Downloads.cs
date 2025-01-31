@@ -66,6 +66,7 @@ internal partial class TelegramChatHandler
             Bytes = fileStream.ToArray(),
             Name = file.FilePath,
             Size = file.FileSize!.Value,
+            FileId = fileId,
         };
     }
 }

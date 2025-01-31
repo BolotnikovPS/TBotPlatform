@@ -1,11 +1,11 @@
 ﻿#nullable enable
 using ComposableAsync;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Extensions.Http;
 using RateLimiter;
 using System.Net;
-using Microsoft.Extensions.Options;
 using TBotPlatform.Common.BackgroundServices;
 using TBotPlatform.Common.Contexts;
 using TBotPlatform.Common.Handlers;
@@ -27,45 +27,28 @@ public static partial class DependencyInjection
             throw new ArgumentNullException(nameof(telegramSettings));
         }
 
-        return services
-              .ConfigureOptions(telegramSettings)
-              .AddTelegramContext<TLog>(httpClient);
-    }
-
-
-    public static IServiceCollection AddTelegramContext<TLog>(this IServiceCollection services, Action<HttpClient>? httpClient = null)
-        where TLog : ITelegramContextLog
-    {
         services
+           .AddSingleton(telegramSettings)
            .AddSingleton(e => GetLimeLimiter(e.GetService<IOptions<TelegramSettings>>()!.Value.HttpPolicy.TelegramRequestMilliSecondInterval))
            .AddScoped<LoggingHttpHandler>()
            .AddScoped(typeof(ITelegramContextLog), typeof(TLog));
 
+        var policy = GetRetryPolicy(telegramSettings.HttpPolicy);
+
         if (httpClient.IsNotNull())
         {
             services
-               .AddHttpClient<ITelegramContext, TelegramContext>(httpClient!)
-               .AddHttpMessageHandler<LoggingHttpHandler>()
-               .AddPolicyHandler(
-                    (s, _) =>
-                    {
-                        var telegramSettings = s.GetService<IOptions<TelegramSettings>>();
-
-                        return GetRetryPolicy(telegramSettings!.Value.HttpPolicy);
-                    });
+               .AddHttpClient<ITelegramContext, TelegramContext>(nameof(TelegramContext))
+               .ConfigureHttpClient(httpClient!)
+               .AddPolicyHandler(policy)
+               .AddHttpMessageHandler<LoggingHttpHandler>();
         }
         else
         {
             services
-               .AddHttpClient<ITelegramContext, TelegramContext>()
-               .AddHttpMessageHandler<LoggingHttpHandler>()
-               .AddPolicyHandler(
-                    (s, _) =>
-                    {
-                        var telegramSettings = s.GetService<IOptions<TelegramSettings>>();
-
-                        return GetRetryPolicy(telegramSettings!.Value.HttpPolicy);
-                    });
+               .AddHttpClient<ITelegramContext, TelegramContext>(nameof(TelegramContext))
+               .AddPolicyHandler(policy)
+               .AddHttpMessageHandler<LoggingHttpHandler>();
         }
 
         services
@@ -79,23 +62,11 @@ public static partial class DependencyInjection
     public static IServiceCollection AddTelegramContext(this IServiceCollection services, TelegramSettings telegramSettings, Action<HttpClient>? httpClient = null)
         => services.AddTelegramContext<TelegramContextLog>(telegramSettings, httpClient);
 
-    public static IServiceCollection AddTelegramContext(this IServiceCollection services, Action<HttpClient>? httpClient = null)
-        => services.AddTelegramContext<TelegramContextLog>(httpClient);
-
     public static IServiceCollection AddTelegramClientHostedService<TLog>(this IServiceCollection services, TelegramSettings telegramSettings, Action<HttpClient>? httpClient = null)
         where TLog : ITelegramContextLog
         => services
           .AddTelegramContext<TLog>(telegramSettings, httpClient)
           .AddHostedService<TelegramContextHostedService>();
-
-    public static IServiceCollection AddTelegramClientHostedService<TLog>(this IServiceCollection services, Action<HttpClient>? httpClient = null)
-        where TLog : ITelegramContextLog
-        => services
-          .AddTelegramContext<TLog>(httpClient)
-          .AddHostedService<TelegramContextHostedService>();
-
-    public static IServiceCollection AddTelegramContextHostedService(this IServiceCollection services, Action<HttpClient>? httpClient = null)
-        => services.AddTelegramClientHostedService<TelegramContextLog>(httpClient);
 
     public static IServiceCollection AddTelegramContextHostedService(this IServiceCollection services, TelegramSettings telegramSettings, Action<HttpClient>? httpClient = null)
         => services.AddTelegramClientHostedService<TelegramContextLog>(telegramSettings, httpClient);

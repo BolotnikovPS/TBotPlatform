@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TBotPlatform.Common.Contexts;
+using TBotPlatform.Common.Contracts;
 using TBotPlatform.Common.Factories;
 using TBotPlatform.Common.Factories.Proxies;
 using TBotPlatform.Common.Handlers;
@@ -23,11 +24,10 @@ public static partial class DependencyInjection
         }
 
         services
-           .ConfigureOptions(
-                new StateFactorySettings
-                {
-                    Assembly = executingAssembly,
-                })
+           .AddOptions<StateFactorySettings>()
+           .Configure(option => { option.Assembly = executingAssembly; });
+
+        services
            .AddScoped<StateFactory>()
            .AddScoped<IStateFactory>(src => src.GetRequiredService<StateFactory>())
            .AddScoped<IStateBindFactory>(src => src.GetRequiredService<StateFactory>())
@@ -55,14 +55,14 @@ public static partial class DependencyInjection
         if (httpClient.IsNotNull())
         {
             services
-               .AddHttpClient<ITelegramContextProxyFactory, TelegramContextProxyFactory>(httpClient!)
+               .AddHttpClient<ITelegramContextProxyFactory, TelegramContextProxyFactory>(nameof(TelegramContextProxyFactory), httpClient!)
                .AddHttpMessageHandler<LoggingHttpHandler>()
                .AddPolicyHandler(policy);
         }
         else
         {
             services
-               .AddHttpClient<ITelegramContextProxyFactory, TelegramContextProxyFactory>()
+               .AddHttpClient<ITelegramContextProxyFactory, TelegramContextProxyFactory>(nameof(TelegramContextProxyFactory))
                .AddHttpMessageHandler<LoggingHttpHandler>()
                .AddPolicyHandler(policy);
         }

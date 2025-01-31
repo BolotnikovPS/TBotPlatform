@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Reflection;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.State;
@@ -164,7 +165,7 @@ public static partial class DependencyInjection
         }
 
         var statesCollection = new StateFactoryDataCollection(states);
-        services.ConfigureOptions(statesCollection);
+        services.AddSingleton(statesCollection);
 
         return services;
     }

@@ -10,11 +10,11 @@ internal partial class StateFactory
 {
     private StateHistory CreateContextFunc()
     {
-        var state = stateFactoryDataCollection.Value
-                                              .FirstOrDefault(
-                                                   q => q.CommandsTypes.CheckAny()
-                                                        && q.CommandsTypes.Any(x => x.In(CommandTypesConstant.StartCommand))
-                                                   );
+        var state = stateFactoryDataCollection
+           .FirstOrDefault(
+                q => q.CommandsTypes.CheckAny()
+                     && q.CommandsTypes.Any(x => x.In(CommandTypesConstant.StartCommand))
+                );
 
         return Convert(state);
     }

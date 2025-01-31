@@ -6,4 +6,9 @@ public class FileData : FileDataBase
     /// Размер файла
     /// </summary>
     public long Size { get; set; }
+
+    /// <summary>
+    /// Идентификатор файла
+    /// </summary>
+    public string FileId { get; set; }
 }

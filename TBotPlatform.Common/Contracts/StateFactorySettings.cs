@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace TBotPlatform.Common.Factories;
+namespace TBotPlatform.Common.Contracts;
 
 internal class StateFactorySettings
 {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using TBotPlatform.Common.Contracts;
 using TBotPlatform.Contracts.Abstractions.Cache;
 using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Bots;
@@ -7,7 +8,7 @@ using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Factories;
 
-internal partial class StateFactory(ICacheService cache, IOptions<StateFactoryDataCollection> stateFactoryDataCollection, IOptions<StateFactorySettings> stateFactorySettings) : IStateFactory
+internal partial class StateFactory(ICacheService cache, StateFactoryDataCollection stateFactoryDataCollection, IOptions<StateFactorySettings> stateFactorySettings) : IStateFactory
 {
     public StateHistory GetStateByNameOrDefault(string nameOfState = "")
     {
@@ -16,7 +17,7 @@ internal partial class StateFactory(ICacheService cache, IOptions<StateFactoryDa
             return CreateContextFunc();
         }
 
-        var newState = stateFactoryDataCollection.Value.FirstOrDefault(q => q.StateTypeName == nameOfState);
+        var newState = stateFactoryDataCollection.FirstOrDefault(q => q.StateTypeName == nameOfState);
 
         return ConvertStateFactoryData(newState);
     }
@@ -26,11 +27,10 @@ internal partial class StateFactory(ICacheService cache, IOptions<StateFactoryDa
         ArgumentNullException.ThrowIfNull(chatId);
         ArgumentNullException.ThrowIfNull(buttonTypeValue);
 
-        var newState = stateFactoryDataCollection.Value
-                                                 .FirstOrDefault(
-                                                      q => q.ButtonsTypes.CheckAny()
-                                                           && q.ButtonsTypes.Any(z => z == buttonTypeValue)
-                                                      );
+        var newState = stateFactoryDataCollection.FirstOrDefault(
+            q => q.ButtonsTypes.CheckAny()
+                 && q.ButtonsTypes.Any(z => z == buttonTypeValue)
+            );
 
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
 
@@ -56,11 +56,11 @@ internal partial class StateFactory(ICacheService cache, IOptions<StateFactoryDa
         ArgumentNullException.ThrowIfNull(chatId);
         ArgumentNullException.ThrowIfNull(commandTypeValue);
 
-        var newState = stateFactoryDataCollection.Value
-                                                 .FirstOrDefault(
-                                                      q => q.CommandsTypes.CheckAny()
-                                                           && q.CommandsTypes.Any(z => z == commandTypeValue)
-                                                      );
+        var newState = stateFactoryDataCollection
+           .FirstOrDefault(
+                q => q.CommandsTypes.CheckAny()
+                     && q.CommandsTypes.Any(z => z == commandTypeValue)
+                );
 
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
 
@@ -86,11 +86,11 @@ internal partial class StateFactory(ICacheService cache, IOptions<StateFactoryDa
         ArgumentNullException.ThrowIfNull(chatId);
         ArgumentNullException.ThrowIfNull(textTypeValue);
 
-        var newState = stateFactoryDataCollection.Value
-                                                 .FirstOrDefault(
-                                                      q => q.TextsTypes.CheckAny()
-                                                           && q.TextsTypes.Any(z => z == textTypeValue)
-                                                      );
+        var newState = stateFactoryDataCollection
+           .FirstOrDefault(
+                q => q.TextsTypes.CheckAny()
+                     && q.TextsTypes.Any(z => z == textTypeValue)
+                );
 
         return ConvertStateFactoryData(newState);
     }
@@ -135,14 +135,14 @@ internal partial class StateFactory(ICacheService cache, IOptions<StateFactoryDa
 
     public StateHistory GetLockState()
     {
-        var state = stateFactoryDataCollection.Value.FirstOrDefault(z => z.IsLockUserState);
+        var state = stateFactoryDataCollection.FirstOrDefault(z => z.IsLockUserState);
 
         return state.IsNotNull() ? Convert(state) : default;
     }
 
     public StateHistory GetRegistrationState()
     {
-        var state = stateFactoryDataCollection.Value.FirstOrDefault(z => z.IsRegistrationState);
+        var state = stateFactoryDataCollection.FirstOrDefault(z => z.IsRegistrationState);
 
         return state.IsNotNull() ? Convert(state) : default;
     }
@@ -153,7 +153,7 @@ internal partial class StateFactory(ICacheService cache, IOptions<StateFactoryDa
 
         var value = await GetBindStateNameAsync(chatId, cancellationToken);
 
-        var state = stateFactoryDataCollection.Value.FirstOrDefault(z => z.StateTypeName == value);
+        var state = stateFactoryDataCollection.FirstOrDefault(z => z.StateTypeName == value);
 
         return value.IsNotNull() ? Convert(state) : null;
     }
@@ -163,7 +163,7 @@ internal partial class StateFactory(ICacheService cache, IOptions<StateFactoryDa
         ArgumentNullException.ThrowIfNull(chatId);
         ArgumentNullException.ThrowIfNull(state);
 
-        var value = stateFactoryDataCollection.Value.FirstOrDefault(z => z.StateTypeName == state.StateType.Name);
+        var value = stateFactoryDataCollection.FirstOrDefault(z => z.StateTypeName == state.StateType.Name);
 
         if (value.IsNull())
         {
@@ -215,7 +215,7 @@ internal partial class StateFactory(ICacheService cache, IOptions<StateFactoryDa
                 return CreateContextFunc();
             }
 
-            var state = stateFactoryDataCollection.Value.FirstOrDefault(x => x.StateTypeName == lastState);
+            var state = stateFactoryDataCollection.FirstOrDefault(x => x.StateTypeName == lastState);
 
             if (state?.MenuTypeName != null)
             {

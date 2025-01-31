@@ -33,11 +33,10 @@ public static partial class DependencyInjection
         }
 
         services
-           .ConfigureOptions(
-                new CacheSettings
-                {
-                    CachePrefix = prefix,
-                })
+           .AddOptions<CacheSettings>()
+           .Configure(option => { option.CachePrefix = prefix; });
+
+        services
            .AddSingleton<ICacheService, CacheService>()
            .AddHealthCheckRedis(redisConnectionString, tags);
 
