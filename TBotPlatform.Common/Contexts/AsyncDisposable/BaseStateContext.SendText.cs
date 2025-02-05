@@ -1,25 +1,26 @@
-﻿using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
-using TBotPlatform.Contracts.Bots.Constant;
+﻿using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Extension;
+using Telegram.Bot;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class BaseStateContext
 {
-    public Task<ChatResult> SendTextMessageWithReplyAsync(string text, bool disableNotification, CancellationToken cancellationToken)
+    public Task<Message> SendTextMessageWithReplyAsync(string text, bool disableNotification, CancellationToken cancellationToken)
         => SendTextMessageAsync(text, withReply: true, disableNotification, cancellationToken);
 
-    public Task<ChatResult> SendTextMessageWithReplyAsync(string text, CancellationToken cancellationToken)
+    public Task<Message> SendTextMessageWithReplyAsync(string text, CancellationToken cancellationToken)
         => SendTextMessageAsync(text, withReply: true, disableNotification: false, cancellationToken);
 
-    public Task<ChatResult> SendTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)
+    public Task<Message> SendTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)
         => SendTextMessageAsync(text, withReply: false, disableNotification, cancellationToken);
 
-    public Task<ChatResult> SendTextMessageAsync(string text, CancellationToken cancellationToken)
+    public Task<Message> SendTextMessageAsync(string text, CancellationToken cancellationToken)
         => SendTextMessageAsync(text, withReply: false, disableNotification: false, cancellationToken);
 
-    private async Task<ChatResult> SendTextMessageAsync(string text, bool withReply, bool disableNotification, CancellationToken cancellationToken)
+    private Task<Message> SendTextMessageAsync(string text, bool withReply, bool disableNotification, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
 
@@ -37,15 +38,14 @@ internal partial class BaseStateContext
                 Selective = true,
             };
 
-        var result = await telegramContext.SendTextMessageAsync(
+        return telegramContext.SendMessage(
             ChatId,
             text,
-            replyMarkup,
-            disableNotification,
-            cancellationToken
+            ParseMode,
+            replyMarkup: replyMarkup,
+            disableNotification: disableNotification,
+            cancellationToken: cancellationToken
             );
-
-        return telegramMapping.MessageToResult(result);
     }
 
     public async Task SendLongTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)
@@ -61,13 +61,24 @@ internal partial class BaseStateContext
         {
             foreach (var tf in text.SplitByLength(StateContextConstant.TextLength))
             {
-                await telegramContext.SendTextMessageAsync(ChatId, tf, disableNotification, cancellationToken);
+                await telegramContext.SendMessage(
+                    ChatId,
+                    tf,
+                    disableNotification: disableNotification,
+                    cancellationToken: cancellationToken
+                    );
             }
 
             return;
         }
 
-        await telegramContext.SendTextMessageAsync(ChatId, text, disableNotification, cancellationToken);
+        await telegramContext.SendMessage(
+            ChatId,
+            text,
+            ParseMode,
+            disableNotification: disableNotification,
+            cancellationToken: cancellationToken
+            );
     }
 
     public Task SendLongTextMessageAsync(string text, CancellationToken cancellationToken)

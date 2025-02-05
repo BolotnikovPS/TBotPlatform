@@ -1,4 +1,5 @@
 ﻿using TBotPlatform.Extension;
+using Telegram.Bot;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
@@ -18,10 +19,10 @@ internal partial class BaseStateContext
         }
 
         ChatIdValidOrThrow();
-        CallbackQueryValidOrThrow(ChatUpdate!.CallbackQueryOrNull);
+        CallbackQueryValidOrThrow(ChatUpdate!.CallbackQuery);
 
-        return telegramContext.AnswerCallbackQueryAsync(
-            ChatUpdate.CallbackQueryOrNull!.Id,
+        return telegramContext.AnswerCallbackQuery(
+            ChatUpdate.CallbackQuery!.Id,
             text,
             showAlert,
             url,

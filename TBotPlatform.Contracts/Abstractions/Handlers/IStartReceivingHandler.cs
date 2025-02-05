@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
+using Telegram.Bot.Types;
 
 namespace TBotPlatform.Contracts.Abstractions.Handlers;
 
@@ -14,5 +15,5 @@ public interface IStartReceivingHandler
     /// <param name="telegramUser">Пользователь telegram</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task HandleUpdateAsync(ChatUpdate chatUpdate, MarkupNextState? markupNextState, TelegramMessageUserData telegramUser, CancellationToken cancellationToken);
+    Task HandleUpdateAsync(Update chatUpdate, MarkupNextState? markupNextState, TelegramMessageUserData telegramUser, CancellationToken cancellationToken);
 }

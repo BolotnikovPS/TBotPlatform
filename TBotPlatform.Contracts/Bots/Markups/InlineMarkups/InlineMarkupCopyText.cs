@@ -16,7 +16,7 @@ public class InlineMarkupCopyText(string buttonName, string copyText)
         {
             Text = copyText,
         };
-        
+
         return InlineKeyboardButton.WithCopyText(ButtonName, copyTextButton);
     }
 }

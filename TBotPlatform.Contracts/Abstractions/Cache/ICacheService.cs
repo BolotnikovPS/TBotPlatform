@@ -7,9 +7,8 @@ public interface ICacheService
     /// </summary>
     /// <param name="collection">Название коллекции</param>
     /// <param name="value">Значение</param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task AddValueToCollectionAsync(string collection, IKeyInCache value, CancellationToken cancellationToken);
+    Task AddValueToCollectionAsync(string collection, IKeyInCache value);
 
     /// <summary>
     /// Получает значение с коллекции
@@ -17,9 +16,8 @@ public interface ICacheService
     /// <typeparam name="T"></typeparam>
     /// <param name="collection">Название коллекции</param>
     /// <param name="key">Ключ</param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<T> GetValueFromCollectionAsync<T>(string collection, string key, CancellationToken cancellationToken)
+    Task<T> GetValueFromCollectionAsync<T>(string collection, string key)
         where T : IKeyInCache;
 
     /// <summary>
@@ -27,9 +25,8 @@ public interface ICacheService
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="collection">Название коллекции</param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<List<T>> GetAllValueFromCollectionAsync<T>(string collection, CancellationToken cancellationToken)
+    Task<List<T>> GetAllValueFromCollectionAsync<T>(string collection)
         where T : IKeyInCache;
 
     /// <summary>
@@ -37,26 +34,23 @@ public interface ICacheService
     /// </summary>
     /// <param name="collection">Название коллекции</param>
     /// <param name="key">Ключ</param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task RemoveValueFromCollectionAsync(string collection, string key, CancellationToken cancellationToken);
+    Task RemoveValueFromCollectionAsync(string collection, string key);
 
     /// <summary>
     /// Удаляет коллекции
     /// </summary>
     /// <param name="collection">Название коллекции</param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task RemoveCollectionAsync(string collection, CancellationToken cancellationToken);
+    Task RemoveCollectionAsync(string collection);
 
     /// <summary>
     /// Получает значение
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="key">Ключ</param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<T> GetValueAsync<T>(string key, CancellationToken cancellationToken)
+    Task<T> GetValueAsync<T>(string key)
         where T : IKeyInCache;
 
     /// <summary>
@@ -64,31 +58,27 @@ public interface ICacheService
     /// </summary>
     /// <param name="value">Значение</param>
     /// <param name="expiryTime"></param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<bool> SetValueAsync(IKeyInCache value, TimeSpan expiryTime, CancellationToken cancellationToken);
+    Task<bool> SetValueAsync(IKeyInCache value, TimeSpan expiryTime);
 
     /// <summary>
     /// Добавляет значение
     /// </summary>
     /// <param name="value">Значение</param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<bool> SetValueAsync(IKeyInCache value, CancellationToken cancellationToken);
+    Task<bool> SetValueAsync(IKeyInCache value);
 
     /// <summary>
     /// Удаляет значение
     /// </summary>
     /// <param name="key">Ключ</param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<bool> RemoveValueAsync(string key, CancellationToken cancellationToken);
+    Task<bool> RemoveValueAsync(string key);
 
     /// <summary>
     /// Проверяет наличие ключа
     /// </summary>
     /// <param name="key">Ключ</param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<bool> KeyExistsAsync(string key, CancellationToken cancellationToken);
+    Task<bool> KeyExistsAsync(string key);
 }

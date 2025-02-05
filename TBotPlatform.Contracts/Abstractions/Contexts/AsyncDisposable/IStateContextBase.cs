@@ -1,12 +1,9 @@
 ﻿#nullable enable
-using TBotPlatform.Contracts.Bots.Account;
 using TBotPlatform.Contracts.Bots.Buttons;
-using TBotPlatform.Contracts.Bots.Chats;
-using TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
-using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
 using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -22,7 +19,7 @@ public interface IStateContextBase
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendDocumentAsync(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken);
+    Task<Message> SendDocumentAsync(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет документы в чат
@@ -31,7 +28,7 @@ public interface IStateContextBase
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendDocumentAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken);
+    Task<Message> SendDocumentAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет документы в чат
@@ -39,7 +36,7 @@ public interface IStateContextBase
     /// <param name="documentData">Файл документа</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendDocumentAsync(FileDataBase documentData, CancellationToken cancellationToken);
+    Task<Message> SendDocumentAsync(FileDataBase documentData, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет фото в чат
@@ -49,7 +46,7 @@ public interface IStateContextBase
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendPhotoAsync(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken);
+    Task<Message> SendPhotoAsync(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет фото в чат
@@ -58,7 +55,7 @@ public interface IStateContextBase
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendPhotoAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken);
+    Task<Message> SendPhotoAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет фото в чат
@@ -66,7 +63,7 @@ public interface IStateContextBase
     /// <param name="documentData">Файл документа</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendPhotoAsync(FileDataBase documentData, CancellationToken cancellationToken);
+    Task<Message> SendPhotoAsync(FileDataBase documentData, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
@@ -77,7 +74,7 @@ public interface IStateContextBase
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendOrUpdateTextMessageAsync(
+    Task<Message> SendOrUpdateTextMessageAsync(
         string text,
         InlineMarkupList inlineMarkupList,
         FileDataBase photoData,
@@ -93,7 +90,7 @@ public interface IStateContextBase
     /// <param name="photoData">Файл изображения</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileDataBase photoData, CancellationToken cancellationToken);
+    Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, FileDataBase photoData, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
@@ -103,7 +100,7 @@ public interface IStateContextBase
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, bool disableNotification, CancellationToken cancellationToken);
+    Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
@@ -112,7 +109,7 @@ public interface IStateContextBase
     /// <param name="inlineMarkupList">Кнопки</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, CancellationToken cancellationToken);
+    Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
@@ -122,7 +119,7 @@ public interface IStateContextBase
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, bool disableNotification, CancellationToken cancellationToken);
+    Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
@@ -131,7 +128,7 @@ public interface IStateContextBase
     /// <param name="inlineMarkupMassiveList">Кнопки</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, CancellationToken cancellationToken);
+    Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
@@ -140,7 +137,7 @@ public interface IStateContextBase
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendOrUpdateTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken);
+    Task<Message> SendOrUpdateTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет или обновляет сообщение с прикрепленными кнопками в чат
@@ -148,7 +145,7 @@ public interface IStateContextBase
     /// <param name="text">Текст сообщения</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendOrUpdateTextMessageAsync(string text, CancellationToken cancellationToken);
+    Task<Message> SendOrUpdateTextMessageAsync(string text, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет сообщение в чат с ответом на сообщение
@@ -157,7 +154,7 @@ public interface IStateContextBase
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendTextMessageWithReplyAsync(string text, bool disableNotification, CancellationToken cancellationToken);
+    Task<Message> SendTextMessageWithReplyAsync(string text, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет сообщение в чат с ответом на сообщение
@@ -165,7 +162,7 @@ public interface IStateContextBase
     /// <param name="text">Текст сообщения</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendTextMessageWithReplyAsync(string text, CancellationToken cancellationToken);
+    Task<Message> SendTextMessageWithReplyAsync(string text, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет сообщение в чат с ответом на сообщение
@@ -174,7 +171,7 @@ public interface IStateContextBase
     /// <param name="disableNotification"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken);
+    Task<Message> SendTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет сообщение в чат с ответом на сообщение
@@ -182,7 +179,7 @@ public interface IStateContextBase
     /// <param name="text">Текст сообщения</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> SendTextMessageAsync(string text, CancellationToken cancellationToken);
+    Task<Message> SendTextMessageAsync(string text, CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет большой текст
@@ -215,7 +212,7 @@ public interface IStateContextBase
     /// <param name="text">Текст сообщения</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> RemoveMarkupAsync(string text, CancellationToken cancellationToken);
+    Task<Message> RemoveMarkupAsync(string text, CancellationToken cancellationToken);
 
     /// <summary>
     /// Обновляет основные кнопки в чате
@@ -223,7 +220,7 @@ public interface IStateContextBase
     /// <param name="replyMarkup">Кнопки</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> UpdateMainButtonsAsync(MainButtonMassiveList replyMarkup, CancellationToken cancellationToken);
+    Task<Message> UpdateMainButtonsAsync(MainButtonMassiveList replyMarkup, CancellationToken cancellationToken);
 
     /// <summary>
     /// Обновляет основные кнопки в чате
@@ -232,7 +229,7 @@ public interface IStateContextBase
     /// <param name="text">Текст сообщения</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> UpdateMainButtonsAsync(MainButtonMassiveList replyMarkup, string text, CancellationToken cancellationToken);
+    Task<Message> UpdateMainButtonsAsync(MainButtonMassiveList replyMarkup, string text, CancellationToken cancellationToken);
 
     /// <summary>
     /// Обновляет сообщение и удаляет кнопки с заменой текста
@@ -255,7 +252,7 @@ public interface IStateContextBase
     /// <param name="messageId">Id сообщения</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task RemoveMessageAsync(int messageId, CancellationToken cancellationToken);
+    Task RemoveMessageAsync(int messageId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Пересылает сообщение
@@ -265,7 +262,7 @@ public interface IStateContextBase
     /// <param name="disableNotification">Отключить уведомление пользователю</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> ForwardMessageAsync(long fromChatId, int messageId, bool disableNotification, CancellationToken cancellationToken);
+    Task<Message> ForwardMessageAsync(long fromChatId, int messageId, bool disableNotification, CancellationToken cancellationToken);
 
     /// <summary>
     /// Пересылает сообщение
@@ -274,7 +271,7 @@ public interface IStateContextBase
     /// <param name="messageId">Id сообщения</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatResult> ForwardMessageAsync(long fromChatId, int messageId, CancellationToken cancellationToken);
+    Task<Message> ForwardMessageAsync(long fromChatId, int messageId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Копирует сообщение
@@ -283,7 +280,6 @@ public interface IStateContextBase
     /// <param name="messageId">Id сообщения</param>
     /// <param name="caption">Подпись/текст к сообщению</param>
     /// <param name="replyToMessageId">Id сообщение на которое ответить</param>
-    /// <param name="allowSendingWithoutReply">Разрешить отправку без ответа на сообщение</param>
     /// <param name="replyMarkup">Кнопки</param>
     /// <param name="disableNotification">Отключить уведомление пользователю</param>
     /// <param name="cancellationToken"></param>
@@ -293,7 +289,6 @@ public interface IStateContextBase
         int messageId,
         string caption,
         int replyToMessageId,
-        bool allowSendingWithoutReply,
         IReplyMarkup replyMarkup,
         bool disableNotification,
         CancellationToken cancellationToken
@@ -346,7 +341,7 @@ public interface IStateContextBase
     /// <param name="userIdToCheck"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ChatMemberData> GetChatMemberAsync(long chatIdToCheck, long userIdToCheck, CancellationToken cancellationToken);
+    Task<ChatMember> GetChatMemberAsync(long chatIdToCheck, long userIdToCheck, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получает информацию о списке администраторов чата
@@ -354,7 +349,7 @@ public interface IStateContextBase
     /// <param name="chatIdToCheck"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<List<ChatMemberData>> GetChatAdministratorsAsync(long chatIdToCheck, CancellationToken cancellationToken);
+    Task<List<ChatMember>> GetChatAdministratorsAsync(long chatIdToCheck, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получает информацию о чате
@@ -362,7 +357,7 @@ public interface IStateContextBase
     /// <param name="chatIdToCheck"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<TelegramChatFullInfo> GetChatAsync(long chatIdToCheck, CancellationToken cancellationToken);
+    Task<ChatFullInfo> GetChatAsync(long chatIdToCheck, CancellationToken cancellationToken);
 
     /// <summary>
     /// Покидает чат
@@ -371,13 +366,6 @@ public interface IStateContextBase
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task LeaveChatAsync(long chatIdToLeave, CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Получает информацию о связи бота с бизнес-аккаунтом
-    /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task<TelegramBusinessInfo> GetBusinessInfoAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Отправляет ответ клиенту на запросы типа callback
@@ -390,7 +378,7 @@ public interface IStateContextBase
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <returns></returns>
-    public Task AnswerCallbackQueryAsync(
+    Task AnswerCallbackQueryAsync(
         string text,
         bool showAlert,
         string url,

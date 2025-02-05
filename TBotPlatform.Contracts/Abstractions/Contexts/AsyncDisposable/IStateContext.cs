@@ -1,7 +1,7 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Bots;
-using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.State;
+using Telegram.Bot.Types;
 
 namespace TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 
@@ -15,7 +15,7 @@ public interface IStateContext : IStateContextMinimal
     /// <summary>
     /// Информация о сообщении из чата
     /// </summary>
-    ChatUpdate ChatUpdate { get; }
+    Update ChatUpdate { get; }
 
     /// <summary>
     /// Информация о состоянии входящей кнопки inline меню

@@ -8,6 +8,8 @@ internal class DistributedLock(ICacheService cacheService, string key) : IDistri
 {
     public async Task<IDistributedLock> RetryUntilTrueAsync(TimeSpan waitingTimeOut, TimeSpan blockingTimeOut, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var i = 0;
         var initialTime = DateTime.UtcNow;
 
@@ -28,24 +30,26 @@ internal class DistributedLock(ICacheService cacheService, string key) : IDistri
 
     public async ValueTask DisposeAsync()
     {
-        await cacheService.RemoveValueAsync(key, CancellationToken.None);
+        await cacheService.RemoveValueAsync(key);
     }
 
     private async Task<bool> TryGetLockAsync(TimeSpan blockingTimeOut, CancellationToken cancellationToken)
     {
-        if (!await cacheService.KeyExistsAsync(key, cancellationToken))
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (!await cacheService.KeyExistsAsync(key))
         {
-            return await cacheService.SetValueAsync(CreateCacheValue(blockingTimeOut), cancellationToken);
+            return await cacheService.SetValueAsync(CreateCacheValue(blockingTimeOut));
         }
 
-        var data = await cacheService.GetValueAsync<DistributedLockContract>(key, cancellationToken);
+        var data = await cacheService.GetValueAsync<DistributedLockContract>(key);
 
         if (data.Value > DateTime.UtcNow)
         {
             return false;
         }
 
-        return await cacheService.SetValueAsync(CreateCacheValue(blockingTimeOut), cancellationToken);
+        return await cacheService.SetValueAsync(CreateCacheValue(blockingTimeOut));
     }
 
     private DistributedLockContract CreateCacheValue(TimeSpan blockingTimeOut)

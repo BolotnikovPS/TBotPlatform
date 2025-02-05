@@ -42,6 +42,12 @@ internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMe
         }
 
         var mainButtons = await menuButtons!.GetMainButtonsAsync(user);
-        await stateContext.UpdateMainButtonsAsync(mainButtons, cancellationToken);
+
+        if (mainButtons?.Count == 0)
+        {
+            return;
+        }
+
+        await stateContext.UpdateMainButtonsAsync(mainButtons!, cancellationToken);
     }
 }

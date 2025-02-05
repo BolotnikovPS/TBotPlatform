@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using ComposableAsync;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Extensions.Http;
 using RateLimiter;
@@ -29,7 +28,7 @@ public static partial class DependencyInjection
 
         services
            .AddSingleton(telegramSettings)
-           .AddSingleton(e => GetLimeLimiter(e.GetService<IOptions<TelegramSettings>>()!.Value.HttpPolicy.TelegramRequestMilliSecondInterval))
+           .AddSingleton(_ => GetLimeLimiter(telegramSettings.HttpPolicy.TelegramRequestMilliSecondInterval))
            .AddScoped<LoggingHttpHandler>()
            .AddScoped(typeof(ITelegramContextLog), typeof(TLog));
 
@@ -50,11 +49,6 @@ public static partial class DependencyInjection
                .AddPolicyHandler(policy)
                .AddHttpMessageHandler<LoggingHttpHandler>();
         }
-
-        services
-           .AddScoped<TelegramChatHandler>()
-           .AddScoped<ITelegramUpdateHandler>(src => src.GetRequiredService<TelegramChatHandler>())
-           .AddScoped<ITelegramMappingHandler>(src => src.GetRequiredService<TelegramChatHandler>());
 
         return services;
     }

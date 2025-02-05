@@ -1,20 +1,19 @@
 ﻿#nullable enable
-using TBotPlatform.Contracts.Bots.Chats;
-using TBotPlatform.Contracts.Bots.Users;
+using Telegram.Bot.Types;
 
 namespace TBotPlatform.Contracts.Bots.ChatUpdate;
 
-public class TelegramMessageUserData(TelegramUser? userOrNull, TelegramChat? chatOrNull)
+public class TelegramMessageUserData(User? userOrNull, Chat? chatOrNull)
 {
     /// <summary>
     /// Информация о пользователе telegram
     /// Не возвращает информацию если UpdateType = Unknown, Poll, PollAnswer
     /// </summary>
-    public TelegramUser? UserOrNull { get; } = userOrNull;
+    public User? UserOrNull { get; } = userOrNull;
 
     /// <summary>
     /// Информация о чате telegram
     /// Не возвращает информацию если UpdateType = Unknown, Poll, PollAnswer, InlineQuery, ChosenInlineResult, ShippingQuery, PreCheckoutQuery
     /// </summary>
-    public TelegramChat? ChatOrNull { get; } = chatOrNull;
+    public Chat? ChatOrNull { get; } = chatOrNull;
 }

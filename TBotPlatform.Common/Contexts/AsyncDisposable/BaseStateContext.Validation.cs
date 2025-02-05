@@ -1,8 +1,8 @@
 ﻿#nullable enable
-using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Extension;
+using Telegram.Bot.Types;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
@@ -32,7 +32,7 @@ internal partial class BaseStateContext
         }
     }
 
-    private static void CallbackQueryValidOrThrow(ChatCallbackQuery? callbackQueryOrNull)
+    private static void CallbackQueryValidOrThrow(CallbackQuery? callbackQueryOrNull)
     {
         if (callbackQueryOrNull.IsNull())
         {

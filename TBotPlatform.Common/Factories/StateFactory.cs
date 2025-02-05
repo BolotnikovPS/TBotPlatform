@@ -133,19 +133,9 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
         return result.IsNotNull() ? result : default;
     }
 
-    public StateHistory GetLockState()
-    {
-        var state = stateFactoryDataCollection.FirstOrDefault(z => z.IsLockUserState);
+    public StateHistory LockState => GetStateHistory(z => z.IsLockUserState);
 
-        return state.IsNotNull() ? Convert(state) : default;
-    }
-
-    public StateHistory GetRegistrationState()
-    {
-        var state = stateFactoryDataCollection.FirstOrDefault(z => z.IsRegistrationState);
-
-        return state.IsNotNull() ? Convert(state) : default;
-    }
+    public StateHistory RegistrationState => GetStateHistory(z => z.IsRegistrationState);
 
     public async Task<StateHistory> GetBindStateOrNullAsync(long chatId, CancellationToken cancellationToken)
     {
@@ -228,5 +218,12 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
 
             statesInMemoryOrEmpty.Remove(lastState);
         }
+    }
+
+    private StateHistory GetStateHistory(Func<StateFactoryData, bool> request)
+    {
+        var state = stateFactoryDataCollection.FirstOrDefault(request);
+
+        return state.IsNotNull() ? Convert(state) : default;
     }
 }

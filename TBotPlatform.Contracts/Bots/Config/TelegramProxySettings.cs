@@ -17,12 +17,6 @@ public class TelegramProxySettings
     public bool ProtectContent { get; init; }
 
     /// <summary>
-    /// Идентификатор бизнес аккаунта
-    /// </summary>
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    public string? BusinessConnectionId { get; init; }
-
-    /// <summary>
     /// Префикс имя бота. Требуется в случае работы с состояниями <see cref="IStateProxyFactory"/>
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]

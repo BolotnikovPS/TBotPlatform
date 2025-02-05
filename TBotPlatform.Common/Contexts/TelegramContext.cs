@@ -1,85 +1,84 @@
-﻿using TBotPlatform.Contracts.Abstractions.Contexts;
+﻿using System.Diagnostics;
+using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Statistics;
+using TBotPlatform.Extension;
 using Telegram.Bot;
-using Telegram.Bot.Types.Enums;
-using PMode = Telegram.Bot.Types.Enums.ParseMode;
+using Telegram.Bot.Requests.Abstractions;
+using Telegram.Bot.Types;
 
 namespace TBotPlatform.Common.Contexts;
 
-internal partial class TelegramContext : ITelegramContext, IAsyncDisposable
+internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisposable
 {
-    private const PMode ParseMode = PMode.Html;
-
-    private readonly TelegramBotClient _botClient;
     private readonly ITelegramContextLog _telegramContextLog;
     private readonly TelegramSettings _telegramSettings;
     private readonly Guid _operationGuid = Guid.NewGuid();
 
-    public TelegramContext(HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(telegramSettings.Token);
+    private readonly Stopwatch _timer = new();
+    private int _iteration;
 
+    public TelegramContext(HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog)
+        : base(telegramSettings.Token ?? throw new ArgumentException("Token"), client)
+    {
         client.DefaultRequestHeaders.TryAddWithoutValidation(DefaultHeadersConstant.ContextOperation, _operationGuid.ToString());
 
-        _botClient = new(telegramSettings.Token, client);
         _telegramSettings = telegramSettings;
         _telegramContextLog = telegramContextLog;
     }
 
-    public Guid GetCurrentOperation() => _operationGuid;
+    public Guid CurrentOperation => _operationGuid;
 
-    public Task<T> MakeRequestAsync<T>(Func<ITelegramBotClient, Task<T>> request, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
-        => ExecuteEnqueueSafety(request.Invoke(_botClient), logMessage, cancellationToken);
-
-    public Task<T> MakeRequestAsync<T>(Func<ITelegramBotClient, Task<T>> request, CancellationToken cancellationToken)
-        => Enqueue(() => request.Invoke(_botClient), cancellationToken);
-
-    public Task MakeRequestAsync(Func<ITelegramBotClient, Task> request, TelegramContextLogMessage logMessage, CancellationToken cancellationToken)
-        => ExecuteEnqueueSafety(request.Invoke(_botClient), logMessage, cancellationToken);
-
-    public Task MakeRequestAsync(Func<ITelegramBotClient, Task> request, CancellationToken cancellationToken)
-        => Enqueue(() => request.Invoke(_botClient), cancellationToken);
-
-    public Task DeleteMessageAsync(long chatId, int messageId, CancellationToken cancellationToken)
+    public override async Task<TResponse> SendRequest<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
-        var logMessageData = new TelegramContextLogMessageData
+        var properties = request.GetType().GetProperties();
+
+        var chatIdValue = properties.FirstOrDefault(z => z.Name == "ChatId")?.GetValue(request) as ChatId;
+        var methodValue = properties.FirstOrDefault(z => z.Name == "MethodName")?.GetValue(request) as string;
+
+        var protectContentValue = properties.FirstOrDefault(z => z.Name == "ProtectContent");
+        if (protectContentValue.IsNotNull())
         {
-            MessageId = messageId,
+            protectContentValue?.SetValue(request, _telegramSettings.ProtectContent);
+        }
+
+        var fullLogMessage = new TelegramContextFullLogMessage
+        {
+            Request = new()
+            {
+                ChatId = chatIdValue?.Identifier ?? 0,
+                OperationGuid = _operationGuid,
+                OperationType = methodValue ?? "",
+                MessageBody = properties
+                             .Where(z => z.Name.NotIn("HttpMethod", "MethodName", "IsWebhookResponse", "ChatId"))
+                             .ToDictionary(property => property.Name, property => property.GetValue(request)?.ToString()),
+            },
         };
 
-        var log = new TelegramContextLogMessage
+        try
         {
-            OperationGuid = _operationGuid,
-            OperationType = nameof(DeleteMessageAsync),
-            ChatId = chatId,
-            MessageBody = logMessageData,
-        };
+            _timer.Start();
 
-        var task = _botClient.DeleteMessage(chatId, messageId, cancellationToken);
+            var result = await base.SendRequest(request, cancellationToken);
 
-        return ExecuteEnqueueSafety(task, log, cancellationToken);
-    }
+            if (result.IsNotNull())
+            {
+                fullLogMessage.Result = result;
+            }
 
-    public Task SendChatActionAsync(long chatId, ChatAction chatAction, CancellationToken cancellationToken)
-    {
-        var logMessageData = new TelegramContextLogMessageData
+            await _telegramContextLog.HandleLogAsync(fullLogMessage, cancellationToken);
+
+            return result;
+        }
+        catch (Exception ex)
         {
-            ChatAction = chatAction,
-        };
+            _iteration++;
+            _timer.Stop();
 
-        var log = new TelegramContextLogMessage
-        {
-            OperationGuid = _operationGuid,
-            OperationType = nameof(SendChatActionAsync),
-            ChatId = chatId,
-            MessageBody = logMessageData,
-        };
-
-        var task = _botClient.SendChatAction(chatId, chatAction, cancellationToken: cancellationToken);
-
-        return ExecuteEnqueueSafety(task, log, cancellationToken);
+            await _telegramContextLog.HandleErrorLogAsync(fullLogMessage, ex, cancellationToken);
+            throw;
+        }
     }
 
     public async ValueTask DisposeAsync()

@@ -1,8 +1,9 @@
 ﻿#nullable enable
-using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
+using TBotPlatform.Contracts;
 using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Extension;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -10,7 +11,7 @@ namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class BaseStateContext
 {
-    public Task<ChatResult> SendOrUpdateTextMessageAsync(
+    public Task<Message> SendOrUpdateTextMessageAsync(
         string text,
         InlineMarkupList inlineMarkupList,
         FileDataBase photoData,
@@ -36,14 +37,14 @@ internal partial class BaseStateContext
         return SendOrUpdateTextMessageAsync(text, inlineKeyboard, photoData, disableNotification, cancellationToken);
     }
 
-    public Task<ChatResult> SendOrUpdateTextMessageAsync(
+    public Task<Message> SendOrUpdateTextMessageAsync(
         string text,
         InlineMarkupList inlineMarkupList,
         FileDataBase photoData,
         CancellationToken cancellationToken
         ) => SendOrUpdateTextMessageAsync(text, inlineMarkupList, photoData, disableNotification: false, cancellationToken);
 
-    public Task<ChatResult> SendOrUpdateTextMessageAsync(
+    public Task<Message> SendOrUpdateTextMessageAsync(
         string text,
         InlineMarkupList inlineMarkupList,
         bool disableNotification,
@@ -68,10 +69,10 @@ internal partial class BaseStateContext
         return SendOrUpdateTextMessageAsync(text, inlineKeyboard, photoData: null, disableNotification, cancellationToken);
     }
 
-    public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, CancellationToken cancellationToken)
+    public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, CancellationToken cancellationToken)
         => SendOrUpdateTextMessageAsync(text, inlineMarkupList, disableNotification: false, cancellationToken);
 
-    public Task<ChatResult> SendOrUpdateTextMessageAsync(
+    public Task<Message> SendOrUpdateTextMessageAsync(
         string text,
         InlineMarkupMassiveList? inlineMarkupMassiveList,
         bool disableNotification,
@@ -88,10 +89,10 @@ internal partial class BaseStateContext
         return SendOrUpdateTextMessageAsync(text, inlineKeyboard, photoData: null, disableNotification, cancellationToken);
     }
 
-    public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, CancellationToken cancellationToken)
+    public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, CancellationToken cancellationToken)
         => SendOrUpdateTextMessageAsync(text, inlineMarkupMassiveList, disableNotification: false, cancellationToken);
 
-    public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)
+    public Task<Message> SendOrUpdateTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)
         => SendOrUpdateTextMessageAsync(
             text,
             inlineMarkupMassiveList: null,
@@ -99,7 +100,7 @@ internal partial class BaseStateContext
             cancellationToken
             );
 
-    public Task<ChatResult> SendOrUpdateTextMessageAsync(string text, CancellationToken cancellationToken)
+    public Task<Message> SendOrUpdateTextMessageAsync(string text, CancellationToken cancellationToken)
         => SendOrUpdateTextMessageAsync(
             text,
             inlineMarkupMassiveList: null,
@@ -107,7 +108,7 @@ internal partial class BaseStateContext
             cancellationToken
             );
 
-    private async Task<ChatResult> SendOrUpdateTextMessageAsync(
+    private async Task<Message> SendOrUpdateTextMessageAsync(
         string text,
         InlineKeyboardMarkup? inlineKeyboard,
         FileDataBase? photoData,
@@ -121,48 +122,58 @@ internal partial class BaseStateContext
         if (photoData.IsNotNull())
         {
             var checkToDelete = ChatUpdate.IsNotNull()
-                                && ChatUpdate!.CallbackQueryOrNull.IsNotNull()
-                                && (DateTime.UtcNow - ChatUpdate.CallbackQueryOrNull!.Date).TotalDays < 1;
+                                && ChatUpdate!.CallbackQuery.IsNotNull()
+                                && (DateTime.UtcNow - ChatUpdate.CallbackQuery!.Message!.Date).TotalDays < 1;
 
             if (checkToDelete)
             {
-                CallbackQueryValidOrThrow(ChatUpdate?.CallbackQueryOrNull);
+                CallbackQueryValidOrThrow(ChatUpdate?.CallbackQuery);
 
-                await telegramContext.DeleteMessageAsync(ChatId, ChatUpdate!.CallbackQueryOrNull!.MessageId, cancellationToken);
+                await telegramContext.DeleteMessage(ChatId, ChatUpdate!.CallbackQuery!.Message!.MessageId, cancellationToken);
             }
 
             await using var fileStream = new MemoryStream(photoData!.Bytes);
-            var resultSendPhoto = await telegramContext.SendPhotoAsync(
+            return await telegramContext.SendPhoto(
                 ChatId,
                 InputFile.FromStream(fileStream),
                 text,
-                inlineKeyboard,
-                disableNotification,
-                cancellationToken
+                ParseMode,
+                replyMarkup: inlineKeyboard,
+                disableNotification: disableNotification,
+                cancellationToken: cancellationToken
                 );
-
-            return telegramMapping.MessageToResult(resultSendPhoto);
         }
 
         if (MarkupNextState.IsNull())
         {
-            var resultSendText = await telegramContext.SendTextMessageAsync(
+            return await telegramContext.SendMessage(
                 ChatId,
                 text,
-                inlineKeyboard,
-                disableNotification,
-                cancellationToken
+                ParseMode,
+                replyMarkup: inlineKeyboard,
+                disableNotification: disableNotification,
+                cancellationToken: cancellationToken
                 );
-
-            return telegramMapping.MessageToResult(resultSendText);
         }
 
-        CallbackQueryValidOrThrow(ChatUpdate!.CallbackQueryOrNull);
+        CallbackQueryValidOrThrow(ChatUpdate!.CallbackQuery);
 
-        var result = ChatUpdate.CallbackQueryOrNull!.MessageWithImage
-            ? await telegramContext.EditMessageCaptionAsync(ChatId, ChatUpdate.CallbackQueryOrNull.MessageId, text, inlineKeyboard, cancellationToken)
-            : await telegramContext.EditMessageTextAsync(ChatId, ChatUpdate.CallbackQueryOrNull.MessageId, text, inlineKeyboard, cancellationToken);
-
-        return telegramMapping.MessageToResult(result);
+        return ChatUpdate.CallbackQuery.WithImage()
+            ? await telegramContext.EditMessageCaption(
+                ChatId,
+                ChatUpdate.CallbackQuery!.Message!.Id,
+                text,
+                ParseMode,
+                replyMarkup: inlineKeyboard,
+                cancellationToken: cancellationToken
+                )
+            : await telegramContext.EditMessageText(
+                ChatId,
+                ChatUpdate.CallbackQuery!.Message!.MessageId,
+                text,
+                ParseMode,
+                replyMarkup: inlineKeyboard,
+                cancellationToken: cancellationToken
+                );
     }
 }

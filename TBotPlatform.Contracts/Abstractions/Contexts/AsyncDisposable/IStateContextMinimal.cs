@@ -6,11 +6,11 @@ public interface IStateContextMinimal : IStateContextBase, IAsyncDisposable
     /// Получает OperationGuid текущих пулов запросов к telegram
     /// </summary>
     /// <returns></returns>
-    Guid GetCurrentOperation();
+    Guid CurrentOperation { get; }
 
     /// <summary>
     /// Получает контекст для работы с telegram напрямую
     /// </summary>
     /// <returns></returns>
-    ITelegramContext GetTelegramContext();
+    ITelegramContext TelegramContext { get; }
 }

@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Bots;
-using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Contracts.Bots.Users;
 using TBotPlatform.Contracts.State;
 using Telegram.Bot.Types;
@@ -33,37 +32,6 @@ public interface IStateContextFactory
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<IStateContextMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
-        where T : UserBase;
-
-    /// <summary>
-    /// Создание контекста состояния и вызов состояния. Базовым чатом указывается чат пользователя.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="user">Пользователь с которым будем взаимодействовать</param>
-    /// <param name="stateHistory">Вызываемое состояние</param>
-    /// <param name="chatUpdate">Форматированное сообщение с telegram</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task<IStateContextMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, ChatUpdate chatUpdate, CancellationToken cancellationToken)
-        where T : UserBase;
-
-    /// <summary>
-    /// Создание контекста состояния и вызов состояния. Базовым чатом указывается чат пользователя.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="user">Пользователь с которым будем взаимодействовать</param>
-    /// <param name="stateHistory">Вызываемое состояние</param>
-    /// <param name="chatUpdate">Форматированное сообщение с telegram</param>
-    /// <param name="markupNextState">Данные с кнопки inline</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public Task<IStateContextMinimal> CreateStateContextAsync<T>(
-        T user,
-        StateHistory stateHistory,
-        ChatUpdate chatUpdate,
-        MarkupNextState? markupNextState,
-        CancellationToken cancellationToken
-        )
         where T : UserBase;
 
     /// <summary>

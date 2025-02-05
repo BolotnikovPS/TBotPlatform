@@ -3,10 +3,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Text;
+using TBotPlatform.Contracts;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Handlers;
 using TBotPlatform.Contracts.Bots;
-using TBotPlatform.Contracts.Bots.ChatUpdate.Enums;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Extension;
 using Telegram.Bot;
@@ -18,30 +18,26 @@ internal class TelegramContextHostedService(
     ILogger<TelegramContextHostedService> logger,
     TelegramSettings settings,
     ITelegramContext telegramContext,
-    IServiceProvider services,
-    ITelegramUpdateHandler telegramUpdateHandler
+    IServiceProvider services
     ) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var result = await telegramContext.MakeRequestAsync(request => request.GetMe(stoppingToken), stoppingToken);
+        var result = await telegramContext.GetMe(stoppingToken);
 
         logger.LogDebug("Запущен бот {name}", result.FirstName);
 
         var offset = 0;
 
         var updateType = settings.UpdateType.IsNotNull()
-            ? settings?.UpdateType?.Select(MapChatUpdate)
+            ? settings?.UpdateType?.ToList()
             : null;
 
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                var updates = await telegramContext.MakeRequestAsync(
-                    request => request.GetUpdates(offset, allowedUpdates: updateType, cancellationToken: stoppingToken),
-                    stoppingToken
-                    );
+                var updates = await telegramContext.GetUpdates(offset, allowedUpdates: updateType, cancellationToken: stoppingToken);
 
                 if (updates.IsNull())
                 {
@@ -61,7 +57,7 @@ internal class TelegramContextHostedService(
                         sbLog.AppendLine($"Поступило сообщение: {update.ToJson()}");
 
                         await using var scope = services.CreateAsyncScope();
-                        var scopedProcessingService = scope.ServiceProvider.GetRequiredService<IStartReceivingHandler>();
+                        var scopedStartReceivingHandler = scope.ServiceProvider.GetRequiredService<IStartReceivingHandler>();
 
                         MarkupNextState markupNextState = null;
 
@@ -75,9 +71,8 @@ internal class TelegramContextHostedService(
                             }
                         }
 
-                        var telegramMessageUserData = telegramUpdateHandler.GetTelegramMessageUserData(update);
-                        var chatUpdate = await telegramUpdateHandler.GetChatUpdateAsync(telegramMessageUserData, update, stoppingToken);
-                        await scopedProcessingService.HandleUpdateAsync(chatUpdate, markupNextState, telegramMessageUserData, stoppingToken);
+                        var telegramMessageUserData = update.GetMessageUserData();
+                        await scopedStartReceivingHandler.HandleUpdateAsync(update, markupNextState, telegramMessageUserData, stoppingToken);
                     }
                     catch (Exception ex)
                     {
@@ -107,24 +102,4 @@ internal class TelegramContextHostedService(
             }
         }
     }
-
-    private static UpdateType MapChatUpdate(EChatUpdateType updateTypes)
-        => updateTypes switch
-        {
-            EChatUpdateType.Message => UpdateType.Message,
-            EChatUpdateType.EditedMessage => UpdateType.EditedMessage,
-            EChatUpdateType.InlineQuery => UpdateType.InlineQuery,
-            EChatUpdateType.ChosenInlineResult => UpdateType.ChosenInlineResult,
-            EChatUpdateType.CallbackQuery => UpdateType.CallbackQuery,
-            EChatUpdateType.ChannelPost => UpdateType.ChannelPost,
-            EChatUpdateType.EditedChannelPost => UpdateType.EditedChannelPost,
-            EChatUpdateType.ShippingQuery => UpdateType.ShippingQuery,
-            EChatUpdateType.PreCheckoutQuery => UpdateType.PreCheckoutQuery,
-            EChatUpdateType.Poll => UpdateType.Poll,
-            EChatUpdateType.PollAnswer => UpdateType.PollAnswer,
-            EChatUpdateType.MyChatMember => UpdateType.MyChatMember,
-            EChatUpdateType.ChatMember => UpdateType.ChatMember,
-            EChatUpdateType.ChatJoinRequest => UpdateType.ChatJoinRequest,
-            _ => UpdateType.Unknown,
-        };
 }

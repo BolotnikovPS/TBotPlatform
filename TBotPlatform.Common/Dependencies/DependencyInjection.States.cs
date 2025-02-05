@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System.Reflection;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.State;
@@ -14,7 +13,7 @@ namespace TBotPlatform.Common.Dependencies;
 public static partial class DependencyInjection
 {
     public static IServiceCollection AddStates(this IServiceCollection services, string botType = "", params Type[] potentialStateTypes)
-        => services.AddStates(botTypes: [botType,], potentialStateTypes);
+        => services.AddStates([botType,], potentialStateTypes);
 
     public static IServiceCollection AddStates(this IServiceCollection services, Assembly executingAssembly, string botType = "")
         => services.AddStates(executingAssembly, botTypes: botType);

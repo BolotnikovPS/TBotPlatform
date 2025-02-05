@@ -9,5 +9,5 @@ public class TelegramContextLogMessage
 
     public required long ChatId { get; set; }
 
-    public required TelegramContextLogMessageData MessageBody { get; set; }
+    public required Dictionary<string, string> MessageBody { get; set; }
 }

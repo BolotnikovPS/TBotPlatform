@@ -2,5 +2,5 @@
 
 public interface ITelegramContextProxy : ITelegramContext, IAsyncDisposable
 {
-    string GetBotPrefixName();
+    string BotPrefixName { get; }
 }

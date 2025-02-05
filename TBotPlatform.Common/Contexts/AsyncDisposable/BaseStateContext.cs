@@ -1,35 +1,35 @@
 ﻿#nullable enable
 using System.Text;
+using TBotPlatform.Contracts;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
-using TBotPlatform.Contracts.Abstractions.Handlers;
 using TBotPlatform.Contracts.Bots;
-using TBotPlatform.Contracts.Bots.Account;
 using TBotPlatform.Contracts.Bots.Buttons;
-using TBotPlatform.Contracts.Bots.ChatUpdate;
-using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
 using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.State;
 using TBotPlatform.Extension;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using PMode = Telegram.Bot.Types.Enums.ParseMode;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
-internal partial class BaseStateContext(ITelegramMappingHandler telegramMapping, ITelegramContext telegramContext, long chatId) 
+internal partial class BaseStateContext(ITelegramContext telegramContext, long chatId)
     : IStateContextBase
 {
     public StateResult StateResult { get; set; } = new();
     public MarkupNextState? MarkupNextState { get; private set; }
-    public ChatUpdate? ChatUpdate { get; private set; }
+    public Update? ChatUpdate { get; private set; }
 
     internal long ChatId { get; set; } = chatId;
 
+    private const PMode ParseMode = PMode.Html;
     private const string ChooseAction = "😊 Выберите действие";
 
-    public void CreateStateContext(ChatUpdate chatUpdate, MarkupNextState? markupNextState)
+    public void CreateStateContext(Update chatUpdate, MarkupNextState? markupNextState)
     {
         ChatIdValidOrThrow();
 
@@ -37,11 +37,11 @@ internal partial class BaseStateContext(ITelegramMappingHandler telegramMapping,
         ChatUpdate = chatUpdate;
     }
 
-    public Guid GetCurrentOperation() => telegramContext.GetCurrentOperation();
+    public Guid CurrentOperation => telegramContext.CurrentOperation;
 
-    public ITelegramContext GetTelegramContext() => telegramContext;
+    public ITelegramContext TelegramContext => telegramContext;
 
-    public async Task<ChatResult> SendDocumentAsync(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken)
+    public async Task<Message> SendDocumentAsync(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
 
@@ -49,25 +49,23 @@ internal partial class BaseStateContext(ITelegramMappingHandler telegramMapping,
 
         var inputFile = InputFile.FromStream(fileStream, documentData.Name);
 
-        var result = await telegramContext.SendDocumentAsync(
+        return await telegramContext.SendDocument(
             ChatId,
             inputFile,
             caption,
-            null,
-            disableNotification,
-            cancellationToken
-            );
-
-        return telegramMapping.MessageToResult(result);
+            ParseMode,
+            replyParameters: null,
+            disableNotification: disableNotification,
+            cancellationToken: cancellationToken);
     }
 
-    public Task<ChatResult> SendDocumentAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
+    public Task<Message> SendDocumentAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
         => SendDocumentAsync(documentData, caption: null, disableNotification, cancellationToken);
 
-    public Task<ChatResult> SendDocumentAsync(FileDataBase documentData, CancellationToken cancellationToken)
+    public Task<Message> SendDocumentAsync(FileDataBase documentData, CancellationToken cancellationToken)
         => SendDocumentAsync(documentData, disableNotification: false, cancellationToken);
 
-    public async Task<ChatResult> SendPhotoAsync(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken)
+    public async Task<Message> SendPhotoAsync(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
 
@@ -75,51 +73,50 @@ internal partial class BaseStateContext(ITelegramMappingHandler telegramMapping,
 
         var inputFile = InputFile.FromStream(fileStream, documentData.Name);
 
-        var result = await telegramContext.SendPhotoAsync(
+        return await telegramContext.SendPhoto(
             ChatId,
             inputFile,
             caption,
-            null,
-            disableNotification,
-            cancellationToken
+            ParseMode,
+            replyParameters: null,
+            disableNotification: disableNotification,
+            cancellationToken: cancellationToken
             );
-
-        return telegramMapping.MessageToResult(result);
     }
 
-    public Task<ChatResult> SendPhotoAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
+    public Task<Message> SendPhotoAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
         => SendPhotoAsync(documentData, caption: null, disableNotification: false, cancellationToken);
 
-    public Task<ChatResult> SendPhotoAsync(FileDataBase documentData, CancellationToken cancellationToken)
+    public Task<Message> SendPhotoAsync(FileDataBase documentData, CancellationToken cancellationToken)
         => SendPhotoAsync(documentData, disableNotification: false, cancellationToken);
 
     public Task SendChatActionAsync(ChatAction chatAction, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
 
-        return telegramContext.SendChatActionAsync(ChatId, chatAction, cancellationToken);
+        return telegramContext.SendChatAction(ChatId, chatAction, cancellationToken: cancellationToken);
     }
 
-    public async Task<ChatResult> RemoveMarkupAsync(string text, CancellationToken cancellationToken)
+    public Task<Message> RemoveMarkupAsync(string text, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
         TextLengthValidOrThrow(text);
 
-        var result = await telegramContext.SendTextMessageAsync(
+        return telegramContext.SendMessage(
             ChatId,
             text,
+            ParseMode,
+            replyParameters: null,
             new ReplyKeyboardRemove(),
             disableNotification: false,
-            cancellationToken
+            cancellationToken: cancellationToken
             );
-
-        return telegramMapping.MessageToResult(result);
     }
 
-    public Task<ChatResult> UpdateMainButtonsAsync(MainButtonMassiveList mainButtonMassiveList, CancellationToken cancellationToken)
+    public Task<Message> UpdateMainButtonsAsync(MainButtonMassiveList mainButtonMassiveList, CancellationToken cancellationToken)
         => UpdateMainButtonsAsync(mainButtonMassiveList, ChooseAction, cancellationToken);
 
-    public async Task<ChatResult> UpdateMainButtonsAsync(MainButtonMassiveList mainButtonMassiveList, string text, CancellationToken cancellationToken)
+    public Task<Message> UpdateMainButtonsAsync(MainButtonMassiveList mainButtonMassiveList, string text, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
         TextLengthValidOrThrow(text);
@@ -131,15 +128,15 @@ internal partial class BaseStateContext(ITelegramMappingHandler telegramMapping,
             throw new ReplyKeyboardMarkupArgException();
         }
 
-        var result = await telegramContext.SendTextMessageAsync(
+        return telegramContext.SendMessage(
             ChatId,
             text,
+            ParseMode,
+            replyParameters: null,
             newMarkup,
             disableNotification: false,
-            cancellationToken
+            cancellationToken: cancellationToken
             );
-
-        return telegramMapping.MessageToResult(result);
     }
 
     public Task UpdateMarkupTextAndDropButtonAsync(string text, CancellationToken cancellationToken)
@@ -150,31 +147,33 @@ internal partial class BaseStateContext(ITelegramMappingHandler telegramMapping,
         }
 
         ChatIdValidOrThrow();
-        CallbackQueryValidOrThrow(ChatUpdate!.CallbackQueryOrNull);
+        CallbackQueryValidOrThrow(ChatUpdate!.CallbackQuery);
         TextLengthValidOrThrow(text);
 
-        var message = new StringBuilder(ChatUpdate.CallbackQueryOrNull!.Text)
+        var message = new StringBuilder(ChatUpdate.CallbackQuery!.Message?.Text)
                      .AppendLine()
                      .AppendLine(text)
                      .ToString();
 
         TextLengthValidOrThrow(message);
 
-        if (ChatUpdate.CallbackQueryOrNull!.MessageWithImage)
+        if (ChatUpdate.CallbackQuery.WithImage())
         {
-            return telegramContext.EditMessageCaptionAsync(
+            return telegramContext.EditMessageCaption(
                 ChatId,
-                ChatUpdate.CallbackQueryOrNull!.MessageId,
+                ChatUpdate.CallbackQuery!.Message!.MessageId,
                 message,
-                cancellationToken
+                ParseMode,
+                cancellationToken: cancellationToken
                 );
         }
 
-        return telegramContext.EditMessageTextAsync(
+        return telegramContext.EditMessageText(
             ChatId,
-            ChatUpdate.CallbackQueryOrNull!.MessageId,
+            ChatUpdate.CallbackQuery!.Message!.MessageId,
             message,
-            cancellationToken
+            ParseMode,
+            cancellationToken: cancellationToken
             );
     }
 
@@ -185,15 +184,8 @@ internal partial class BaseStateContext(ITelegramMappingHandler telegramMapping,
     {
         ChatIdValidOrThrow();
         MessageIdValidOrThrow(messageId);
-        
-        return telegramContext.DeleteMessageAsync(ChatId, messageId, cancellationToken);
-    }
 
-    public async Task<TelegramBusinessInfo> GetBusinessInfoAsync(CancellationToken cancellationToken)
-    {
-        var result = await telegramContext.GetBusinessConnectionAsync(cancellationToken);
-
-        return telegramMapping.GetTelegramBusinessInfo(result);
+        return telegramContext.DeleteMessage(ChatId, messageId, cancellationToken);
     }
 
     public ValueTask DisposeAsync()

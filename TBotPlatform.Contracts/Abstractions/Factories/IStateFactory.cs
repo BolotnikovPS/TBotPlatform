@@ -65,11 +65,11 @@ public interface IStateFactory : IStateBindFactory
     /// Получает состояние для заблокированных пользователей
     /// </summary>
     /// <returns></returns>
-    StateHistory GetLockState();
+    StateHistory LockState { get; }
 
     /// <summary>
     /// Получает состояние для заблокированных пользователей
     /// </summary>
     /// <returns></returns>
-    StateHistory GetRegistrationState();
+    StateHistory RegistrationState { get; }
 }

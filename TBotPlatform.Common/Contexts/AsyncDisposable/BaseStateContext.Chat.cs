@@ -1,6 +1,6 @@
-﻿using TBotPlatform.Contracts.Bots.Chats;
-using TBotPlatform.Contracts.Bots.ChatUpdate.ChatMessages;
-using TBotPlatform.Extension;
+﻿using TBotPlatform.Extension;
+using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
@@ -10,40 +10,36 @@ internal partial class BaseStateContext
     {
         ChatIdValidOrThrow(chatIdToCheck);
 
-        return telegramContext.GetChatMemberCountAsync(chatIdToCheck, cancellationToken);
+        return telegramContext.GetChatMemberCount(chatIdToCheck, cancellationToken);
     }
 
-    public async Task<ChatMemberData> GetChatMemberAsync(long chatIdToCheck, long userIdToCheck, CancellationToken cancellationToken)
+    public Task<ChatMember> GetChatMemberAsync(long chatIdToCheck, long userIdToCheck, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow(chatIdToCheck);
 
-        var result = await telegramContext.GetChatMemberAsync(chatIdToCheck, userIdToCheck, cancellationToken);
-
-        return telegramMapping.ChatMemberToData(result);
+        return telegramContext.GetChatMember(chatIdToCheck, userIdToCheck, cancellationToken);
     }
 
-    public async Task<List<ChatMemberData>> GetChatAdministratorsAsync(long chatIdToCheck, CancellationToken cancellationToken)
+    public async Task<List<ChatMember>> GetChatAdministratorsAsync(long chatIdToCheck, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow(chatIdToCheck);
 
-        var result = await telegramContext.GetChatAdministratorsAsync(chatIdToCheck, cancellationToken);
+        var result = await telegramContext.GetChatAdministrators(chatIdToCheck, cancellationToken);
 
-        return result.CheckAny() ? result.Select(telegramMapping.ChatMemberToData).ToList() : default;
+        return result.CheckAny() ? result.ToList() : default;
     }
 
-    public async Task<TelegramChatFullInfo> GetChatAsync(long chatIdToCheck, CancellationToken cancellationToken)
+    public Task<ChatFullInfo> GetChatAsync(long chatIdToCheck, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow(chatIdToCheck);
 
-        var result = await telegramContext.GetChatAsync(chatIdToCheck, cancellationToken);
-
-        return telegramMapping.ChatToTelegramChat(result);
+        return telegramContext.GetChat(chatIdToCheck, cancellationToken);
     }
 
     public Task LeaveChatAsync(long chatIdToLeave, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow(chatIdToLeave);
 
-        return telegramContext.LeaveChatAsync(ChatId, cancellationToken);
+        return telegramContext.LeaveChat(ChatId, cancellationToken);
     }
 }

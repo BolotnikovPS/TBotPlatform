@@ -11,7 +11,7 @@ internal class DistributedLockFactory(ICacheService cacheService) : IDistributed
         => new DistributedLock(cacheService, CreateKey(key)).RetryUntilTrueAsync(timeOut, timeOut, cancellationToken);
 
     public Task<bool> IsLockedAsync(string key, CancellationToken cancellationToken)
-        => cacheService.KeyExistsAsync(CreateKey(key), cancellationToken);
+        => cacheService.KeyExistsAsync(CreateKey(key));
 
     private static string CreateKey(string baseKey)
         => $"Locker_{baseKey}";

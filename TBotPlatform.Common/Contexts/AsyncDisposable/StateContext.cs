@@ -1,7 +1,6 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Factories;
-using TBotPlatform.Contracts.Abstractions.Handlers;
 using TBotPlatform.Contracts.Bots;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
@@ -9,10 +8,9 @@ namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 internal class StateContext(
     StateHistory stateHistory,
     IStateBindFactory stateBindFactory,
-    ITelegramMappingHandler telegramMapping,
     ITelegramContext telegramContext,
     long chatId
-    ) : BaseStateContext(telegramMapping, telegramContext, chatId), IStateContext
+    ) : BaseStateContext(telegramContext, chatId), IStateContext
 {
     public async Task<T> MakeRequestToOtherChatAsync<T>(long newChatId, Func<IStateContextMinimal, Task<T>> request)
     {

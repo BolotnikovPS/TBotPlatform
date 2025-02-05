@@ -1,4 +1,6 @@
-﻿namespace TBotPlatform.Common.Contexts.AsyncDisposable;
+﻿using Telegram.Bot;
+
+namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class BaseStateContext
 {
@@ -7,7 +9,7 @@ internal partial class BaseStateContext
         ChatIdValidOrThrow();
         MessageIdValidOrThrow(messageId);
 
-        return telegramContext.PinChatMessageAsync(ChatId, messageId, disableNotification, cancellationToken);
+        return telegramContext.PinChatMessage(ChatId, messageId, disableNotification, cancellationToken: cancellationToken);
     }
 
     public Task PinChatMessageAsync(int messageId, CancellationToken cancellationToken)
@@ -18,13 +20,13 @@ internal partial class BaseStateContext
         ChatIdValidOrThrow();
         MessageIdValidOrThrow(messageId);
 
-        return telegramContext.UnpinChatMessageAsync(ChatId, messageId, cancellationToken);
+        return telegramContext.UnpinChatMessage(ChatId, messageId, cancellationToken: cancellationToken);
     }
 
     public Task UnpinAllChatMessages(CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
 
-        return telegramContext.UnpinAllChatMessagesAsync(ChatId, cancellationToken);
+        return telegramContext.UnpinAllChatMessages(ChatId, cancellationToken);
     }
 }

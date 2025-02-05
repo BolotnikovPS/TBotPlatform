@@ -1,21 +1,20 @@
-﻿using TBotPlatform.Contracts.Bots.ChatUpdate.ChatResults;
+﻿using Telegram.Bot;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class BaseStateContext
 {
-    public async Task<ChatResult> ForwardMessageAsync(long fromChatId, int messageId, bool disableNotification, CancellationToken cancellationToken)
+    public Task<Message> ForwardMessageAsync(long fromChatId, int messageId, bool disableNotification, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
         MessageIdValidOrThrow(messageId);
 
-        var result = await telegramContext.ForwardMessageAsync(ChatId, fromChatId, messageId, disableNotification, cancellationToken);
-
-        return telegramMapping.MessageToResult(result);
+        return telegramContext.ForwardMessage(ChatId, fromChatId, messageId, messageThreadId: null, disableNotification, cancellationToken: cancellationToken);
     }
 
-    public Task<ChatResult> ForwardMessageAsync(long fromChatId, int messageId, CancellationToken cancellationToken)
+    public Task<Message> ForwardMessageAsync(long fromChatId, int messageId, CancellationToken cancellationToken)
         => ForwardMessageAsync(fromChatId, messageId, disableNotification: false, cancellationToken);
 
     public async Task<int> CopyMessageAsync(
@@ -23,7 +22,6 @@ internal partial class BaseStateContext
         int messageId,
         string caption,
         int replyToMessageId,
-        bool allowSendingWithoutReply,
         IReplyMarkup replyMarkup,
         bool disableNotification,
         CancellationToken cancellationToken
@@ -33,16 +31,16 @@ internal partial class BaseStateContext
         ChatIdValidOrThrow(fromChatId);
         MessageIdValidOrThrow(messageId);
 
-        var result = await telegramContext.CopyMessageAsync(
+        var result = await telegramContext.CopyMessage(
             ChatId,
             fromChatId,
             messageId,
             caption,
+            ParseMode,
             replyToMessageId,
-            allowSendingWithoutReply,
             replyMarkup,
-            disableNotification,
-            cancellationToken
+            disableNotification: disableNotification,
+            cancellationToken: cancellationToken
             );
 
         return result.Id;
