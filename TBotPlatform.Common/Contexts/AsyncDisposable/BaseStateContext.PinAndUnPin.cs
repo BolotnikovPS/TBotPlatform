@@ -4,7 +4,7 @@ namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class BaseStateContext
 {
-    public Task PinChatMessageAsync(int messageId, bool disableNotification, CancellationToken cancellationToken)
+    public Task PinChatMessage(int messageId, bool disableNotification, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
         MessageIdValidOrThrow(messageId);
@@ -12,10 +12,10 @@ internal partial class BaseStateContext
         return telegramContext.PinChatMessage(ChatId, messageId, disableNotification, cancellationToken: cancellationToken);
     }
 
-    public Task PinChatMessageAsync(int messageId, CancellationToken cancellationToken)
-        => PinChatMessageAsync(messageId, disableNotification: false, cancellationToken);
+    public Task PinChatMessage(int messageId, CancellationToken cancellationToken)
+        => PinChatMessage(messageId, disableNotification: false, cancellationToken);
 
-    public Task UnpinChatMessageAsync(int messageId, CancellationToken cancellationToken)
+    public Task UnpinChatMessage(int messageId, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
         MessageIdValidOrThrow(messageId);

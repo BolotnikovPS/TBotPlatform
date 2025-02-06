@@ -12,7 +12,7 @@ internal class StateContextProxy(
     long chatId
     ) : BaseStateContext(telegramContextProxy, chatId), IStateContext, IStateContextProxyMinimal
 {
-    public async Task<T> MakeRequestToOtherChatAsync<T>(long newChatId, Func<IStateContextMinimal, Task<T>> request)
+    public async Task<T> MakeRequestToOtherChat<T>(long newChatId, Func<IStateContextMinimal, Task<T>> request)
     {
         ChatIdValidOrThrow(newChatId);
 
@@ -33,9 +33,9 @@ internal class StateContextProxy(
         }
     }
 
-    public Task BindStateAsync(CancellationToken cancellationToken)
-        => stateProxyFactory.MakeRequestAsync(telegramContextProxy.BotPrefixName, factory => factory.BindStateAsync(ChatId, stateHistory, cancellationToken), cancellationToken);
+    public Task BindState(CancellationToken cancellationToken)
+        => stateProxyFactory.MakeRequest(telegramContextProxy.BotPrefixName, factory => factory.BindState(ChatId, stateHistory, cancellationToken), cancellationToken);
 
-    public Task UnBindStateAsync(CancellationToken cancellationToken)
-        => stateProxyFactory.MakeRequestAsync(telegramContextProxy.BotPrefixName, factory => factory.UnBindStateAsync(ChatId, cancellationToken), cancellationToken);
+    public Task UnBindState(CancellationToken cancellationToken)
+        => stateProxyFactory.MakeRequest(telegramContextProxy.BotPrefixName, factory => factory.UnBindState(ChatId, cancellationToken), cancellationToken);
 }

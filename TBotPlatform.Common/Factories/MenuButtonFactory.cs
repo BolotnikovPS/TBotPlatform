@@ -10,16 +10,16 @@ namespace TBotPlatform.Common.Factories;
 
 internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMenuButtonFactory
 {
-    public Task UpdateMainButtonsByStateAsync<T>(T user, IStateContextMinimal stateContext, StateHistory stateHistory, CancellationToken cancellationToken)
+    public Task UpdateMainButtonsByState<T>(T user, IStateContextMinimal stateContext, StateHistory stateHistory, CancellationToken cancellationToken)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(stateHistory);
         ArgumentNullException.ThrowIfNull(stateHistory.MenuStateTypeOrNull);
 
-        return UpdateMainButtonsByStateAsync(user, stateContext, stateHistory.MenuStateTypeOrNull, cancellationToken);
+        return UpdateMainButtonsByState(user, stateContext, stateHistory.MenuStateTypeOrNull, cancellationToken);
     }
 
-    public async Task UpdateMainButtonsByStateAsync<T>(T user, IStateContextMinimal stateContext, Type menuStateType, CancellationToken cancellationToken)
+    public async Task UpdateMainButtonsByState<T>(T user, IStateContextMinimal stateContext, Type menuStateType, CancellationToken cancellationToken)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(user);
@@ -41,13 +41,13 @@ internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMe
             throw new("Не смог активировать меню");
         }
 
-        var mainButtons = await menuButtons!.GetMainButtonsAsync(user);
+        var mainButtons = await menuButtons!.GetMainButtons(user);
 
         if (mainButtons?.Count == 0)
         {
             return;
         }
 
-        await stateContext.UpdateMainButtonsAsync(mainButtons!, cancellationToken);
+        await stateContext.UpdateMainButtons(mainButtons!, cancellationToken);
     }
 }

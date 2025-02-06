@@ -10,7 +10,7 @@ public interface ITelegramContextLog
     /// <param name="message">Сообщение</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task HandleLogAsync(TelegramContextFullLogMessage message, CancellationToken cancellationToken);
+    Task HandleLog(TelegramContextFullLogMessage message, CancellationToken cancellationToken);
 
     /// <summary>
     /// Сохраняет информацию о взаимодействии с telegram в случае вызова исключения
@@ -19,7 +19,7 @@ public interface ITelegramContextLog
     /// <param name="exception">Исключение</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task HandleErrorLogAsync(TelegramContextFullLogMessage message, Exception exception, CancellationToken cancellationToken);
+    Task HandleErrorLog(TelegramContextFullLogMessage message, Exception exception, CancellationToken cancellationToken);
 
     /// <summary>
     /// Логирование данных по запросам к telegram
@@ -29,5 +29,5 @@ public interface ITelegramContextLog
     /// <param name="operationGuid">Id текущих операций</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task HandleEnqueueLogAsync(int requestCount, int elapsedMilliseconds, Guid operationGuid, CancellationToken cancellationToken);
+    Task HandleEnqueueLog(int requestCount, int elapsedMilliseconds, Guid operationGuid, CancellationToken cancellationToken);
 }

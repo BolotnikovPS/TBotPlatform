@@ -9,6 +9,6 @@ internal abstract class BaseStateContextFactory
 {
     internal const string ErrorText = "🆘 Произошла ошибка при обработке запроса.";
 
-    internal abstract Task RequestAsync<T>(IStateContext stateContext, T user, StateHistory stateHistory, CancellationToken cancellationToken)
+    internal abstract Task Request<T>(IStateContext stateContext, T user, StateHistory stateHistory, CancellationToken cancellationToken)
         where T : UserBase;
 }

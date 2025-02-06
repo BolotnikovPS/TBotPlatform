@@ -23,27 +23,27 @@ internal class StateContextFactory(
     IServiceScopeFactory serviceScopeFactory
     ) : BaseStateContextFactory, IStateContextFactory
 {
-    public IStateContextMinimal CreateStateContext<T>(T user) where T : UserBase
-        => CreateStateContext(user.ChatId);
+    public IStateContextMinimal GetStateContext<T>(T user) where T : UserBase
+        => GetStateContext(user.ChatId);
 
-    public IStateContextMinimal CreateStateContext(long chatId)
+    public IStateContextMinimal GetStateContext(long chatId)
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
         return new StateContext(stateHistory: null, stateBindFactory, telegramContext, chatId);
     }
 
-    public Task<IStateContextMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
+    public Task<IStateContextMinimal> CreateStateContext<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(user);
         ArgumentNullException.ThrowIfNull(stateHistory);
         ArgumentNullException.ThrowIfNull(update);
 
-        return CreateStateContextAsync(user, stateHistory, update, markupNextState: null, cancellationToken);
+        return CreateStateContext(user, stateHistory, update, markupNextState: null, cancellationToken);
     }
 
-    public async Task<IStateContextMinimal> CreateStateContextAsync<T>(
+    public async Task<IStateContextMinimal> CreateStateContext<T>(
         T user,
         StateHistory stateHistory,
         Update chatUpdate,
@@ -59,7 +59,7 @@ internal class StateContextFactory(
         var stateContext = new StateContext(stateHistory, stateBindFactory, telegramContext, user.ChatId);
         stateContext.CreateStateContext(chatUpdate, markupNextState);
 
-        await RequestAsync(stateContext, user, stateHistory, cancellationToken);
+        await Request(stateContext, user, stateHistory, cancellationToken);
 
         return stateContext;
     }
@@ -69,7 +69,7 @@ internal class StateContextFactory(
             ? context.StateResult
             : default;
 
-    internal override async Task RequestAsync<T>(IStateContext stateContext, T user, StateHistory stateHistory, CancellationToken cancellationToken)
+    internal override async Task Request<T>(IStateContext stateContext, T user, StateHistory stateHistory, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(stateContext);
         ArgumentNullException.ThrowIfNull(user);
@@ -95,7 +95,7 @@ internal class StateContextFactory(
 
         try
         {
-            await stateContext.SendChatActionAsync(ChatAction.Typing, cancellationToken);
+            await stateContext.SendChatAction(ChatAction.Typing, cancellationToken);
         }
         catch
         {
@@ -105,9 +105,9 @@ internal class StateContextFactory(
         Exception? exception = null;
         try
         {
-            await state!.HandleAsync(stateContext, user, cancellationToken);
+            await state!.Handle(stateContext, user, cancellationToken);
 
-            await state.HandleCompleteAsync(stateContext, user, cancellationToken);
+            await state.HandleComplete(stateContext, user, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -122,13 +122,13 @@ internal class StateContextFactory(
 
         try
         {
-            await stateContext.SendTextMessageAsync(ErrorText, cancellationToken);
+            await stateContext.SendTextMessage(ErrorText, cancellationToken);
         }
         catch
         {
             // ignored
         }
 
-        await state!.HandleErrorAsync(stateContext, user, exception, cancellationToken);
+        await state!.HandleError(stateContext, user, exception, cancellationToken);
     }
 }

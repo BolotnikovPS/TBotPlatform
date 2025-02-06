@@ -13,7 +13,7 @@ public interface IState<in T>
     /// <param name="user">Пользователь</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task HandleAsync(IStateContext context, T user, CancellationToken cancellationToken);
+    Task Handle(IStateContext context, T user, CancellationToken cancellationToken);
 
     /// <summary>
     /// Запускает обработку логики состояния после HandleAsync
@@ -22,7 +22,7 @@ public interface IState<in T>
     /// <param name="user">Пользователь</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task HandleCompleteAsync(IStateContext context, T user, CancellationToken cancellationToken);
+    Task HandleComplete(IStateContext context, T user, CancellationToken cancellationToken);
 
     /// <summary>
     /// Запускает обработку логики состояния в случая ошибки
@@ -32,5 +32,5 @@ public interface IState<in T>
     /// <param name="exception"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task HandleErrorAsync(IStateContext context, T user, Exception exception, CancellationToken cancellationToken);
+    Task HandleError(IStateContext context, T user, Exception exception, CancellationToken cancellationToken);
 }

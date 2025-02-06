@@ -26,7 +26,7 @@ internal class LoggingHttpHandler(ILogger<LoggingHttpHandler> logger, IDispatche
                 sbLog.AppendLine(resultRequest.ToJson());
             }
 
-            var response = await dispatcher.Enqueue(() => base.SendAsync(request, cancellationToken), cancellationToken);
+            var response = await dispatcher.Enqueue(() => base.Send(request, cancellationToken), cancellationToken);
 
             sbLog.AppendLine($"Response: {response.ToJson()}");
 

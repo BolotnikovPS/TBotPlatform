@@ -22,7 +22,7 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
         return ConvertStateFactoryData(newState);
     }
 
-    public async Task<StateHistory> GetStateByButtonsTypeOrDefaultAsync(long chatId, string buttonTypeValue, CancellationToken cancellationToken)
+    public async Task<StateHistory> GetStateByButtonsTypeOrDefault(long chatId, string buttonTypeValue, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(chatId);
         ArgumentNullException.ThrowIfNull(buttonTypeValue);
@@ -32,7 +32,7 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
                  && q.ButtonsTypes.Any(z => z == buttonTypeValue)
             );
 
-        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
+        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmpty(chatId, cancellationToken);
 
         var checkNewState = newState.IsNotNull()
                             && !newState!.IsInlineState
@@ -44,14 +44,14 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
         }
 
         statesInMemoryOrEmpty?.Add(newState.StateTypeName);
-        await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+        await UpdateValueState(statesInMemoryOrEmpty, chatId, cancellationToken);
 
-        await UnBindStateAsync(chatId, cancellationToken);
+        await UnBindState(chatId, cancellationToken);
 
         return ConvertStateFactoryData(newState);
     }
 
-    public async Task<StateHistory> GetStateByCommandsTypeOrDefaultAsync(long chatId, string commandTypeValue, CancellationToken cancellationToken)
+    public async Task<StateHistory> GetStateByCommandsTypeOrDefault(long chatId, string commandTypeValue, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(chatId);
         ArgumentNullException.ThrowIfNull(commandTypeValue);
@@ -62,7 +62,7 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
                      && q.CommandsTypes.Any(z => z == commandTypeValue)
                 );
 
-        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
+        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmpty(chatId, cancellationToken);
 
         var checkNewState = newState.IsNotNull()
                             && !newState!.IsInlineState
@@ -74,9 +74,9 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
         }
 
         statesInMemoryOrEmpty?.Add(newState.StateTypeName);
-        await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+        await UpdateValueState(statesInMemoryOrEmpty, chatId, cancellationToken);
 
-        await UnBindStateAsync(chatId, cancellationToken);
+        await UnBindState(chatId, cancellationToken);
 
         return ConvertStateFactoryData(newState);
     }
@@ -95,24 +95,24 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
         return ConvertStateFactoryData(newState);
     }
 
-    public async Task<StateHistory> GetStateMainAsync(long chatId, CancellationToken cancellationToken)
+    public async Task<StateHistory> GetStateMain(long chatId, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
+        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmpty(chatId, cancellationToken);
         statesInMemoryOrEmpty.Clear();
-        await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+        await UpdateValueState(statesInMemoryOrEmpty, chatId, cancellationToken);
 
-        await UnBindStateAsync(chatId, cancellationToken);
+        await UnBindState(chatId, cancellationToken);
 
         return CreateContextFunc();
     }
 
-    public async Task<StateHistory> GetStatePreviousOrMainAsync(long chatId, CancellationToken cancellationToken)
+    public async Task<StateHistory> GetStatePreviousOrMain(long chatId, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
+        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmpty(chatId, cancellationToken);
         if (statesInMemoryOrEmpty.Count == 0)
         {
             return CreateContextFunc();
@@ -120,15 +120,15 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
 
         statesInMemoryOrEmpty.RemoveAt(statesInMemoryOrEmpty.Count - 1);
 
-        return await GetLastStateWithMenuOrMainAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+        return await GetLastStateWithMenuOrMain(statesInMemoryOrEmpty, chatId, cancellationToken);
     }
 
-    public async Task<StateHistory> GetLastStateWithMenuAsync(long chatId, CancellationToken cancellationToken)
+    public async Task<StateHistory> GetLastStateWithMenu(long chatId, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmptyAsync(chatId, cancellationToken);
-        var result = await GetLastStateWithMenuOrMainAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+        var statesInMemoryOrEmpty = await GetStatesInCacheOrEmpty(chatId, cancellationToken);
+        var result = await GetLastStateWithMenuOrMain(statesInMemoryOrEmpty, chatId, cancellationToken);
 
         return result.IsNotNull() ? result : default;
     }
@@ -137,18 +137,18 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
 
     public StateHistory RegistrationState => GetStateHistory(z => z.IsRegistrationState);
 
-    public async Task<StateHistory> GetBindStateOrNullAsync(long chatId, CancellationToken cancellationToken)
+    public async Task<StateHistory> GetBindStateOrNull(long chatId, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        var value = await GetBindStateNameAsync(chatId, cancellationToken);
+        var value = await GetBindStateName(chatId, cancellationToken);
 
         var state = stateFactoryDataCollection.FirstOrDefault(z => z.StateTypeName == value);
 
         return value.IsNotNull() ? Convert(state) : null;
     }
 
-    public Task BindStateAsync(long chatId, StateHistory state, CancellationToken cancellationToken)
+    public Task BindState(long chatId, StateHistory state, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(chatId);
         ArgumentNullException.ThrowIfNull(state);
@@ -160,34 +160,34 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
             throw new("Состояние не найдено");
         }
 
-        return AddBindStateAsync(chatId, value?.StateTypeName, cancellationToken);
+        return AddBindState(chatId, value?.StateTypeName, cancellationToken);
     }
 
-    public Task UnBindStateAsync(long chatId, CancellationToken cancellationToken)
+    public Task UnBindState(long chatId, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        return RemoveBindStateAsync(chatId, cancellationToken);
+        return RemoveBindState(chatId, cancellationToken);
     }
 
-    public async Task<bool> HasBindStateAsync(long chatId, CancellationToken cancellationToken)
+    public async Task<bool> HasBindState(long chatId, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        var value = await GetBindStateNameAsync(chatId, cancellationToken);
+        var value = await GetBindStateName(chatId, cancellationToken);
 
         return value.CheckAny();
     }
 
-    private async Task<StateHistory> GetLastStateWithMenuOrMainAsync(List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)
+    private async Task<StateHistory> GetLastStateWithMenuOrMain(List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)
     {
         var lastStateToRemove = statesInMemoryOrEmpty.LastOrDefault();
 
         if (lastStateToRemove.IsNull())
         {
-            await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+            await UpdateValueState(statesInMemoryOrEmpty, chatId, cancellationToken);
 
-            await UnBindStateAsync(chatId, cancellationToken);
+            await UnBindState(chatId, cancellationToken);
 
             return CreateContextFunc();
         }
@@ -198,9 +198,9 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
 
             if (lastState.IsNull())
             {
-                await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+                await UpdateValueState(statesInMemoryOrEmpty, chatId, cancellationToken);
 
-                await UnBindStateAsync(chatId, cancellationToken);
+                await UnBindState(chatId, cancellationToken);
 
                 return CreateContextFunc();
             }
@@ -209,9 +209,9 @@ internal partial class StateFactory(ICacheService cache, StateFactoryDataCollect
 
             if (state?.MenuTypeName != null)
             {
-                await UpdateValueStateAsync(statesInMemoryOrEmpty, chatId, cancellationToken);
+                await UpdateValueState(statesInMemoryOrEmpty, chatId, cancellationToken);
 
-                await UnBindStateAsync(chatId, cancellationToken);
+                await UnBindState(chatId, cancellationToken);
 
                 return Convert(state);
             }

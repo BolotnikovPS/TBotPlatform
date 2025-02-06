@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using TBotPlatform.Contracts.Bots.ChatUpdate;
+using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -9,8 +10,9 @@ public static partial class Extensions
 {
     public static bool WithImage(this CallbackQuery? callbackQuery) => callbackQuery?.Message?.Type == MessageType.Photo;
 
-    public static TelegramMessageUserData GetMessageUserData(this Update update)
-        => update.Type switch
+    public static bool TryGetMessageUserData(this Update update, out TelegramMessageUserData? telegramMessageUserData)
+    {
+        telegramMessageUserData = update.Type switch
         {
             UpdateType.Message => new(update.Message?.From, update.Message?.Chat),
             UpdateType.InlineQuery => new(update.InlineQuery?.From, chatOrNull: null),
@@ -34,6 +36,9 @@ public static partial class Extensions
             UpdateType.EditedBusinessMessage => new(update.EditedBusinessMessage?.From, update.EditedBusinessMessage?.Chat),
             UpdateType.DeletedBusinessMessages => new(null, update.DeletedBusinessMessages?.Chat),
             UpdateType.PurchasedPaidMedia => new(update.PurchasedPaidMedia?.From, null),
-            _ => new(userOrNull: null, chatOrNull: null),
+            _ => null,
         };
+
+        return !telegramMessageUserData.IsNull();
+    }
 }

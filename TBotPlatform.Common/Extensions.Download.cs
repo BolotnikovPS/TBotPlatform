@@ -14,23 +14,23 @@ public static partial class Extensions
 
     public static bool ContainDocumentInMessage(this Message? message) => !message.ContainPhotoInMessage() && message?.Document?.IsNotNull() == true;
 
-    public static Task<FileData?> DownloadPhotoAsync(this IStateContext stateContext, Message message, CancellationToken cancellationToken)
-        => stateContext.TelegramContext.DownloadPhotoAsync(message, cancellationToken);
+    public static Task<FileData?> TryDownloadPhoto(this IStateContext stateContext, Message message, CancellationToken cancellationToken)
+        => stateContext.TelegramContext.DownloadPhoto(message, cancellationToken);
 
-    public static Task<FileData?> DownloadDocumentAsync(this IStateContext stateContext, Message message, CancellationToken cancellationToken)
-        => stateContext.TelegramContext.DownloadDocumentAsync(message, cancellationToken);
+    public static Task<FileData?> DownloadDocument(this IStateContext stateContext, Message message, CancellationToken cancellationToken)
+        => stateContext.TelegramContext.DownloadDocument(message, cancellationToken);
 
-    public static Task<FileData?> DownloadFileAsync(this IStateContext stateContext, string fileId, CancellationToken cancellationToken)
-        => stateContext.TelegramContext.DownloadFileAsync(fileId, cancellationToken);
+    public static Task<FileData?> DownloadFile(this IStateContext stateContext, string fileId, CancellationToken cancellationToken)
+        => stateContext.TelegramContext.DownloadFile(fileId, cancellationToken);
 
-    public static Task<FileData?> DownloadPhotoAsync(this ITelegramContext telegramContext, Message message, CancellationToken cancellationToken)
+    public static Task<FileData?> DownloadPhoto(this ITelegramContext telegramContext, Message message, CancellationToken cancellationToken)
     {
         if (message.IsNotNull()
             && message.Photo.CheckAny()
            )
         {
             var photo = message.Photo![^1];
-            return DownloadFileAsync(telegramContext, photo.FileId, cancellationToken);
+            return DownloadFile(telegramContext, photo.FileId, cancellationToken);
         }
 
         if (message.IsNull()
@@ -42,10 +42,10 @@ public static partial class Extensions
         }
 
         var photoDocument = message.Document;
-        return DownloadFileAsync(telegramContext, photoDocument.FileId, cancellationToken);
+        return DownloadFile(telegramContext, photoDocument.FileId, cancellationToken);
     }
 
-    public static Task<FileData?> DownloadDocumentAsync(this ITelegramContext telegramContext, Message message, CancellationToken cancellationToken)
+    public static Task<FileData?> DownloadDocument(this ITelegramContext telegramContext, Message message, CancellationToken cancellationToken)
     {
         if (message.IsNull()
             || message.Document.IsNull()
@@ -55,10 +55,10 @@ public static partial class Extensions
         }
 
         var document = message.Document!;
-        return DownloadFileAsync(telegramContext, document.FileId, cancellationToken);
+        return DownloadFile(telegramContext, document.FileId, cancellationToken);
     }
 
-    public static async Task<FileData?> DownloadFileAsync(this ITelegramContext telegramContext, string fileId, CancellationToken cancellationToken)
+    public static async Task<FileData?> DownloadFile(this ITelegramContext telegramContext, string fileId, CancellationToken cancellationToken)
     {
         var file = await telegramContext.GetFile(fileId, cancellationToken);
 

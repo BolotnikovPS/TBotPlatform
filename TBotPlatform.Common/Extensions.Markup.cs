@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Contracts.Bots;
+﻿#nullable enable
+using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 using TBotPlatform.Extension;
@@ -8,71 +9,81 @@ namespace TBotPlatform.Common;
 
 public static partial class Extensions
 {
-    public static InlineMarkupList GetInlineMarkupList(this InlineKeyboardMarkup replyMarkup)
+    public static bool TryGetInlineMarkupList(this InlineKeyboardMarkup replyMarkup, out InlineMarkupList? inlineMarkupList)
     {
+        inlineMarkupList = null;
         if (replyMarkup.IsNull())
         {
-            return default;
+            return false;
         }
 
-        var result = new InlineMarkupList();
+        inlineMarkupList = [];
 
-        var inlineMarkups = replyMarkup.InlineKeyboard.SelectMany(x => x.Select(GetInlineMarkup));
+        var inlineMarkups = replyMarkup.InlineKeyboard
+                                       .SelectMany(x => x.Select(z => z.TryGetInlineMarkup(out var e) ? e : null))
+                                       .Where(z => z.IsNotNull());
 
         foreach (var inlineMarkup in inlineMarkups)
         {
-            result.Add(inlineMarkup);
+            inlineMarkupList.Add(inlineMarkup);
         }
 
-        return result;
+        return true;
     }
 
-    public static InlineMarkupBase GetInlineMarkup(this InlineKeyboardButton button)
+    public static bool TryGetInlineMarkup(this InlineKeyboardButton button, out InlineMarkupBase? inlineMarkupBase)
     {
+        inlineMarkupBase = null;
         if (button.CallbackData.IsNotNull())
         {
             if (button.CallbackData!.TryParseJson<MarkupNextState>(out var newMarkupNextState))
             {
-                return new InlineMarkupState(button.Text, newMarkupNextState);
+                inlineMarkupBase = new InlineMarkupState(button.Text, newMarkupNextState);
+                return true;
             }
         }
 
         if (button.Url.IsNotNull())
         {
-            return new InlineMarkupUrl(button.Text, button.Url);
+            inlineMarkupBase = new InlineMarkupUrl(button.Text, button.Url);
+            return true;
         }
 
         if (button.LoginUrl.IsNotNull())
         {
             var loginUrl = button.LoginUrl;
-            return new InlineMarkupLoginUrl(
+            inlineMarkupBase = new InlineMarkupLoginUrl(
                 button.Text,
                 loginUrl?.Url,
                 loginUrl?.ForwardText,
                 loginUrl?.BotUsername,
                 loginUrl?.RequestWriteAccess ?? false
                 );
+            return true;
         }
 
         if (button.CallbackGame.IsNotNull())
         {
-            return new InlineMarkupCallBackGame(button.Text);
+            inlineMarkupBase = new InlineMarkupCallBackGame(button.Text);
+            return true;
         }
 
         if (button.Pay)
         {
-            return new InlineMarkupPayment(button.Text);
+            inlineMarkupBase = new InlineMarkupPayment(button.Text);
+            return true;
         }
 
         if (button.SwitchInlineQuery.IsNotNull())
         {
-            return new InlineMarkupSwitchInlineQuery(button.Text, button.SwitchInlineQuery);
+            inlineMarkupBase = new InlineMarkupSwitchInlineQuery(button.Text, button.SwitchInlineQuery);
+            return true;
         }
 
         if (button.SwitchInlineQueryChosenChat.IsNotNull())
         {
             var switchInlineQueryChosenChat = button.SwitchInlineQueryChosenChat;
-            return new InlineMarkupSwitchInlineQueryChosenChat(
+            inlineMarkupBase = new InlineMarkupSwitchInlineQueryChosenChat(
                 button.Text,
                 switchInlineQueryChosenChat?.Query,
                 switchInlineQueryChosenChat?.AllowUserChats ?? false,
@@ -80,23 +91,33 @@ public static partial class Extensions
                 switchInlineQueryChosenChat?.AllowGroupChats ?? false,
                 switchInlineQueryChosenChat?.AllowChannelChats ?? false
                 );
+            return true;
         }
 
         if (button.SwitchInlineQueryCurrentChat.IsNotNull())
         {
-            return new InlineMarkupSwitchInlineQueryCurrentChat(button.Text, button.SwitchInlineQueryCurrentChat);
+            inlineMarkupBase = new InlineMarkupSwitchInlineQueryCurrentChat(button.Text, button.SwitchInlineQueryCurrentChat);
+            return true;
         }
 
         if (button.WebApp.IsNotNull())
         {
-            return new InlineMarkupWebApp(button.Text, button.WebApp!.Url);
+            inlineMarkupBase = new InlineMarkupWebApp(button.Text, button.WebApp!.Url);
+            return true;
         }
 
         if (button.CopyText.IsNotNull())
         {
-            return new InlineMarkupCopyText(button.Text, button.CopyText?.Text);
+            inlineMarkupBase = new InlineMarkupCopyText(button.Text, button.CopyText?.Text);
+            return true;
         }
 
-        return new InlineMarkupStateDefault(button.Text);
+        if (button.Text.IsNull())
+        {
+            return false;
+        }
+
+        inlineMarkupBase = new InlineMarkupStateDefault(button.Text);
+        return true;
     }
 }

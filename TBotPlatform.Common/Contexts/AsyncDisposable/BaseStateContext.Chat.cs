@@ -6,21 +6,21 @@ namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class BaseStateContext
 {
-    public Task<int> GetChatMemberCountAsync(long chatIdToCheck, CancellationToken cancellationToken)
+    public Task<int> GetChatMemberCount(long chatIdToCheck, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow(chatIdToCheck);
 
         return telegramContext.GetChatMemberCount(chatIdToCheck, cancellationToken);
     }
 
-    public Task<ChatMember> GetChatMemberAsync(long chatIdToCheck, long userIdToCheck, CancellationToken cancellationToken)
+    public Task<ChatMember> GetChatMember(long chatIdToCheck, long userIdToCheck, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow(chatIdToCheck);
 
         return telegramContext.GetChatMember(chatIdToCheck, userIdToCheck, cancellationToken);
     }
 
-    public async Task<List<ChatMember>> GetChatAdministratorsAsync(long chatIdToCheck, CancellationToken cancellationToken)
+    public async Task<List<ChatMember>> GetChatAdministrators(long chatIdToCheck, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow(chatIdToCheck);
 
@@ -29,14 +29,14 @@ internal partial class BaseStateContext
         return result.CheckAny() ? result.ToList() : default;
     }
 
-    public Task<ChatFullInfo> GetChatAsync(long chatIdToCheck, CancellationToken cancellationToken)
+    public Task<ChatFullInfo> GetChat(long chatIdToCheck, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow(chatIdToCheck);
 
         return telegramContext.GetChat(chatIdToCheck, cancellationToken);
     }
 
-    public Task LeaveChatAsync(long chatIdToLeave, CancellationToken cancellationToken)
+    public Task LeaveChat(long chatIdToLeave, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow(chatIdToLeave);
 

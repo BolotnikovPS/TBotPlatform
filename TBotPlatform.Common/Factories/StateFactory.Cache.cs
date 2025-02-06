@@ -16,11 +16,11 @@ internal partial class StateFactory
         CacheBindCollectionKeyName = $"{prefix}_{CacheBindCollectionKeyName}";
     }
 
-    private async Task<List<string>> GetStatesInCacheOrEmptyAsync(long chatId, CancellationToken cancellationToken)
+    private async Task<List<string>> GetStatesInCacheOrEmpty(long chatId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var values = await cache.GetValueFromCollectionAsync<UserStateInCache>(CacheCollectionKeyName, chatId.ToString());
+        var values = await cache.GetValueFromCollection<UserStateInCache>(CacheCollectionKeyName, chatId.ToString());
 
         if (values.IsNull())
         {
@@ -30,7 +30,7 @@ internal partial class StateFactory
         return values.StatesTypeName.CheckAny() ? values.StatesTypeName : [];
     }
 
-    private async Task UpdateValueStateAsync(List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)
+    private async Task UpdateValueState(List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -46,29 +46,29 @@ internal partial class StateFactory
             StatesTypeName = statesInMemoryOrEmpty,
         };
 
-        await cache.AddValueToCollectionAsync(CacheCollectionKeyName, values);
+        await cache.AddValueToCollection(CacheCollectionKeyName, values);
     }
 
-    private async Task<string> GetBindStateNameAsync(long chatId, CancellationToken cancellationToken)
+    private async Task<string> GetBindStateName(long chatId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var values = await cache.GetValueFromCollectionAsync<UserBindStateInCache>(CacheBindCollectionKeyName, chatId.ToString());
+        var values = await cache.GetValueFromCollection<UserBindStateInCache>(CacheBindCollectionKeyName, chatId.ToString());
 
         return values.IsNotNull()
             ? values.StatesTypeName
             : default;
     }
 
-    private async Task AddBindStateAsync(long chatId, string statesTypeName, CancellationToken cancellationToken)
+    private async Task AddBindState(long chatId, string statesTypeName, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var value = await cache.GetValueFromCollectionAsync<UserBindStateInCache>(CacheBindCollectionKeyName, chatId.ToString());
+        var value = await cache.GetValueFromCollection<UserBindStateInCache>(CacheBindCollectionKeyName, chatId.ToString());
 
         if (value.IsNotNull())
         {
-            await RemoveBindStateAsync(chatId, cancellationToken);
+            await RemoveBindState(chatId, cancellationToken);
         }
 
         value = new()
@@ -77,13 +77,13 @@ internal partial class StateFactory
             StatesTypeName = statesTypeName,
         };
 
-        await cache.AddValueToCollectionAsync(CacheBindCollectionKeyName, value);
+        await cache.AddValueToCollection(CacheBindCollectionKeyName, value);
     }
 
-    private Task RemoveBindStateAsync(long chatId, CancellationToken cancellationToken)
+    private Task RemoveBindState(long chatId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        return cache.RemoveValueFromCollectionAsync(CacheBindCollectionKeyName, chatId.ToString());
+        return cache.RemoveValueFromCollection(CacheBindCollectionKeyName, chatId.ToString());
     }
 }

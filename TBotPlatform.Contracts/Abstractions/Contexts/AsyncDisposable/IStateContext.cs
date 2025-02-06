@@ -29,18 +29,18 @@ public interface IStateContext : IStateContextMinimal
     /// <param name="newChatId"></param>
     /// <param name="request"></param>
     /// <returns></returns>
-    Task<T> MakeRequestToOtherChatAsync<T>(long newChatId, Func<IStateContextMinimal, Task<T>> request);
+    Task<T> MakeRequestToOtherChat<T>(long newChatId, Func<IStateContextMinimal, Task<T>> request);
 
     /// <summary>
     /// Устанавливает необходимость зафиксировать состояние
     /// </summary>
     /// <param name="cancellationToken"></param>
-    Task BindStateAsync(CancellationToken cancellationToken);
+    Task BindState(CancellationToken cancellationToken);
 
     /// <summary>
     /// Снимает необходимость зафиксировать состояние
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task UnBindStateAsync(CancellationToken cancellationToken);
+    Task UnBindState(CancellationToken cancellationToken);
 }

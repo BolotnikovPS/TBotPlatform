@@ -8,19 +8,19 @@ namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class BaseStateContext
 {
-    public Task<Message> SendTextMessageWithReplyAsync(string text, bool disableNotification, CancellationToken cancellationToken)
-        => SendTextMessageAsync(text, withReply: true, disableNotification, cancellationToken);
+    public Task<Message> SendTextMessageWithReply(string text, bool disableNotification, CancellationToken cancellationToken)
+        => SendTextMessage(text, withReply: true, disableNotification, cancellationToken);
 
-    public Task<Message> SendTextMessageWithReplyAsync(string text, CancellationToken cancellationToken)
-        => SendTextMessageAsync(text, withReply: true, disableNotification: false, cancellationToken);
+    public Task<Message> SendTextMessageWithReply(string text, CancellationToken cancellationToken)
+        => SendTextMessage(text, withReply: true, disableNotification: false, cancellationToken);
 
-    public Task<Message> SendTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)
-        => SendTextMessageAsync(text, withReply: false, disableNotification, cancellationToken);
+    public Task<Message> SendTextMessage(string text, bool disableNotification, CancellationToken cancellationToken)
+        => SendTextMessage(text, withReply: false, disableNotification, cancellationToken);
 
-    public Task<Message> SendTextMessageAsync(string text, CancellationToken cancellationToken)
-        => SendTextMessageAsync(text, withReply: false, disableNotification: false, cancellationToken);
+    public Task<Message> SendTextMessage(string text, CancellationToken cancellationToken)
+        => SendTextMessage(text, withReply: false, disableNotification: false, cancellationToken);
 
-    private Task<Message> SendTextMessageAsync(string text, bool withReply, bool disableNotification, CancellationToken cancellationToken)
+    private Task<Message> SendTextMessage(string text, bool withReply, bool disableNotification, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
 
@@ -48,7 +48,7 @@ internal partial class BaseStateContext
             );
     }
 
-    public async Task SendLongTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)
+    public async Task SendLongTextMessage(string text, bool disableNotification, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
 
@@ -81,6 +81,6 @@ internal partial class BaseStateContext
             );
     }
 
-    public Task SendLongTextMessageAsync(string text, CancellationToken cancellationToken)
-        => SendLongTextMessageAsync(text, disableNotification: false, cancellationToken);
+    public Task SendLongTextMessage(string text, CancellationToken cancellationToken)
+        => SendLongTextMessage(text, disableNotification: false, cancellationToken);
 }

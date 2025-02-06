@@ -41,7 +41,7 @@ internal partial class BaseStateContext(ITelegramContext telegramContext, long c
 
     public ITelegramContext TelegramContext => telegramContext;
 
-    public async Task<Message> SendDocumentAsync(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken)
+    public async Task<Message> SendDocument(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
 
@@ -59,13 +59,13 @@ internal partial class BaseStateContext(ITelegramContext telegramContext, long c
             cancellationToken: cancellationToken);
     }
 
-    public Task<Message> SendDocumentAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
-        => SendDocumentAsync(documentData, caption: null, disableNotification, cancellationToken);
+    public Task<Message> SendDocument(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
+        => SendDocument(documentData, caption: null, disableNotification, cancellationToken);
 
-    public Task<Message> SendDocumentAsync(FileDataBase documentData, CancellationToken cancellationToken)
-        => SendDocumentAsync(documentData, disableNotification: false, cancellationToken);
+    public Task<Message> SendDocument(FileDataBase documentData, CancellationToken cancellationToken)
+        => SendDocument(documentData, disableNotification: false, cancellationToken);
 
-    public async Task<Message> SendPhotoAsync(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken)
+    public async Task<Message> SendPhoto(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
 
@@ -84,20 +84,20 @@ internal partial class BaseStateContext(ITelegramContext telegramContext, long c
             );
     }
 
-    public Task<Message> SendPhotoAsync(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
-        => SendPhotoAsync(documentData, caption: null, disableNotification: false, cancellationToken);
+    public Task<Message> SendPhoto(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
+        => SendPhoto(documentData, caption: null, disableNotification: false, cancellationToken);
 
-    public Task<Message> SendPhotoAsync(FileDataBase documentData, CancellationToken cancellationToken)
-        => SendPhotoAsync(documentData, disableNotification: false, cancellationToken);
+    public Task<Message> SendPhoto(FileDataBase documentData, CancellationToken cancellationToken)
+        => SendPhoto(documentData, disableNotification: false, cancellationToken);
 
-    public Task SendChatActionAsync(ChatAction chatAction, CancellationToken cancellationToken)
+    public Task SendChatAction(ChatAction chatAction, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
 
         return telegramContext.SendChatAction(ChatId, chatAction, cancellationToken: cancellationToken);
     }
 
-    public Task<Message> RemoveMarkupAsync(string text, CancellationToken cancellationToken)
+    public Task<Message> RemoveMarkup(string text, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
         TextLengthValidOrThrow(text);
@@ -113,10 +113,10 @@ internal partial class BaseStateContext(ITelegramContext telegramContext, long c
             );
     }
 
-    public Task<Message> UpdateMainButtonsAsync(MainButtonMassiveList mainButtonMassiveList, CancellationToken cancellationToken)
-        => UpdateMainButtonsAsync(mainButtonMassiveList, ChooseAction, cancellationToken);
+    public Task<Message> UpdateMainButtons(MainButtonMassiveList mainButtonMassiveList, CancellationToken cancellationToken)
+        => UpdateMainButtons(mainButtonMassiveList, ChooseAction, cancellationToken);
 
-    public Task<Message> UpdateMainButtonsAsync(MainButtonMassiveList mainButtonMassiveList, string text, CancellationToken cancellationToken)
+    public Task<Message> UpdateMainButtons(MainButtonMassiveList mainButtonMassiveList, string text, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
         TextLengthValidOrThrow(text);
@@ -139,7 +139,7 @@ internal partial class BaseStateContext(ITelegramContext telegramContext, long c
             );
     }
 
-    public Task UpdateMarkupTextAndDropButtonAsync(string text, CancellationToken cancellationToken)
+    public Task UpdateMarkupTextAndDropButton(string text, CancellationToken cancellationToken)
     {
         if (MarkupNextState?.State == null)
         {
@@ -177,10 +177,10 @@ internal partial class BaseStateContext(ITelegramContext telegramContext, long c
             );
     }
 
-    public Task UpdateMarkupTextAndDropButtonAsync(CancellationToken cancellationToken)
-        => UpdateMarkupTextAndDropButtonAsync("", cancellationToken);
+    public Task UpdateMarkupTextAndDropButton(CancellationToken cancellationToken)
+        => UpdateMarkupTextAndDropButton("", cancellationToken);
 
-    public Task RemoveMessageAsync(int messageId, CancellationToken cancellationToken)
+    public Task RemoveMessage(int messageId, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
         MessageIdValidOrThrow(messageId);

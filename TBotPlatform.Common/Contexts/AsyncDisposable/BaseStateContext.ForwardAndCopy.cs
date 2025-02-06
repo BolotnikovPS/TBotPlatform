@@ -6,7 +6,7 @@ namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class BaseStateContext
 {
-    public Task<Message> ForwardMessageAsync(long fromChatId, int messageId, bool disableNotification, CancellationToken cancellationToken)
+    public Task<Message> ForwardMessage(long fromChatId, int messageId, bool disableNotification, CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
         MessageIdValidOrThrow(messageId);
@@ -14,10 +14,10 @@ internal partial class BaseStateContext
         return telegramContext.ForwardMessage(ChatId, fromChatId, messageId, messageThreadId: null, disableNotification, cancellationToken: cancellationToken);
     }
 
-    public Task<Message> ForwardMessageAsync(long fromChatId, int messageId, CancellationToken cancellationToken)
-        => ForwardMessageAsync(fromChatId, messageId, disableNotification: false, cancellationToken);
+    public Task<Message> ForwardMessage(long fromChatId, int messageId, CancellationToken cancellationToken)
+        => ForwardMessage(fromChatId, messageId, disableNotification: false, cancellationToken);
 
-    public async Task<int> CopyMessageAsync(
+    public async Task<int> CopyMessage(
         long fromChatId,
         int messageId,
         string caption,

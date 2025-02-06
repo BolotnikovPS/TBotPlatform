@@ -15,5 +15,5 @@ public interface IStartReceivingHandler
     /// <param name="telegramUser">Пользователь telegram</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task HandleUpdateAsync(Update chatUpdate, MarkupNextState? markupNextState, TelegramMessageUserData telegramUser, CancellationToken cancellationToken);
+    Task HandleUpdate(Update chatUpdate, MarkupNextState? markupNextState, TelegramMessageUserData telegramUser, CancellationToken cancellationToken);
 }

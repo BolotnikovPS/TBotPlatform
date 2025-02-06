@@ -8,7 +8,7 @@ public interface ICacheService
     /// <param name="collection">Название коллекции</param>
     /// <param name="value">Значение</param>
     /// <returns></returns>
-    Task AddValueToCollectionAsync(string collection, IKeyInCache value);
+    Task AddValueToCollection(string collection, IKeyInCache value);
 
     /// <summary>
     /// Получает значение с коллекции
@@ -17,7 +17,7 @@ public interface ICacheService
     /// <param name="collection">Название коллекции</param>
     /// <param name="key">Ключ</param>
     /// <returns></returns>
-    Task<T> GetValueFromCollectionAsync<T>(string collection, string key)
+    Task<T> GetValueFromCollection<T>(string collection, string key)
         where T : IKeyInCache;
 
     /// <summary>
@@ -26,7 +26,7 @@ public interface ICacheService
     /// <typeparam name="T"></typeparam>
     /// <param name="collection">Название коллекции</param>
     /// <returns></returns>
-    Task<List<T>> GetAllValueFromCollectionAsync<T>(string collection)
+    Task<List<T>> GetAllValueFromCollection<T>(string collection)
         where T : IKeyInCache;
 
     /// <summary>
@@ -35,14 +35,14 @@ public interface ICacheService
     /// <param name="collection">Название коллекции</param>
     /// <param name="key">Ключ</param>
     /// <returns></returns>
-    Task RemoveValueFromCollectionAsync(string collection, string key);
+    Task RemoveValueFromCollection(string collection, string key);
 
     /// <summary>
     /// Удаляет коллекции
     /// </summary>
     /// <param name="collection">Название коллекции</param>
     /// <returns></returns>
-    Task RemoveCollectionAsync(string collection);
+    Task RemoveCollection(string collection);
 
     /// <summary>
     /// Получает значение
@@ -50,7 +50,7 @@ public interface ICacheService
     /// <typeparam name="T"></typeparam>
     /// <param name="key">Ключ</param>
     /// <returns></returns>
-    Task<T> GetValueAsync<T>(string key)
+    Task<T> GetValue<T>(string key)
         where T : IKeyInCache;
 
     /// <summary>
@@ -59,26 +59,26 @@ public interface ICacheService
     /// <param name="value">Значение</param>
     /// <param name="expiryTime"></param>
     /// <returns></returns>
-    Task<bool> SetValueAsync(IKeyInCache value, TimeSpan expiryTime);
+    Task<bool> SetValue(IKeyInCache value, TimeSpan expiryTime);
 
     /// <summary>
     /// Добавляет значение
     /// </summary>
     /// <param name="value">Значение</param>
     /// <returns></returns>
-    Task<bool> SetValueAsync(IKeyInCache value);
+    Task<bool> SetValue(IKeyInCache value);
 
     /// <summary>
     /// Удаляет значение
     /// </summary>
     /// <param name="key">Ключ</param>
     /// <returns></returns>
-    Task<bool> RemoveValueAsync(string key);
+    Task<bool> RemoveValue(string key);
 
     /// <summary>
     /// Проверяет наличие ключа
     /// </summary>
     /// <param name="key">Ключ</param>
     /// <returns></returns>
-    Task<bool> KeyExistsAsync(string key);
+    Task<bool> KeyExists(string key);
 }

@@ -67,7 +67,7 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
                 fullLogMessage.Result = result;
             }
 
-            await _telegramContextLog.HandleLogAsync(fullLogMessage, cancellationToken);
+            await _telegramContextLog.HandleLog(fullLogMessage, cancellationToken);
 
             return result;
         }
@@ -76,7 +76,7 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
             _iteration++;
             _timer.Stop();
 
-            await _telegramContextLog.HandleErrorLogAsync(fullLogMessage, ex, cancellationToken);
+            await _telegramContextLog.HandleErrorLog(fullLogMessage, ex, cancellationToken);
             throw;
         }
     }
@@ -85,7 +85,7 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
     {
         try
         {
-            await _telegramContextLog.HandleEnqueueLogAsync(_iteration, _timer.Elapsed.Milliseconds, _operationGuid, CancellationToken.None);
+            await _telegramContextLog.HandleEnqueueLog(_iteration, _timer.Elapsed.Milliseconds, _operationGuid, CancellationToken.None);
         }
         catch
         {

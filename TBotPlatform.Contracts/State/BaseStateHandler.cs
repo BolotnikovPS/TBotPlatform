@@ -7,11 +7,11 @@ namespace TBotPlatform.Contracts.State;
 public abstract class BaseStateHandler<T> : IState<T>
     where T : UserBase
 {
-    public abstract Task HandleAsync(IStateContext context, T user, CancellationToken cancellationToken);
+    public abstract Task Handle(IStateContext context, T user, CancellationToken cancellationToken);
 
-    public virtual Task HandleCompleteAsync(IStateContext context, T user, CancellationToken cancellationToken)
+    public virtual Task HandleComplete(IStateContext context, T user, CancellationToken cancellationToken)
         => Task.CompletedTask;
 
-    public virtual Task HandleErrorAsync(IStateContext context, T user, Exception exception, CancellationToken cancellationToken)
+    public virtual Task HandleError(IStateContext context, T user, Exception exception, CancellationToken cancellationToken)
         => Task.CompletedTask;
 }

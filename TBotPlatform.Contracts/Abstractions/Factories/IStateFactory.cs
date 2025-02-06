@@ -18,7 +18,7 @@ public interface IStateFactory : IStateBindFactory
     /// <param name="buttonTypeValue">Тип кнопки</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<StateHistory> GetStateByButtonsTypeOrDefaultAsync(long chatId, string buttonTypeValue, CancellationToken cancellationToken);
+    Task<StateHistory> GetStateByButtonsTypeOrDefault(long chatId, string buttonTypeValue, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получает состояние по типу команды или /start
@@ -27,7 +27,7 @@ public interface IStateFactory : IStateBindFactory
     /// <param name="commandTypeValue">Тип команды</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<StateHistory> GetStateByCommandsTypeOrDefaultAsync(long chatId, string commandTypeValue, CancellationToken cancellationToken);
+    Task<StateHistory> GetStateByCommandsTypeOrDefault(long chatId, string commandTypeValue, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получает состояние по типу текста или /start
@@ -43,7 +43,7 @@ public interface IStateFactory : IStateBindFactory
     /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<StateHistory> GetStateMainAsync(long chatId, CancellationToken cancellationToken);
+    Task<StateHistory> GetStateMain(long chatId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получает предыдущие или первоначальное состояние, у которого есть меню или /start
@@ -51,7 +51,7 @@ public interface IStateFactory : IStateBindFactory
     /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<StateHistory> GetStatePreviousOrMainAsync(long chatId, CancellationToken cancellationToken);
+    Task<StateHistory> GetStatePreviousOrMain(long chatId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получает последнее состояние с меню, из истории состояний
@@ -59,7 +59,7 @@ public interface IStateFactory : IStateBindFactory
     /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<StateHistory> GetLastStateWithMenuAsync(long chatId, CancellationToken cancellationToken);
+    Task<StateHistory> GetLastStateWithMenu(long chatId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получает состояние для заблокированных пользователей

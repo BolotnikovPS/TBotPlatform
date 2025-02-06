@@ -11,18 +11,18 @@ public abstract class BaseState(ICacheService cacheService)
     protected string StateName
         => GetType().Name;
 
-    protected virtual async Task<T> GetValueStateOrNullFromCacheAsync<T>(int userId)
+    protected virtual async Task<T> GetValueStateOrNullFromCache<T>(int userId)
     {
         CacheServiceCheck();
 
-        var result = await CacheService.GetValueFromCollectionAsync<BaseStateInCache<T>>(GetCacheCollectionName(userId), GetCacheKeyName());
+        var result = await CacheService.GetValueFromCollection<BaseStateInCache<T>>(GetCacheCollectionName(userId), GetCacheKeyName());
 
         return result.IsNotNull()
             ? result.Value
             : default;
     }
 
-    protected virtual Task AddValueStateInCacheAsync<T>(int userId, T value)
+    protected virtual Task AddValueStateInCache<T>(int userId, T value)
     {
         CacheServiceCheck();
 
@@ -32,21 +32,21 @@ public abstract class BaseState(ICacheService cacheService)
             Key = GetCacheKeyName(),
         };
 
-        return CacheService.AddValueToCollectionAsync(GetCacheCollectionName(userId), data);
+        return CacheService.AddValueToCollection(GetCacheCollectionName(userId), data);
     }
 
-    protected virtual Task RemoveValueStateInCacheAsync(int userId)
+    protected virtual Task RemoveValueStateInCache(int userId)
     {
         CacheServiceCheck();
 
-        return CacheService.RemoveValueFromCollectionAsync(GetCacheCollectionName(userId), GetCacheKeyName());
+        return CacheService.RemoveValueFromCollection(GetCacheCollectionName(userId), GetCacheKeyName());
     }
 
-    protected virtual Task RemoveValuesInCacheAsync(int userId)
+    protected virtual Task RemoveValuesInCache(int userId)
     {
         CacheServiceCheck();
 
-        return CacheService.RemoveCollectionAsync(GetCacheCollectionName(userId));
+        return CacheService.RemoveCollection(GetCacheCollectionName(userId));
     }
 
     private void CacheServiceCheck()

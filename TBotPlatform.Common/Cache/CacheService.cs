@@ -10,16 +10,16 @@ internal class CacheService(ILogger<CacheService> logger, Lazy<ConnectionMultipl
 {
     private IDatabase DbCache => lazyMultiplexer.Value.GetDatabase();
 
-    Task ICacheService.AddValueToCollectionAsync(string collection, IKeyInCache value) => DbCache.HashSetAsync(CreateCollectionName(collection), value.Key, value.ToJson());
+    Task ICacheService.AddValueToCollection(string collection, IKeyInCache value) => DbCache.HashSetAsync(CreateCollectionName(collection), value.Key, value.ToJson());
 
-    async Task<T> ICacheService.GetValueFromCollectionAsync<T>(string collection, string key)
+    async Task<T> ICacheService.GetValueFromCollection<T>(string collection, string key)
     {
         var redisValue = await DbCache.HashGetAsync(CreateCollectionName(collection), key);
 
         return DeserializeObject<T>(redisValue);
     }
 
-    async Task<List<T>> ICacheService.GetAllValueFromCollectionAsync<T>(string collection)
+    async Task<List<T>> ICacheService.GetAllValueFromCollection<T>(string collection)
     {
         var redisValue = await DbCache.HashGetAllAsync(CreateCollectionName(collection));
 
@@ -28,22 +28,22 @@ internal class CacheService(ILogger<CacheService> logger, Lazy<ConnectionMultipl
             : default;
     }
 
-    Task ICacheService.RemoveValueFromCollectionAsync(string collection, string key) => DbCache.HashDeleteAsync(CreateCollectionName(collection), key);
+    Task ICacheService.RemoveValueFromCollection(string collection, string key) => DbCache.HashDeleteAsync(CreateCollectionName(collection), key);
 
-    Task ICacheService.RemoveCollectionAsync(string collection) => DbCache.KeyDeleteAsync(CreateCollectionName(collection));
+    Task ICacheService.RemoveCollection(string collection) => DbCache.KeyDeleteAsync(CreateCollectionName(collection));
 
-    async Task<T> ICacheService.GetValueAsync<T>(string key)
+    async Task<T> ICacheService.GetValue<T>(string key)
     {
         var value = await DbCache.StringGetAsync(CreateKeyName(key));
 
         return DeserializeObject<T>(value);
     }
 
-    Task<bool> ICacheService.SetValueAsync(IKeyInCache value, TimeSpan expiryTime) => DbCache.StringSetAsync(CreateKeyName(value.Key), value.ToJson(), expiryTime);
+    Task<bool> ICacheService.SetValue(IKeyInCache value, TimeSpan expiryTime) => DbCache.StringSetAsync(CreateKeyName(value.Key), value.ToJson(), expiryTime);
 
-    Task<bool> ICacheService.SetValueAsync(IKeyInCache value) => DbCache.StringSetAsync(CreateKeyName(value.Key), value.ToJson());
+    Task<bool> ICacheService.SetValue(IKeyInCache value) => DbCache.StringSetAsync(CreateKeyName(value.Key), value.ToJson());
 
-    async Task<bool> ICacheService.RemoveValueAsync(string key)
+    async Task<bool> ICacheService.RemoveValue(string key)
     {
         if (await DbCache.KeyExistsAsync(CreateKeyName(key)))
         {
@@ -53,7 +53,7 @@ internal class CacheService(ILogger<CacheService> logger, Lazy<ConnectionMultipl
         return false;
     }
 
-    Task<bool> ICacheService.KeyExistsAsync(string key) => DbCache.KeyExistsAsync(CreateKeyName(key));
+    Task<bool> ICacheService.KeyExists(string key) => DbCache.KeyExistsAsync(CreateKeyName(key));
 
     private T DeserializeObject<T>(RedisValue? value)
         where T : IKeyInCache

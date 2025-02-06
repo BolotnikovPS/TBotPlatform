@@ -7,11 +7,11 @@ namespace TBotPlatform.Common.Factories;
 
 internal class DistributedLockFactory(ICacheService cacheService) : IDistributedLockFactory
 {
-    public Task<IDistributedLock> AcquireLockAsync(string key, TimeSpan timeOut, CancellationToken cancellationToken)
-        => new DistributedLock(cacheService, CreateKey(key)).RetryUntilTrueAsync(timeOut, timeOut, cancellationToken);
+    public Task<IDistributedLock> AcquireLock(string key, TimeSpan timeOut, CancellationToken cancellationToken)
+        => new DistributedLock(cacheService, CreateKey(key)).RetryUntilTrue(timeOut, timeOut, cancellationToken);
 
-    public Task<bool> IsLockedAsync(string key, CancellationToken cancellationToken)
-        => cacheService.KeyExistsAsync(CreateKey(key));
+    public Task<bool> IsLocked(string key, CancellationToken cancellationToken)
+        => cacheService.KeyExists(CreateKey(key));
 
     private static string CreateKey(string baseKey)
         => $"Locker_{baseKey}";

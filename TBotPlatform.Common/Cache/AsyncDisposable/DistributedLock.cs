@@ -6,7 +6,7 @@ namespace TBotPlatform.Common.Cache.AsyncDisposable;
 
 internal class DistributedLock(ICacheService cacheService, string key) : IDistributedLock
 {
-    public async Task<IDistributedLock> RetryUntilTrueAsync(TimeSpan waitingTimeOut, TimeSpan blockingTimeOut, CancellationToken cancellationToken)
+    public async Task<IDistributedLock> RetryUntilTrue(TimeSpan waitingTimeOut, TimeSpan blockingTimeOut, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -17,7 +17,7 @@ internal class DistributedLock(ICacheService cacheService, string key) : IDistri
         {
             i++;
 
-            if (await TryGetLockAsync(blockingTimeOut, cancellationToken))
+            if (await TryGetLock(blockingTimeOut, cancellationToken))
             {
                 return this;
             }
@@ -30,26 +30,26 @@ internal class DistributedLock(ICacheService cacheService, string key) : IDistri
 
     public async ValueTask DisposeAsync()
     {
-        await cacheService.RemoveValueAsync(key);
+        await cacheService.RemoveValue(key);
     }
 
-    private async Task<bool> TryGetLockAsync(TimeSpan blockingTimeOut, CancellationToken cancellationToken)
+    private async Task<bool> TryGetLock(TimeSpan blockingTimeOut, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (!await cacheService.KeyExistsAsync(key))
+        if (!await cacheService.KeyExists(key))
         {
-            return await cacheService.SetValueAsync(CreateCacheValue(blockingTimeOut));
+            return await cacheService.SetValue(CreateCacheValue(blockingTimeOut));
         }
 
-        var data = await cacheService.GetValueAsync<DistributedLockContract>(key);
+        var data = await cacheService.GetValue<DistributedLockContract>(key);
 
         if (data.Value > DateTime.UtcNow)
         {
             return false;
         }
 
-        return await cacheService.SetValueAsync(CreateCacheValue(blockingTimeOut));
+        return await cacheService.SetValue(CreateCacheValue(blockingTimeOut));
     }
 
     private DistributedLockContract CreateCacheValue(TimeSpan blockingTimeOut)

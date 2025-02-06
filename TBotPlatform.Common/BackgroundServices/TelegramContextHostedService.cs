@@ -71,8 +71,12 @@ internal class TelegramContextHostedService(
                             }
                         }
 
-                        var telegramMessageUserData = update.GetMessageUserData();
-                        await scopedStartReceivingHandler.HandleUpdateAsync(update, markupNextState, telegramMessageUserData, stoppingToken);
+                        if (!update.TryGetMessageUserData(out var telegramMessageUserData))
+                        {
+                            throw new("Error data from telegram");
+                        }
+
+                        await scopedStartReceivingHandler.HandleUpdate(update, markupNextState, telegramMessageUserData, stoppingToken);
                     }
                     catch (Exception ex)
                     {

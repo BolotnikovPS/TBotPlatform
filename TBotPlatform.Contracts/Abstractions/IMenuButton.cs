@@ -10,6 +10,6 @@ public interface IMenuButton
     /// </summary>
     /// <param name="user">Пользователь</param>
     /// <returns></returns>
-    Task<MainButtonMassiveList> GetMainButtonsAsync<T>(T user)
+    Task<MainButtonMassiveList> GetMainButtons<T>(T user)
         where T : UserBase;
 }

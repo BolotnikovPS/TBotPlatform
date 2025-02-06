@@ -11,7 +11,7 @@ namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class BaseStateContext
 {
-    public Task<Message> SendOrUpdateTextMessageAsync(
+    public Task<Message> SendOrUpdateTextMessage(
         string text,
         InlineMarkupList inlineMarkupList,
         FileDataBase photoData,
@@ -34,17 +34,17 @@ internal partial class BaseStateContext
                 });
         }
 
-        return SendOrUpdateTextMessageAsync(text, inlineKeyboard, photoData, disableNotification, cancellationToken);
+        return SendOrUpdateTextMessage(text, inlineKeyboard, photoData, disableNotification, cancellationToken);
     }
 
-    public Task<Message> SendOrUpdateTextMessageAsync(
+    public Task<Message> SendOrUpdateTextMessage(
         string text,
         InlineMarkupList inlineMarkupList,
         FileDataBase photoData,
         CancellationToken cancellationToken
-        ) => SendOrUpdateTextMessageAsync(text, inlineMarkupList, photoData, disableNotification: false, cancellationToken);
+        ) => SendOrUpdateTextMessage(text, inlineMarkupList, photoData, disableNotification: false, cancellationToken);
 
-    public Task<Message> SendOrUpdateTextMessageAsync(
+    public Task<Message> SendOrUpdateTextMessage(
         string text,
         InlineMarkupList inlineMarkupList,
         bool disableNotification,
@@ -66,13 +66,13 @@ internal partial class BaseStateContext
                 });
         }
 
-        return SendOrUpdateTextMessageAsync(text, inlineKeyboard, photoData: null, disableNotification, cancellationToken);
+        return SendOrUpdateTextMessage(text, inlineKeyboard, photoData: null, disableNotification, cancellationToken);
     }
 
-    public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupList inlineMarkupList, CancellationToken cancellationToken)
-        => SendOrUpdateTextMessageAsync(text, inlineMarkupList, disableNotification: false, cancellationToken);
+    public Task<Message> SendOrUpdateTextMessage(string text, InlineMarkupList inlineMarkupList, CancellationToken cancellationToken)
+        => SendOrUpdateTextMessage(text, inlineMarkupList, disableNotification: false, cancellationToken);
 
-    public Task<Message> SendOrUpdateTextMessageAsync(
+    public Task<Message> SendOrUpdateTextMessage(
         string text,
         InlineMarkupMassiveList? inlineMarkupMassiveList,
         bool disableNotification,
@@ -86,29 +86,29 @@ internal partial class BaseStateContext
             inlineKeyboard = Map(inlineMarkupMassiveList);
         }
 
-        return SendOrUpdateTextMessageAsync(text, inlineKeyboard, photoData: null, disableNotification, cancellationToken);
+        return SendOrUpdateTextMessage(text, inlineKeyboard, photoData: null, disableNotification, cancellationToken);
     }
 
-    public Task<Message> SendOrUpdateTextMessageAsync(string text, InlineMarkupMassiveList inlineMarkupMassiveList, CancellationToken cancellationToken)
-        => SendOrUpdateTextMessageAsync(text, inlineMarkupMassiveList, disableNotification: false, cancellationToken);
+    public Task<Message> SendOrUpdateTextMessage(string text, InlineMarkupMassiveList inlineMarkupMassiveList, CancellationToken cancellationToken)
+        => SendOrUpdateTextMessage(text, inlineMarkupMassiveList, disableNotification: false, cancellationToken);
 
-    public Task<Message> SendOrUpdateTextMessageAsync(string text, bool disableNotification, CancellationToken cancellationToken)
-        => SendOrUpdateTextMessageAsync(
+    public Task<Message> SendOrUpdateTextMessage(string text, bool disableNotification, CancellationToken cancellationToken)
+        => SendOrUpdateTextMessage(
             text,
             inlineMarkupMassiveList: null,
             disableNotification,
             cancellationToken
             );
 
-    public Task<Message> SendOrUpdateTextMessageAsync(string text, CancellationToken cancellationToken)
-        => SendOrUpdateTextMessageAsync(
+    public Task<Message> SendOrUpdateTextMessage(string text, CancellationToken cancellationToken)
+        => SendOrUpdateTextMessage(
             text,
             inlineMarkupMassiveList: null,
             disableNotification: false,
             cancellationToken
             );
 
-    private async Task<Message> SendOrUpdateTextMessageAsync(
+    private async Task<Message> SendOrUpdateTextMessage(
         string text,
         InlineKeyboardMarkup? inlineKeyboard,
         FileDataBase? photoData,

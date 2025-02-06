@@ -15,7 +15,7 @@ public interface IStateContextProxyFactory
     /// <param name="telegramContextProxy"></param>
     /// <param name="user">Пользователь с которым будем взаимодействовать</param>
     /// <returns></returns>
-    IStateContextProxyMinimal CreateStateContext<T>(ITelegramContextProxy telegramContextProxy, T user) 
+    IStateContextProxyMinimal GetStateContext<T>(ITelegramContextProxy telegramContextProxy, T user) 
         where T : UserBase;
 
     /// <summary>
@@ -24,7 +24,7 @@ public interface IStateContextProxyFactory
     /// <param name="telegramContextProxy"></param>
     /// <param name="chatId">Id чата с которым будем взаимодействовать</param>
     /// <returns></returns>
-    IStateContextProxyMinimal CreateStateContext(ITelegramContextProxy telegramContextProxy, long chatId);
+    IStateContextProxyMinimal GetStateContext(ITelegramContextProxy telegramContextProxy, long chatId);
 
     /// <summary>
     /// Создание контекста состояния и вызов состояния. Базовым чатом указывается чат пользователя.
@@ -35,7 +35,7 @@ public interface IStateContextProxyFactory
     /// <param name="update">Сообщение с telegram</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IStateContextProxyMinimal> CreateStateContextAsync<T>(
+    Task<IStateContextProxyMinimal> CreateStateContext<T>(
         ITelegramContextProxy telegramContextProxy,
         T user,
         StateHistory stateHistory,
@@ -55,7 +55,7 @@ public interface IStateContextProxyFactory
     /// <param name="markupNextState">Данные с кнопки inline</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IStateContextProxyMinimal> CreateStateContextAsync<T>(
+    Task<IStateContextProxyMinimal> CreateStateContext<T>(
         ITelegramContextProxy telegramContextProxy,
         T user,
         StateHistory stateHistory,

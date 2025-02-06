@@ -14,14 +14,14 @@ public interface IStateContextFactory
     /// </summary>
     /// <param name="user">Пользователь с которым будем взаимодействовать</param>
     /// <returns></returns>
-    IStateContextMinimal CreateStateContext<T>(T user) where T : UserBase;
+    IStateContextMinimal GetStateContext<T>(T user) where T : UserBase;
 
     /// <summary>
     /// Создание контекста состояния
     /// </summary>
     /// <param name="chatId">Id чата с которым будем взаимодействовать</param>
     /// <returns></returns>
-    IStateContextMinimal CreateStateContext(long chatId);
+    IStateContextMinimal GetStateContext(long chatId);
 
     /// <summary>
     /// Создание контекста состояния и вызов состояния. Базовым чатом указывается чат пользователя.
@@ -31,7 +31,7 @@ public interface IStateContextFactory
     /// <param name="update">Сообщение с telegram</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IStateContextMinimal> CreateStateContextAsync<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
+    Task<IStateContextMinimal> CreateStateContext<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
         where T : UserBase;
 
     /// <summary>
@@ -43,7 +43,7 @@ public interface IStateContextFactory
     /// <param name="markupNextState">Данные с кнопки inline</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IStateContextMinimal> CreateStateContextAsync<T>(
+    Task<IStateContextMinimal> CreateStateContext<T>(
         T user,
         StateHistory stateHistory,
         Update update,

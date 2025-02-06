@@ -5,7 +5,7 @@ namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class BaseStateContext
 {
-    public Task AnswerCallbackQueryAsync(
+    public Task AnswerCallbackQuery(
         string text,
         bool showAlert,
         string url,

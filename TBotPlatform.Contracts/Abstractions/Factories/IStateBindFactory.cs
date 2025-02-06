@@ -10,7 +10,7 @@ public interface IStateBindFactory
     /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<StateHistory> GetBindStateOrNullAsync(long chatId, CancellationToken cancellationToken);
+    Task<StateHistory> GetBindStateOrNull(long chatId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Фиксирует состояние
@@ -19,7 +19,7 @@ public interface IStateBindFactory
     /// <param name="state">Состояние</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task BindStateAsync(long chatId, StateHistory state, CancellationToken cancellationToken);
+    Task BindState(long chatId, StateHistory state, CancellationToken cancellationToken);
 
     /// <summary>
     /// Снимает фиксацию состояния для пользователя
@@ -27,7 +27,7 @@ public interface IStateBindFactory
     /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task UnBindStateAsync(long chatId, CancellationToken cancellationToken);
+    Task UnBindState(long chatId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Проверяет наличие зафиксированного состояния
@@ -35,5 +35,5 @@ public interface IStateBindFactory
     /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<bool> HasBindStateAsync(long chatId, CancellationToken cancellationToken);
+    Task<bool> HasBindState(long chatId, CancellationToken cancellationToken);
 }

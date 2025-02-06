@@ -12,7 +12,7 @@ internal class StateContext(
     long chatId
     ) : BaseStateContext(telegramContext, chatId), IStateContext
 {
-    public async Task<T> MakeRequestToOtherChatAsync<T>(long newChatId, Func<IStateContextMinimal, Task<T>> request)
+    public async Task<T> MakeRequestToOtherChat<T>(long newChatId, Func<IStateContextMinimal, Task<T>> request)
     {
         ChatIdValidOrThrow(newChatId);
 
@@ -33,9 +33,9 @@ internal class StateContext(
         }
     }
 
-    public Task BindStateAsync(CancellationToken cancellationToken)
-        => stateBindFactory.BindStateAsync(ChatId, stateHistory, cancellationToken);
+    public Task BindState(CancellationToken cancellationToken)
+        => stateBindFactory.BindState(ChatId, stateHistory, cancellationToken);
 
-    public Task UnBindStateAsync(CancellationToken cancellationToken)
-        => stateBindFactory.UnBindStateAsync(ChatId, cancellationToken);
+    public Task UnBindState(CancellationToken cancellationToken)
+        => stateBindFactory.UnBindState(ChatId, cancellationToken);
 }
