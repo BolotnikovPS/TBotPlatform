@@ -15,12 +15,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Update="**\Extensions.*.cs">
-			<DependentUpon>Extensions.cs</DependentUpon>
-		</Compile>
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\TBotPlatform.Extension\TBotPlatform.Extension.csproj" />
 	</ItemGroup>
 

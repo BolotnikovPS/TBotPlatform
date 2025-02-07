@@ -10,23 +10,19 @@ namespace TBotPlatform.Common;
 
 public static partial class Extensions
 {
-    public static bool ContainPhotoInMessage(this Message? message) => message?.Document?.MimeType?.Contains("image") == true || message?.Photo != null;
-
-    public static bool ContainDocumentInMessage(this Message? message) => !message.ContainPhotoInMessage() && message?.Document?.IsNotNull() == true;
-
-    public static Task<FileData?> TryDownloadPhoto(this IStateContext stateContext, Message message, CancellationToken cancellationToken)
+    public static Task<FileData?> DownloadPhoto(this IStateContext stateContext, Message? message, CancellationToken cancellationToken)
         => stateContext.TelegramContext.DownloadPhoto(message, cancellationToken);
 
-    public static Task<FileData?> DownloadDocument(this IStateContext stateContext, Message message, CancellationToken cancellationToken)
+    public static Task<FileData?> DownloadDocument(this IStateContext stateContext, Message? message, CancellationToken cancellationToken)
         => stateContext.TelegramContext.DownloadDocument(message, cancellationToken);
 
     public static Task<FileData?> DownloadFile(this IStateContext stateContext, string fileId, CancellationToken cancellationToken)
         => stateContext.TelegramContext.DownloadFile(fileId, cancellationToken);
 
-    public static Task<FileData?> DownloadPhoto(this ITelegramContext telegramContext, Message message, CancellationToken cancellationToken)
+    public static Task<FileData?> DownloadPhoto(this ITelegramContext telegramContext, Message? message, CancellationToken cancellationToken)
     {
         if (message.IsNotNull()
-            && message.Photo.CheckAny()
+            && message!.Photo.CheckAny()
            )
         {
             var photo = message.Photo![^1];
@@ -34,7 +30,7 @@ public static partial class Extensions
         }
 
         if (message.IsNull()
-            || message.Document.IsNull()
+            || message!.Document.IsNull()
             || !message.Document!.MimeType!.Contains("image")
            )
         {
@@ -45,10 +41,10 @@ public static partial class Extensions
         return DownloadFile(telegramContext, photoDocument.FileId, cancellationToken);
     }
 
-    public static Task<FileData?> DownloadDocument(this ITelegramContext telegramContext, Message message, CancellationToken cancellationToken)
+    public static Task<FileData?> DownloadDocument(this ITelegramContext telegramContext, Message? message, CancellationToken cancellationToken)
     {
         if (message.IsNull()
-            || message.Document.IsNull()
+            || message!.Document.IsNull()
            )
         {
             return Task.FromResult<FileData?>(null);

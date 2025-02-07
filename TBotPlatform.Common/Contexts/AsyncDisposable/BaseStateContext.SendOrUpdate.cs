@@ -1,5 +1,4 @@
 ﻿#nullable enable
-using TBotPlatform.Contracts;
 using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Extension;

@@ -4,12 +4,18 @@ using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TBotPlatform.Contracts;
+namespace TBotPlatform.Common;
 
 public static partial class Extensions
 {
-    public static bool WithImage(this CallbackQuery? callbackQuery) => callbackQuery?.Message?.Type == MessageType.Photo;
+    public static bool WithPhoto(this CallbackQuery? callbackQuery) => callbackQuery?.Message?.Type == MessageType.Photo;
 
+    public static bool WithPhoto(this Message? message) => message.IsNotNull() && (message?.Document?.MimeType?.Contains("image") == true || message!.Photo.IsNotNull());
+
+    public static bool WithDocument(this Message? message) => !message.WithPhoto() && message!.Document.IsNotNull();
+
+    public static bool IsForwardMessage(this Message? message) => message.IsNotNull() && message!.ForwardOrigin.IsNotNull();
+    
     public static bool TryGetMessageUserData(this Update update, out TelegramMessageUserData? telegramMessageUserData)
     {
         telegramMessageUserData = update.Type switch

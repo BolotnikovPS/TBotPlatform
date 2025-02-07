@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using System.Text;
-using TBotPlatform.Contracts;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Bots;

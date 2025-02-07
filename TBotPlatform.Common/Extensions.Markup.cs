@@ -19,14 +19,12 @@ public static partial class Extensions
 
         inlineMarkupList = [];
 
-        var inlineMarkups = replyMarkup.InlineKeyboard
-                                       .SelectMany(x => x.Select(z => z.TryGetInlineMarkup(out var e) ? e : null))
-                                       .Where(z => z.IsNotNull());
-
-        foreach (var inlineMarkup in inlineMarkups)
-        {
-            inlineMarkupList.Add(inlineMarkup);
-        }
+        inlineMarkupList.AddRange(
+            replyMarkup
+               .InlineKeyboard
+               .SelectMany(x => x.Select(z => z.TryGetInlineMarkup(out var e) ? e : null))
+               .Where(z => z.IsNotNull())
+            );
 
         return true;
     }
