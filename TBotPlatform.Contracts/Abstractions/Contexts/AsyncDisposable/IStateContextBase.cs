@@ -289,7 +289,7 @@ public interface IStateContextBase
         int messageId,
         string caption,
         int replyToMessageId,
-        IReplyMarkup replyMarkup,
+        ReplyMarkup replyMarkup,
         bool disableNotification,
         CancellationToken cancellationToken
         );

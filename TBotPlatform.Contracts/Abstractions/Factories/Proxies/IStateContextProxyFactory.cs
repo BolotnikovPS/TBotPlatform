@@ -15,7 +15,7 @@ public interface IStateContextProxyFactory
     /// <param name="telegramContextProxy"></param>
     /// <param name="user">Пользователь с которым будем взаимодействовать</param>
     /// <returns></returns>
-    IStateContextProxyMinimal GetStateContext<T>(ITelegramContextProxy telegramContextProxy, T user) 
+    IStateContextProxyMinimal GetStateContext<T>(ITelegramContextProxy telegramContextProxy, T user)
         where T : UserBase;
 
     /// <summary>

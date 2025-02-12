@@ -156,7 +156,7 @@ internal partial class BaseStateContext(ITelegramContext telegramContext, long c
 
         TextLengthValidOrThrow(message);
 
-        if (ChatUpdate.CallbackQuery.WithImage())
+        if (ChatUpdate.CallbackQuery.WithPhoto())
         {
             return telegramContext.EditMessageCaption(
                 ChatId,

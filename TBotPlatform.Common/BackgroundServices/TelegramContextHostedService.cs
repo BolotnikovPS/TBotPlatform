@@ -72,7 +72,7 @@ internal class TelegramContextHostedService(
 
                         if (!update.TryGetMessageUserData(out var telegramMessageUserData))
                         {
-                            throw new("Error data from telegram");
+                            throw new("Не удалось обработать сообщение с telegram");
                         }
 
                         await scopedStartReceivingHandler.HandleUpdate(update, markupNextState, telegramMessageUserData, stoppingToken);

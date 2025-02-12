@@ -157,7 +157,7 @@ internal partial class BaseStateContext
 
         CallbackQueryValidOrThrow(ChatUpdate!.CallbackQuery);
 
-        return ChatUpdate.CallbackQuery.WithImage()
+        return ChatUpdate.CallbackQuery.WithPhoto()
             ? await telegramContext.EditMessageCaption(
                 ChatId,
                 ChatUpdate.CallbackQuery!.Message!.Id,
