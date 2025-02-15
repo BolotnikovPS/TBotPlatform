@@ -49,21 +49,21 @@ public static partial class DependencyInjection
 
         services
            .AddSingleton(_ => GetLimeLimiter(telegramSettingsHttpPolicy.TelegramRequestMilliSecondInterval))
-           .AddScoped<LoggingHttpHandler>()
+           .AddScoped<TelegramHttpHandler>()
            .AddScoped(typeof(ITelegramContextLog), typeof(TLog));
 
         if (httpClient.IsNotNull())
         {
             services
                .AddHttpClient<ITelegramContextProxyFactory, TelegramContextProxyFactory>(nameof(TelegramContextProxyFactory), httpClient!)
-               .AddHttpMessageHandler<LoggingHttpHandler>()
+               .AddHttpMessageHandler<TelegramHttpHandler>()
                .AddPolicyHandler(policy);
         }
         else
         {
             services
                .AddHttpClient<ITelegramContextProxyFactory, TelegramContextProxyFactory>(nameof(TelegramContextProxyFactory))
-               .AddHttpMessageHandler<LoggingHttpHandler>()
+               .AddHttpMessageHandler<TelegramHttpHandler>()
                .AddPolicyHandler(policy);
         }
 

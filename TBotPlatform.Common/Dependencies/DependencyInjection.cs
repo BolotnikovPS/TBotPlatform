@@ -29,7 +29,7 @@ public static partial class DependencyInjection
         services
            .AddSingleton(telegramSettings)
            .AddSingleton(_ => GetLimeLimiter(telegramSettings.HttpPolicy.TelegramRequestMilliSecondInterval))
-           .AddScoped<LoggingHttpHandler>()
+           .AddScoped<TelegramHttpHandler>()
            .AddScoped(typeof(ITelegramContextLog), typeof(TLog));
 
         var policy = GetRetryPolicy(telegramSettings.HttpPolicy);
@@ -40,14 +40,14 @@ public static partial class DependencyInjection
                .AddHttpClient<ITelegramContext, TelegramContext>(nameof(TelegramContext))
                .ConfigureHttpClient(httpClient!)
                .AddPolicyHandler(policy)
-               .AddHttpMessageHandler<LoggingHttpHandler>();
+               .AddHttpMessageHandler<TelegramHttpHandler>();
         }
         else
         {
             services
                .AddHttpClient<ITelegramContext, TelegramContext>(nameof(TelegramContext))
                .AddPolicyHandler(policy)
-               .AddHttpMessageHandler<LoggingHttpHandler>();
+               .AddHttpMessageHandler<TelegramHttpHandler>();
         }
 
         return services;

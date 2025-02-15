@@ -37,7 +37,44 @@ public static partial class Extensions
     public static bool IsForwardMessage(this Message? message) => message.IsNotNull() && message!.ForwardOrigin.IsNotNull();
 
     /// <summary>
-    /// Пробует получить данные о пользователе и чате
+    /// Получает текст сообщения
+    /// </summary>
+    /// <param name="message">Сообщение</param>
+    /// <param name="text">Текст сообщения</param>
+    /// <returns></returns>
+    public static bool TryGetText(this Message? message, out string? text)
+    {
+        if (message.IsNull())
+        {
+            text = null;
+            return false;
+        }
+
+        text = message.WithImage() ? message!.Caption : message!.Text;
+        return true;
+    }
+
+    /// <summary>
+    /// Получает текст сообщения
+    /// </summary>
+    /// <param name="callbackQuery">Сообщение</param>
+    /// <param name="text">Текст сообщения</param>
+    /// <returns></returns>
+    public static bool TryGetText(this CallbackQuery? callbackQuery, out string? text)
+    {
+        if (callbackQuery.IsNotNull()
+            && callbackQuery!.Message.IsNotNull()
+           )
+        {
+            return callbackQuery.Message.TryGetText(out text);
+        }
+
+        text = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Получает данные о пользователе и чате
     /// </summary>
     /// <param name="update">Запрос с telegram</param>
     /// <param name="telegramMessageUserData">Выходные данные о входящем запросе</param>
