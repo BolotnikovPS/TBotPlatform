@@ -38,7 +38,7 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
         var methodValue = properties.FirstOrDefault(z => z.Name == "MethodName")?.GetValue(request) as string;
 
         var protectContentValue = properties.FirstOrDefault(z => z.Name == "ProtectContent");
-        if (protectContentValue.IsNotNull())
+        if (protectContentValue.IsNotNull() && _telegramSettings.ProtectContent)
         {
             protectContentValue?.SetValue(request, _telegramSettings.ProtectContent);
         }
@@ -52,7 +52,10 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
                 OperationType = methodValue ?? "",
                 MessageBody = properties
                              .Where(z => z.Name.NotIn("HttpMethod", "MethodName", "IsWebhookResponse", "ChatId"))
-                             .ToDictionary(property => property.Name, property => property.GetValue(request)?.ToString()),
+                             .ToDictionary(
+                                  property => property.Name,
+                                  property => property.PropertyType != typeof(InputFile) ? property.GetValue(request)?.ToString() : string.Empty
+                                  ),
             },
         };
 

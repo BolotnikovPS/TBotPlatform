@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
@@ -16,7 +17,7 @@ using PMode = Telegram.Bot.Types.Enums.ParseMode;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
-internal partial class BaseStateContext(ITelegramContext telegramContext, long chatId)
+internal partial class BaseStateContext(AsyncServiceScope scope, ITelegramContext telegramContext, long chatId)
     : IStateContextBase
 {
     public StateResult StateResult { get; set; } = new();
@@ -187,11 +188,11 @@ internal partial class BaseStateContext(ITelegramContext telegramContext, long c
         return telegramContext.DeleteMessage(ChatId, messageId, cancellationToken);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         ChatUpdate = null;
         MarkupNextState = null;
 
-        return ValueTask.CompletedTask;
+        await scope.DisposeAsync();
     }
 }

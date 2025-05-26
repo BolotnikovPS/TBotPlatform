@@ -25,7 +25,7 @@ internal class CacheService(ILogger<CacheService> logger, Lazy<ConnectionMultipl
 
         return redisValue.IsNotNull()
             ? redisValue.Select(item => DeserializeObject<T>(item.Value)).ToList()
-            : default;
+            : null;
     }
 
     Task ICacheService.RemoveValueFromCollection(string collection, string key) => DbCache.HashDeleteAsync(CreateCollectionName(collection), key);

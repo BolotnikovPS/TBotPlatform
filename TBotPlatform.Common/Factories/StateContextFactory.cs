@@ -9,19 +9,14 @@ using TBotPlatform.Contracts.Abstractions.State;
 using TBotPlatform.Contracts.Attributes;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Users;
-using TBotPlatform.Contracts.State;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Factories;
 
-internal class StateContextFactory(
-    ILogger<StateContextFactory> logger,
-    ITelegramContext telegramContext,
-    IStateBindFactory stateBindFactory,
-    IServiceScopeFactory serviceScopeFactory
-    ) : BaseStateContextFactory, IStateContextFactory
+internal class StateContextFactory(ILogger<StateContextFactory> logger, IServiceScopeFactory serviceScopeFactory)
+    : BaseStateContextFactory, IStateContextFactory
 {
     public IStateContextMinimal GetStateContext<T>(T user) where T : UserBase
         => GetStateContext(user.ChatId);
@@ -30,7 +25,11 @@ internal class StateContextFactory(
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        return new StateContext(stateHistory: null, stateBindFactory, telegramContext, chatId);
+        var scope = serviceScopeFactory.CreateAsyncScope();
+        var telegramContext = scope.ServiceProvider.GetRequiredService<ITelegramContext>();
+        var stateBindFactory = scope.ServiceProvider.GetRequiredService<IStateBindFactory>();
+
+        return new StateContext(scope, stateHistory: null, stateBindFactory, telegramContext, chatId);
     }
 
     public Task<IStateContextMinimal> CreateStateContext<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
@@ -56,19 +55,18 @@ internal class StateContextFactory(
         ArgumentNullException.ThrowIfNull(stateHistory);
         ArgumentNullException.ThrowIfNull(chatUpdate);
 
-        var stateContext = new StateContext(stateHistory, stateBindFactory, telegramContext, user.ChatId);
+        var scope = serviceScopeFactory.CreateAsyncScope();
+        var telegramContext = scope.ServiceProvider.GetRequiredService<ITelegramContext>();
+        var stateBindFactory = scope.ServiceProvider.GetRequiredService<IStateBindFactory>();
+
+        var stateContext = new StateContext(scope, stateHistory, stateBindFactory, telegramContext, user.ChatId);
         stateContext.CreateStateContext(chatUpdate, markupNextState);
 
         await Request(stateContext, user, stateHistory, cancellationToken);
 
         return stateContext;
     }
-
-    public StateResult? GetStateResult(IStateContextMinimal stateContext)
-        => stateContext is BaseStateContext context
-            ? context.StateResult
-            : default;
-
+    
     internal override async Task Request<T>(IStateContext stateContext, T user, StateHistory stateHistory, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(stateContext);

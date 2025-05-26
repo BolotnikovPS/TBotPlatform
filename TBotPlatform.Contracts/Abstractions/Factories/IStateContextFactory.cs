@@ -2,7 +2,6 @@
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Users;
-using TBotPlatform.Contracts.State;
 using Telegram.Bot.Types;
 
 namespace TBotPlatform.Contracts.Abstractions.Factories;
@@ -51,11 +50,4 @@ public interface IStateContextFactory
         CancellationToken cancellationToken
         )
         where T : UserBase;
-
-    /// <summary>
-    /// Получает результат выполнения состояния
-    /// </summary>
-    /// <param name="stateContext">Контекст состояния</param>
-    /// <returns></returns>
-    StateResult? GetStateResult(IStateContextMinimal stateContext);
 }

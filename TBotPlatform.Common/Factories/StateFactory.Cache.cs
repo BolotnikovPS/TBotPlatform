@@ -57,7 +57,7 @@ internal partial class StateFactory
 
         return values.IsNotNull()
             ? values.StatesTypeName
-            : default;
+            : null;
     }
 
     private async Task AddBindState(long chatId, string statesTypeName, CancellationToken cancellationToken)

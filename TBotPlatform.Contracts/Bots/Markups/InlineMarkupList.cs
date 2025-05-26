@@ -4,8 +4,5 @@ namespace TBotPlatform.Contracts.Bots.Markups;
 
 public sealed class InlineMarkupList : List<InlineMarkupBase>
 {
-    public new void Add(InlineMarkupBase item)
-    {
-        base.Add(item);
-    }
+    public new void Add(InlineMarkupBase item) => base.Add(item);
 }

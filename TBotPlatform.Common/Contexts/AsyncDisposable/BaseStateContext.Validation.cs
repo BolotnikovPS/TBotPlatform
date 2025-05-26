@@ -8,17 +8,17 @@ namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class BaseStateContext
 {
-    internal void ChatIdValidOrThrow(long chatId)
+    private void ChatIdValidOrThrow()
     {
-        if (chatId.IsDefault())
+        if (ChatId.IsDefault())
         {
             throw new ChatIdArgException();
         }
     }
 
-    private void ChatIdValidOrThrow()
+    internal static void ChatIdValidOrThrow(long chatId)
     {
-        if (ChatId.IsDefault())
+        if (chatId.IsDefault())
         {
             throw new ChatIdArgException();
         }

@@ -10,14 +10,13 @@ using TBotPlatform.Contracts.Attributes;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Contracts.Bots.Users;
-using TBotPlatform.Contracts.State;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Factories.Proxies;
 
-internal class StateContextProxyFactory(ILogger<StateContextProxyFactory> logger, IStateProxyFactory stateProxyFactory, IServiceScopeFactory serviceScopeFactory)
+internal class StateContextProxyFactory(ILogger<StateContextProxyFactory> logger, IServiceScopeFactory serviceScopeFactory)
     : BaseStateContextFactory, IStateContextProxyFactory
 {
     public IStateContextProxyMinimal GetStateContext<T>(ITelegramContextProxy telegramContextProxy, T user) where T : UserBase
@@ -27,7 +26,10 @@ internal class StateContextProxyFactory(ILogger<StateContextProxyFactory> logger
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        return new StateContextProxy(stateHistory: null, stateProxyFactory, GetTelegramContextProxyOrThrow(telegramContextProxy), chatId);
+        var scope = serviceScopeFactory.CreateAsyncScope();
+        var stateProxyFactory = scope.ServiceProvider.GetRequiredService<IStateProxyFactory>();
+
+        return new StateContextProxy(scope, stateHistory: null, stateProxyFactory, GetTelegramContextProxyOrThrow(telegramContextProxy), chatId);
     }
 
     public Task<IStateContextProxyMinimal> CreateStateContext<T>(
@@ -60,18 +62,16 @@ internal class StateContextProxyFactory(ILogger<StateContextProxyFactory> logger
         ArgumentNullException.ThrowIfNull(stateHistory);
         ArgumentNullException.ThrowIfNull(chatUpdate);
 
-        var stateContext = new StateContextProxy(stateHistory, stateProxyFactory, GetTelegramContextProxyOrThrow(telegramContextProxy), user.ChatId);
+        var scope = serviceScopeFactory.CreateAsyncScope();
+        var stateProxyFactory = scope.ServiceProvider.GetRequiredService<IStateProxyFactory>();
+
+        var stateContext = new StateContextProxy(scope, stateHistory, stateProxyFactory, GetTelegramContextProxyOrThrow(telegramContextProxy), user.ChatId);
         stateContext.CreateStateContext(chatUpdate, markupNextState);
 
         await Request(stateContext, user, stateHistory, cancellationToken);
 
         return stateContext;
     }
-
-    public StateResult? GetStateResult(IStateContextProxyMinimal stateContext)
-        => stateContext is StateContextProxy context
-            ? context.StateResult
-            : default;
 
     internal override async Task Request<T>(IStateContext stateContext, T user, StateHistory stateHistory, CancellationToken cancellationToken)
     {

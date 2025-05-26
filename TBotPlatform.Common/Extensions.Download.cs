@@ -102,7 +102,7 @@ public static partial class Extensions
 
         if (file.IsNull())
         {
-            return default;
+            return null;
         }
 
         await using var fileStream = new MemoryStream();

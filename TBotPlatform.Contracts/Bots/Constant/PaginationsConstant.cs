@@ -1,6 +1,6 @@
 ﻿namespace TBotPlatform.Contracts.Bots.Constant;
 
-public static class PaginationsConstant
+public static partial class PaginationsConstant
 {
     public const int Step = 8;
     public const int StepMin = 6;

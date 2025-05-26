@@ -1,4 +1,5 @@
-﻿using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
+﻿using Microsoft.Extensions.DependencyInjection;
+using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable.Proxies;
 using TBotPlatform.Contracts.Abstractions.Factories.Proxies;
 using TBotPlatform.Contracts.Bots;
@@ -6,11 +7,12 @@ using TBotPlatform.Contracts.Bots;
 namespace TBotPlatform.Common.Contexts.AsyncDisposable.Proxies;
 
 internal class StateContextProxy(
+    AsyncServiceScope scope,
     StateHistory stateHistory,
     IStateProxyFactory stateProxyFactory,
     ITelegramContextProxy telegramContextProxy,
     long chatId
-    ) : BaseStateContext(telegramContextProxy, chatId), IStateContext, IStateContextProxyMinimal
+    ) : BaseStateContext(scope, telegramContextProxy, chatId), IStateContext, IStateContextProxyMinimal
 {
     public async Task<T> MakeRequestToOtherChat<T>(long newChatId, Func<IStateContextMinimal, Task<T>> request)
     {

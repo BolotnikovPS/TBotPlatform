@@ -9,10 +9,7 @@ public abstract class CollectionBase<T>
 
     public string GetValueByKey(T key) => DataCollection.GetValueOrDefault(key);
 
-    public T GetKeyByValue(string value)
-    {
-        return DataCollection.FirstOrDefault(z => z.Value == value).Key;
-    }
+    public T GetKeyByValue(string value) => DataCollection.FirstOrDefault(z => z.Value == value).Key;
 
     public string[] GetAllValue() => [.. DataCollection.Values,];
 }

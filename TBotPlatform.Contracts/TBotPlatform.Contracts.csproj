@@ -6,12 +6,12 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<RepositoryUrl>https://github.com/BolotnikovPS/TBotPlatform</RepositoryUrl>
 		<Description>C# библиотека для облегчения создания бота Telegram</Description>
-		<Version>1.0.8</Version>
+		<Version>1.0.9</Version>
 		<IncludeSymbols>True</IncludeSymbols>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Telegram.Bot" Version="22.4.1" />
+		<PackageReference Include="Telegram.Bot" Version="22.5.1" />
 	</ItemGroup>
 
 	<ItemGroup>

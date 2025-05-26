@@ -12,9 +12,11 @@ internal class TelegramHttpHandler(ILogger<TelegramHttpHandler> logger, IDispatc
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        request.Headers.TryGetValues(DefaultHeadersConstant.ContextOperation, out var value);
-        Guid.TryParse(value?.FirstOrDefault(), out var operationGuid);
-        request.Headers.Remove(DefaultHeadersConstant.ContextOperation);
+        var operationGuid = Guid.Empty;
+        if (request.Headers.TryGetValues(DefaultHeadersConstant.ContextOperation, out var contextOperationValue) && Guid.TryParse(contextOperationValue.FirstOrDefault(), out operationGuid))
+        {
+            request.Headers.Remove(DefaultHeadersConstant.ContextOperation);
+        }
 
         Exception exception = null;
         var sbLog = new StringBuilder($"Request: {request.ToJson()}");
@@ -26,13 +28,11 @@ internal class TelegramHttpHandler(ILogger<TelegramHttpHandler> logger, IDispatc
                 sbLog.AppendLine(resultRequest.ToJson());
             }
 
-            var response = await dispatcher.Enqueue(() => base.Send(request, cancellationToken), cancellationToken);
+            var response = await dispatcher.Enqueue(() => base.SendAsync(request, cancellationToken), cancellationToken);
 
             sbLog.AppendLine($"Response: {response.ToJson()}");
 
-            if (response.StatusCode == HttpStatusCode.TooManyRequests
-                && response.Headers.RetryAfter.IsNotNull()
-               )
+            if (response.StatusCode == HttpStatusCode.TooManyRequests && response.Headers.RetryAfter.IsNotNull())
             {
                 sbLog.AppendLine($"Delay: {response!.Headers!.RetryAfter!.Delta.ToString()}");
             }

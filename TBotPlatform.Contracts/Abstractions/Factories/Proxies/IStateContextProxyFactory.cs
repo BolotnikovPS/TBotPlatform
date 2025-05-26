@@ -64,11 +64,4 @@ public interface IStateContextProxyFactory
         CancellationToken cancellationToken
         )
         where T : UserBase;
-
-    /// <summary>
-    /// Получает результат выполнения состояния
-    /// </summary>
-    /// <param name="stateContext">Контекст состояния</param>
-    /// <returns></returns>
-    StateResult? GetStateResult(IStateContextProxyMinimal stateContext);
 }

@@ -26,7 +26,7 @@ internal partial class BaseStateContext
 
         if (text.IsNull())
         {
-            return default;
+            return null;
         }
 
         TextLengthValidOrThrow(text);

@@ -31,11 +31,11 @@ public class InlineMarkupState(string buttonName, string state, string data = nu
 
         if (MarkupNextStateJson.IsNull())
         {
-            return default;
+            return null;
         }
 
         return Encoding.Default.GetBytes(MarkupNextStateJson).Length > InlineMarkupConstant.MarkupNextStateJsonLength
-            ? default
+            ? null
             : InlineKeyboardButton.WithCallbackData(ButtonName, MarkupNextStateJson);
     }
 

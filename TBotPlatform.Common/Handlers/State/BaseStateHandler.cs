@@ -2,7 +2,7 @@
 using TBotPlatform.Contracts.Abstractions.State;
 using TBotPlatform.Contracts.Bots.Users;
 
-namespace TBotPlatform.Contracts.State;
+namespace TBotPlatform.Common.Handlers.State;
 
 public abstract class BaseStateHandler<T> : IState<T>
     where T : UserBase
