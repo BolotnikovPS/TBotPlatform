@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.State;
 using TBotPlatform.Contracts.Attributes;
@@ -12,29 +11,7 @@ namespace TBotPlatform.Common.Dependencies;
 
 public static partial class DependencyInjection
 {
-    public static IServiceCollection AddStates(this IServiceCollection services, string botType = "", params Type[] potentialStateTypes)
-        => services.AddStates([botType,], potentialStateTypes);
-
-    public static IServiceCollection AddStates(this IServiceCollection services, Assembly executingAssembly, string botType = "")
-        => services.AddStates(executingAssembly, botTypes: botType);
-
-    public static IServiceCollection AddStates(this IServiceCollection services, Assembly executingAssembly, params string[] botTypes)
-    {
-        if (executingAssembly.IsNull())
-        {
-            throw new ArgumentNullException(nameof(executingAssembly));
-        }
-
-        var potentialStateTypes = executingAssembly
-                                 .GetTypes()
-                                 .Where(z => z.IsDefined(typeof(StateActivatorBaseAttribute), inherit: false))
-                                 .OrderBy(z => z.FullName)
-                                 .ToArray();
-
-        return services.AddStates(botTypes, potentialStateTypes);
-    }
-
-    public static IServiceCollection AddStates(this IServiceCollection services, string[] botTypes, params Type[] potentialStateTypes)
+    internal static IServiceCollection AddStates(this IServiceCollection services, string botName, List<Type> potentialStateTypes)
     {
         if (potentialStateTypes.IsNull())
         {
@@ -59,7 +36,7 @@ public static partial class DependencyInjection
 
             if (attr!.OnlyForBot.CheckAny() && attr.OnlyForBot.NotIn("None", ""))
             {
-                if (attr.OnlyForBot.NotIn(botTypes))
+                if (attr.OnlyForBot.NotIn(botName))
                 {
                     continue;
                 }
@@ -164,7 +141,7 @@ public static partial class DependencyInjection
         }
 
         var statesCollection = new StateFactoryDataCollection(states);
-        services.AddSingleton(statesCollection);
+        services.AddKeyedSingleton(botName, statesCollection);
 
         return services;
     }

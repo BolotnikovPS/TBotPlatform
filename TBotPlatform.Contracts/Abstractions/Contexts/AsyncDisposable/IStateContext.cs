@@ -8,6 +8,11 @@ namespace TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 public interface IStateContext : IStateContextMinimal
 {
     /// <summary>
+    /// Наименование бота
+    /// </summary>
+    string BotName { get; }
+
+    /// <summary>
     /// Результат работы состояния
     /// </summary>
     StateResult StateResult { get; set; }

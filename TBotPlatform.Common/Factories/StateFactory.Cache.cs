@@ -1,26 +1,21 @@
 ﻿using TBotPlatform.Contracts.Cache;
 using TBotPlatform.Extension;
+using Telegram.Bot.Types;
 
 namespace TBotPlatform.Common.Factories;
 
 internal partial class StateFactory
 {
-    private string CacheCollectionKeyName { get; set; } = "UserStates";
-    private string CacheBindCollectionKeyName { get; set; } = "UserStatesBind";
+    private static string CacheCollectionKeyName(string botName) => $"{botName}_UserStates";
+    private static string CacheBindCollectionKeyName(string botName) => $"{botName}_UserStatesBind";
 
     private const int MaxState = 10;
 
-    internal void SetCacheKeyPrefix(string prefix)
-    {
-        CacheCollectionKeyName = $"{prefix}_{CacheCollectionKeyName}";
-        CacheBindCollectionKeyName = $"{prefix}_{CacheBindCollectionKeyName}";
-    }
-
-    private async Task<List<string>> GetStatesInCacheOrEmpty(long chatId, CancellationToken cancellationToken)
+    private async Task<List<string>> GetStatesInCacheOrEmpty(string botName, long chatId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var values = await cache.GetValueFromCollection<UserStateInCache>(CacheCollectionKeyName, chatId.ToString());
+        var values = await cache.GetValueFromCollection<UserStateInCache>(CacheCollectionKeyName(botName), chatId.ToString());
 
         if (values.IsNull())
         {
@@ -30,7 +25,7 @@ internal partial class StateFactory
         return values.StatesTypeName.CheckAny() ? values.StatesTypeName : [];
     }
 
-    private async Task UpdateValueState(List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)
+    private async Task UpdateValueState(string botName, List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -46,29 +41,29 @@ internal partial class StateFactory
             StatesTypeName = statesInMemoryOrEmpty,
         };
 
-        await cache.AddValueToCollection(CacheCollectionKeyName, values);
+        await cache.AddValueToCollection(CacheCollectionKeyName(botName), values);
     }
 
-    private async Task<string> GetBindStateName(long chatId, CancellationToken cancellationToken)
+    private async Task<string> GetBindStateName(string botName, long chatId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var values = await cache.GetValueFromCollection<UserBindStateInCache>(CacheBindCollectionKeyName, chatId.ToString());
+        var values = await cache.GetValueFromCollection<UserBindStateInCache>(CacheBindCollectionKeyName(botName), chatId.ToString());
 
         return values.IsNotNull()
             ? values.StatesTypeName
             : null;
     }
 
-    private async Task AddBindState(long chatId, string statesTypeName, CancellationToken cancellationToken)
+    private async Task AddBindState(string botName, long chatId, string statesTypeName, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var value = await cache.GetValueFromCollection<UserBindStateInCache>(CacheBindCollectionKeyName, chatId.ToString());
+        var value = await cache.GetValueFromCollection<UserBindStateInCache>(CacheBindCollectionKeyName(botName), chatId.ToString());
 
         if (value.IsNotNull())
         {
-            await RemoveBindState(chatId, cancellationToken);
+            await RemoveBindState(botName, chatId, cancellationToken);
         }
 
         value = new()
@@ -77,13 +72,13 @@ internal partial class StateFactory
             StatesTypeName = statesTypeName,
         };
 
-        await cache.AddValueToCollection(CacheBindCollectionKeyName, value);
+        await cache.AddValueToCollection(CacheBindCollectionKeyName(botName), value);
     }
 
-    private Task RemoveBindState(long chatId, CancellationToken cancellationToken)
+    private Task RemoveBindState(string botName, long chatId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        return cache.RemoveValueFromCollection(CacheBindCollectionKeyName, chatId.ToString());
+        return cache.RemoveValueFromCollection(CacheBindCollectionKeyName(botName), chatId.ToString());
     }
 }

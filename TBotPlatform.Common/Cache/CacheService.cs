@@ -24,7 +24,7 @@ internal class CacheService(ILogger<CacheService> logger, Lazy<ConnectionMultipl
         var redisValue = await DbCache.HashGetAllAsync(CreateCollectionName(collection));
 
         return redisValue.IsNotNull()
-            ? redisValue.Select(item => DeserializeObject<T>(item.Value)).ToList()
+            ? [.. redisValue.Select(item => DeserializeObject<T>(item.Value))]
             : null;
     }
 

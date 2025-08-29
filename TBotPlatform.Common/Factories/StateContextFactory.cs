@@ -15,34 +15,36 @@ using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Common.Factories;
 
-internal class StateContextFactory(ILogger<StateContextFactory> logger, IServiceScopeFactory serviceScopeFactory)
-    : BaseStateContextFactory, IStateContextFactory
+internal class StateContextFactory(ILogger<StateContextFactory> logger, IServiceScopeFactory serviceScopeFactory) : IStateContextFactory
 {
-    public IStateContextMinimal GetStateContext<T>(T user) where T : UserBase
-        => GetStateContext(user.ChatId);
+    internal const string ErrorText = "🆘 Произошла ошибка при обработке запроса.";
 
-    public IStateContextMinimal GetStateContext(long chatId)
+    public IStateContextMinimal GetStateContext<T>(string botName, T user) where T : UserBase
+        => GetStateContext(botName, user.ChatId);
+
+    public IStateContextMinimal GetStateContext(string botName, long chatId)
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
         var scope = serviceScopeFactory.CreateAsyncScope();
-        var telegramContext = scope.ServiceProvider.GetRequiredService<ITelegramContext>();
+        var telegramContext = scope.ServiceProvider.GetRequiredKeyedService<ITelegramContext>(botName);
         var stateBindFactory = scope.ServiceProvider.GetRequiredService<IStateBindFactory>();
 
         return new StateContext(scope, stateHistory: null, stateBindFactory, telegramContext, chatId);
     }
 
-    public Task<IStateContextMinimal> CreateStateContext<T>(T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
+    public Task<IStateContextMinimal> CreateStateContext<T>(string botName, T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(user);
         ArgumentNullException.ThrowIfNull(stateHistory);
         ArgumentNullException.ThrowIfNull(update);
 
-        return CreateStateContext(user, stateHistory, update, markupNextState: null, cancellationToken);
+        return CreateStateContext(botName, user, stateHistory, update, markupNextState: null, cancellationToken);
     }
 
     public async Task<IStateContextMinimal> CreateStateContext<T>(
+        string botName, 
         T user,
         StateHistory stateHistory,
         Update chatUpdate,
@@ -56,7 +58,7 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         ArgumentNullException.ThrowIfNull(chatUpdate);
 
         var scope = serviceScopeFactory.CreateAsyncScope();
-        var telegramContext = scope.ServiceProvider.GetRequiredService<ITelegramContext>();
+        var telegramContext = scope.ServiceProvider.GetRequiredKeyedService<ITelegramContext>(botName);
         var stateBindFactory = scope.ServiceProvider.GetRequiredService<IStateBindFactory>();
 
         var stateContext = new StateContext(scope, stateHistory, stateBindFactory, telegramContext, user.ChatId);
@@ -67,7 +69,8 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         return stateContext;
     }
     
-    internal override async Task Request<T>(IStateContext stateContext, T user, StateHistory stateHistory, CancellationToken cancellationToken)
+    internal async Task Request<T>(IStateContext stateContext, T user, StateHistory stateHistory, CancellationToken cancellationToken)
+        where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(stateContext);
         ArgumentNullException.ThrowIfNull(user);
@@ -88,7 +91,7 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
 
         if (state.IsNull())
         {
-            throw new("Не смог активировать состояние");
+            throw new($"Не смог активировать состояние {stateType.Name}");
         }
 
         try

@@ -84,6 +84,8 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
         }
     }
 
+    public TelegramSettings GetTelegramSettings() => _telegramSettings;
+
     public async ValueTask DisposeAsync()
     {
         try

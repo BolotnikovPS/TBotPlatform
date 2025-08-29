@@ -8,9 +8,9 @@ namespace TBotPlatform.Common.Factories;
 
 internal partial class StateFactory
 {
-    private StateHistory CreateContextFunc()
+    private StateHistory CreateContextFunc(string botName)
     {
-        var state = stateFactoryDataCollection
+        var state = GetStateFactoryDataCollection(botName)
            .FirstOrDefault(
                 q => q.CommandsTypes.CheckAny()
                      && q.CommandsTypes.Any(x => x.In(CommandTypesConstant.StartCommand))
@@ -52,8 +52,8 @@ internal partial class StateFactory
         }
     }
 
-    private StateHistory ConvertStateFactoryData(StateFactoryData? stateFactoryData = null)
+    private StateHistory ConvertStateFactoryData(string botName, StateFactoryData? stateFactoryData = null)
         => stateFactoryData.IsNotNull()
             ? Convert(stateFactoryData)
-            : CreateContextFunc();
+            : CreateContextFunc(botName);
 }

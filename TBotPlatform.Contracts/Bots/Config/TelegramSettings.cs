@@ -7,9 +7,14 @@ namespace TBotPlatform.Contracts.Bots.Config;
 public class TelegramSettings
 {
     /// <summary>
+    /// Наименование бота
+    /// </summary>
+    public required string BotName { get; set; }
+
+    /// <summary>
     /// Токен бота
     /// </summary>
-    public string? Token { get; init; }
+    public required string Token { get; init; }
 
     /// <summary>
     /// Конфиденциальные настройки бота по отправке сообщений
