@@ -1,4 +1,5 @@
-﻿using ComposableAsync;
+﻿#nullable enable
+using ComposableAsync;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Polly;

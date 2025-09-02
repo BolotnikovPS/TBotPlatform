@@ -23,4 +23,18 @@ public static partial class Extensions
     /// <param name="context">Контекст для обработки сообщения</param>
     /// <param name="data">Данные</param>
     public static void SetData(this IStateContext context, string data) => context.StateResult.Data = data;
+
+    /// <summary>
+    /// Делит строку на массив строк по длине
+    /// </summary>
+    /// <param name="str">Строка</param>
+    /// <param name="maxLength">Максимальная длина строки</param>
+    /// <returns></returns>
+    public static IEnumerable<string> SplitByLength(this string str, int maxLength)
+    {
+        for (var index = 0; index < str.Length; index += maxLength)
+        {
+            yield return str.Substring(index, Math.Min(maxLength, str.Length - index));
+        }
+    }
 }

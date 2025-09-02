@@ -15,13 +15,18 @@ namespace TBotPlatform.Common.Builder;
 internal class BotBuilder(IServiceCollection serviceCollection, IBotPlatformBuilder botPlatformBuilder, TelegramSettings telegramSettings) : IBotBuilder
 {
     private Action<HttpClient>? HttpClient { get; set; }
-    private Type Log { get; set; }
-    private List<Type> PotentialStateTypes { get; set; }
-    private Type ReceivingHandlerType { get; set; }
+    private Type? Log { get; set; }
+    private List<Type>? PotentialStateTypes { get; set; }
+    private Type? ReceivingHandlerType { get; set; }
 
     public IBotBuilder AddTelegramContext<TLog>(Action<HttpClient>? httpClient = null)
         where TLog : ITelegramContextLog
     {
+        if (HttpClient.IsNotNull() || Log.IsNotNull())
+        {
+            throw new InvalidOperationException("Контекст telegram ранее был добавлен.");
+        }
+
         HttpClient = httpClient;
         Log = typeof(TLog);
 
@@ -30,6 +35,11 @@ internal class BotBuilder(IServiceCollection serviceCollection, IBotPlatformBuil
 
     public IBotBuilder AddTelegramContext(Action<HttpClient>? httpClient = null)
     {
+        if (HttpClient.IsNotNull() || Log.IsNotNull())
+        {
+            throw new InvalidOperationException("Контекст telegram ранее был добавлен.");
+        }
+
         HttpClient = httpClient;
         Log = typeof(TelegramContextLog);
 
@@ -44,12 +54,17 @@ internal class BotBuilder(IServiceCollection serviceCollection, IBotPlatformBuil
         }
 
         var potentialStateTypes = executingAssembly
-                                 .GetTypes()
-                                 .Where(z => z.IsDefined(typeof(StateActivatorBaseAttribute), inherit: false))
-                                 .OrderBy(z => z.FullName)
-                                 .ToList();
+                                 ?.GetTypes()
+                                 ?.Where(z => z.IsDefined(typeof(StateActivatorBaseAttribute), inherit: false))
+                                 ?.OrderBy(z => z.FullName)
+                                 ?.ToList();
 
-        AddStates(potentialStateTypes);
+        if (potentialStateTypes.IsNull())
+        {
+            throw new InvalidDataException("Отсутствуют потенциальные состояния.");
+        }
+
+        AddStates(potentialStateTypes!);
 
         return this;
     }
@@ -76,16 +91,36 @@ internal class BotBuilder(IServiceCollection serviceCollection, IBotPlatformBuil
     public IBotBuilder AddReceivingHandler<T>()
         where T : IStartReceivingHandler
     {
+        if (ReceivingHandlerType.IsNotNull())
+        {
+            throw new InvalidOperationException("Обработчик событий от telegram ранее был добавлен.");
+        }
+
         ReceivingHandlerType = typeof(T);
         return this;
     }
 
     public IBotPlatformBuilder Build()
     {
+        if (PotentialStateTypes.IsNull())
+        {
+            throw new InvalidDataException("Отсутствуют потенциальные состояния.");
+        }
+
+        if (HttpClient.IsNull() || Log.IsNull())
+        {
+            throw new InvalidOperationException("Отсутствует контекст telegram.");
+        }
+
+        if (ReceivingHandlerType.IsNull())
+        {
+            throw new InvalidOperationException("Отсутствует обработчик событий от telegram.");
+        }
+
         serviceCollection
-            .AddTelegramContext(telegramSettings, Log, HttpClient)
-            .AddStates(telegramSettings.BotName, [.. PotentialStateTypes.Distinct()])
-            .AddKeyedScoped(typeof(IStartReceivingHandler), telegramSettings.BotName, ReceivingHandlerType);
+            .AddTelegramContext(telegramSettings, Log!, HttpClient)
+            .AddStates(telegramSettings.BotName, [.. PotentialStateTypes!.Distinct()])
+            .AddKeyedScoped(typeof(IStartReceivingHandler), telegramSettings.BotName, ReceivingHandlerType!);
 
         return botPlatformBuilder;
     }

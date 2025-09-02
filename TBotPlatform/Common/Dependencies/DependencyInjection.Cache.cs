@@ -11,12 +11,12 @@ namespace TBotPlatform.Common.Dependencies;
 
 public static partial class DependencyInjection
 {
-    public static IServiceCollection AddCache<T>(this IServiceCollection services)
+    internal static IServiceCollection AddCache<T>(this IServiceCollection services)
         where T : ICacheService
         => services
            .AddSingleton(typeof(ICacheService), typeof(T));
 
-    public static IServiceCollection AddCache(this IServiceCollection services, string redisConnectionString, ConnectionMultiplexer? client = null, string? prefix = null, string[]? tags = null)
+    internal static IServiceCollection AddCache(this IServiceCollection services, string redisConnectionString, ConnectionMultiplexer? client = null, string? prefix = null, string[]? tags = null)
     {
         if (client.IsNotNull())
         {
@@ -42,16 +42,6 @@ public static partial class DependencyInjection
 
         return services;
     }
-
-    public static IServiceCollection AddCacheWithDistributedLock(
-        this IServiceCollection services,
-        string redisConnectionString,
-        ConnectionMultiplexer? client = null,
-        string? prefix = null,
-        string[]? tags = null
-        ) => services
-            .AddCache(redisConnectionString, client, prefix, tags)
-            .AddSingleton<IDistributedLockFactory, DistributedLockFactory>();
 
     private static void AddHealthCheckRedis(this IServiceCollection services, string redisConnectionString, string[]? tags = null)
     {

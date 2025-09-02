@@ -15,15 +15,21 @@ public interface IBotPlatformBuilder
     IBotBuilder AddBot(TelegramSettings telegramSettings);
 
     /// <summary>
+    /// Добавляет кеш для работы ботов
+    /// </summary>
+    /// <returns></returns>
+    ICacheBuilder AddCache();
+
+    /// <summary>
     /// Добавляет фоновый сервиса для получения обновлений telegram
     /// </summary>
     /// <returns></returns>
     IBotPlatformBuilder AddHostedService();
 
     /// <summary>
-    /// Добавляет фабрики для работы бота <see cref="IStateFactory"/>, <see cref="IStateBindFactory"/>, <see cref="IStateContextFactory"/>, <see cref="IMenuButtonFactory"/>
+    /// Добавляет фабрики для работы ботов <see cref="IStateFactory"/>, <see cref="IStateBindFactory"/>, <see cref="IStateContextFactory"/>, <see cref="IMenuButtonFactory"/>
     /// </summary>
-    /// <param name="executingAssembly"></param>
+    /// <param name="executingAssembly">Сборка в которой находятся потенциальные состояния</param>
     /// <returns></returns>
     IBotPlatformBuilder AddFactories(Assembly executingAssembly);
     
