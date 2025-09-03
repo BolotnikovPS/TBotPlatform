@@ -1,6 +1,6 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Bots;
-using TBotPlatform.Contracts.State;
+using TBotPlatform.Contracts.Bots.States;
 using Telegram.Bot.Types;
 
 namespace TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;

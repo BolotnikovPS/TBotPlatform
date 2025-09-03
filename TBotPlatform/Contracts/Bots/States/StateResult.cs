@@ -1,4 +1,4 @@
-﻿namespace TBotPlatform.Contracts.State;
+﻿namespace TBotPlatform.Contracts.Bots.States;
 
 public class StateResult
 {

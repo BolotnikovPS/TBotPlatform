@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
-internal partial class BaseStateContext
+internal partial class StateContext
 {
     public Task<int> GetChatMemberCount(long chatIdToCheck, CancellationToken cancellationToken)
     {

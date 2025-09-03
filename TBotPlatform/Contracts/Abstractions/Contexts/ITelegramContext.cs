@@ -1,5 +1,4 @@
-﻿#nullable enable
-using TBotPlatform.Contracts.Bots.Config;
+﻿using TBotPlatform.Contracts.Bots.Config;
 using Telegram.Bot;
 
 namespace TBotPlatform.Contracts.Abstractions.Contexts;

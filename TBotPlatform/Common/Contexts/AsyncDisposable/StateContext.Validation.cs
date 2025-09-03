@@ -6,7 +6,7 @@ using Telegram.Bot.Types;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
-internal partial class BaseStateContext
+internal partial class StateContext
 {
     private void ChatIdValidOrThrow()
     {

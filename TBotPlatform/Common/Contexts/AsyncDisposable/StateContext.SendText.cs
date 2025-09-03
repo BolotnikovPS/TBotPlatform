@@ -6,7 +6,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
-internal partial class BaseStateContext
+internal partial class StateContext
 {
     public Task<Message> SendTextMessageWithReply(string text, bool disableNotification, CancellationToken cancellationToken)
         => SendTextMessage(text, withReply: true, disableNotification, cancellationToken);

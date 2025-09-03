@@ -2,7 +2,7 @@
 
 namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
-internal partial class BaseStateContext
+internal partial class StateContext
 {
     public Task PinChatMessage(int messageId, bool disableNotification, CancellationToken cancellationToken)
     {

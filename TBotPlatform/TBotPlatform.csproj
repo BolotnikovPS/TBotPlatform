@@ -37,5 +37,32 @@
 		<PackageReference Include="AspNetCore.HealthChecks.Redis" Version="8.0.1" PrivateAssets="compile" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.Validation.cs">
+	    <DependentUpon>StateContext.cs</DependentUpon>
+	  </Compile>
+	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.SendText.cs">
+	    <DependentUpon>StateContext.cs</DependentUpon>
+	  </Compile>
+	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.SendOrUpdate.cs">
+	    <DependentUpon>StateContext.cs</DependentUpon>
+	  </Compile>
+	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.PinAndUnPin.cs">
+	    <DependentUpon>StateContext.cs</DependentUpon>
+	  </Compile>
+	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.Map.cs">
+	    <DependentUpon>StateContext.cs</DependentUpon>
+	  </Compile>
+	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.ForwardAndCopy.cs">
+	    <DependentUpon>StateContext.cs</DependentUpon>
+	  </Compile>
+	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.Chat.cs">
+	    <DependentUpon>StateContext.cs</DependentUpon>
+	  </Compile>
+	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.Callback.cs">
+	    <DependentUpon>StateContext.cs</DependentUpon>
+	  </Compile>
+	</ItemGroup>
 
 </Project>

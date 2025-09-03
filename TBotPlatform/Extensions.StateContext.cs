@@ -1,7 +1,7 @@
 ﻿#nullable enable
 using TBotPlatform.Common.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
-using TBotPlatform.Contracts.State;
+using TBotPlatform.Contracts.Bots.States;
 
 namespace TBotPlatform.Common;
 
@@ -15,7 +15,7 @@ public static partial class Extensions
     /// <returns></returns>
     public static bool TryGetStateResult(this IStateContextMinimal stateContext, out StateResult? result)
     {
-        if (stateContext is BaseStateContext context)
+        if (stateContext is StateContext context)
         {
             result = context.StateResult;
             return true;

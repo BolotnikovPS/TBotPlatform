@@ -7,8 +7,8 @@ namespace TBotPlatform.Contracts.Bots;
 /// <summary>
 /// Данные с кнопки inline
 /// </summary>
-/// <param name="state"></param>
-/// <param name="data"></param>
+/// <param name="state">Состояние</param>
+/// <param name="data">Данные состояния</param>
 public class MarkupNextState(string state, string data = null)
 {
     /// <summary>
