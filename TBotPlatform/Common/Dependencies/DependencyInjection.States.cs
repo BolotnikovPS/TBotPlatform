@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.State;
 using TBotPlatform.Contracts.Attributes;
@@ -25,6 +26,11 @@ public static partial class DependencyInjection
 
         foreach (var stateType in potentialStateTypes)
         {
+            if (states.Any(z => z.StateTypeName == stateType.Name))
+            {
+                continue;
+            }
+
             var isIStateType = stateType.GetInterfaces().Any(x => x.Name == stateInterfaceName);
 
             if (!isIStateType)
@@ -97,11 +103,16 @@ public static partial class DependencyInjection
 
             states.Add(newState);
 
-            services.AddScoped(stateType);
-
-            if (attr.MenuType.IsNotNull())
+            if (services.Any(z => z.ServiceType.Name == newState.StateTypeName))
             {
-                services.AddScoped(attr!.MenuType!);
+                continue;
+            }
+
+            services.TryAddScoped(stateType);
+
+            if (attr.MenuType.IsNotNull() && !services.Any(z => z.ServiceType == attr.MenuType))
+            {
+                services.TryAddScoped(attr!.MenuType!);
             }
         }
 
@@ -141,8 +152,7 @@ public static partial class DependencyInjection
         }
 
         var statesCollection = new StateFactoryDataCollection(states);
-        services.AddKeyedSingleton(botName, statesCollection);
 
-        return services;
+        return services.AddKeyedSingleton(botName, statesCollection);
     }
 }

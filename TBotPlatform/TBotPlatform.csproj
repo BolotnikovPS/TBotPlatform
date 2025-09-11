@@ -9,13 +9,13 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<RepositoryUrl>https://github.com/BolotnikovPS/TBotPlatform</RepositoryUrl>
 		<Description>C# библиотека для облегчения создания бота Telegram</Description>
-		<Version>2.0.0-beta1.3</Version>
+		<Version>2.0.0-beta1.4</Version>
 		<IncludeSymbols>True</IncludeSymbols>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Update="**\BaseStateContext.*.cs">
-			<DependentUpon>BaseStateContext.cs</DependentUpon>
+		<Compile Update="**\StateContext.*.cs">
+			<DependentUpon>StateContext.cs</DependentUpon>
 		</Compile>
 		<Compile Update="**\StateFactory.*.cs">
 			<DependentUpon>StateFactory.cs</DependentUpon>
@@ -30,7 +30,7 @@
 	
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="Telegram.Bot" Version="22.7.1" />
+		<PackageReference Include="Telegram.Bot" Version="22.7.2" />
 		<PackageReference Include="StackExchange.Redis" Version="2.9.11" PrivateAssets="compile" />
 		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.19" />
 		<PackageReference Include="RateLimiter" Version="2.2.0" />
@@ -38,31 +38,4 @@
 		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
 	</ItemGroup>
 	
-	<ItemGroup>
-	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.Validation.cs">
-	    <DependentUpon>StateContext.cs</DependentUpon>
-	  </Compile>
-	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.SendText.cs">
-	    <DependentUpon>StateContext.cs</DependentUpon>
-	  </Compile>
-	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.SendOrUpdate.cs">
-	    <DependentUpon>StateContext.cs</DependentUpon>
-	  </Compile>
-	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.PinAndUnPin.cs">
-	    <DependentUpon>StateContext.cs</DependentUpon>
-	  </Compile>
-	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.Map.cs">
-	    <DependentUpon>StateContext.cs</DependentUpon>
-	  </Compile>
-	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.ForwardAndCopy.cs">
-	    <DependentUpon>StateContext.cs</DependentUpon>
-	  </Compile>
-	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.Chat.cs">
-	    <DependentUpon>StateContext.cs</DependentUpon>
-	  </Compile>
-	  <Compile Update="Common\Contexts\AsyncDisposable\StateContext.Callback.cs">
-	    <DependentUpon>StateContext.cs</DependentUpon>
-	  </Compile>
-	</ItemGroup>
-
 </Project>
