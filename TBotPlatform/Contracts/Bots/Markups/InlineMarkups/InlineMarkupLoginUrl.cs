@@ -11,7 +11,7 @@ public class InlineMarkupLoginUrl(
     string? forwardText,
     string? botUsername,
     bool requestWriteAccess
-    ) : InlineMarkupBase(buttonName, EInlineMarkupType.LoginUrl)
+    ) : InlineMarkupBase(buttonName, InlineMarkupType.LoginUrl)
 {
     public override InlineKeyboardButton Format()
     {

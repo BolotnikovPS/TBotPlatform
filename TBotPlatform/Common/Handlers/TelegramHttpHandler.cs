@@ -7,8 +7,7 @@ using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Handlers;
 
-internal class TelegramHttpHandler(ILogger<TelegramHttpHandler> logger, IDispatcher dispatcher)
-    : DelegatingHandler
+internal class TelegramHttpHandler(ILogger<TelegramHttpHandler> logger, IDispatcher dispatcher) : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
@@ -54,9 +53,7 @@ internal class TelegramHttpHandler(ILogger<TelegramHttpHandler> logger, IDispatc
         }
         finally
         {
-            var logLevel = exception.IsNotNull()
-                ? LogLevel.Error
-                : LogLevel.Debug;
+            var logLevel = exception.IsNotNull() ? LogLevel.Error : LogLevel.Debug;
 
             logger.Log(logLevel, exception, "{operationGuid} {sbLog}", operationGuid, sbLog);
         }

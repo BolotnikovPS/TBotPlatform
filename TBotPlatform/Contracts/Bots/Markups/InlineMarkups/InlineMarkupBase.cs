@@ -8,9 +8,9 @@ namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 /// Создание inline кнопки <see cref="InlineKeyboardButton"/>
 /// </summary>
 /// <param name="buttonName"></param>
-public abstract class InlineMarkupBase(string buttonName, EInlineMarkupType type)
+public abstract class InlineMarkupBase(string buttonName, InlineMarkupType type)
 {
-    protected readonly EInlineMarkupType Type = type;
+    protected readonly InlineMarkupType Type = type;
 
     /// <summary>
     /// Название inline кнопки

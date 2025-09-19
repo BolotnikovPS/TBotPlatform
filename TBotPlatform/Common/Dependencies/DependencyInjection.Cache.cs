@@ -2,9 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using TBotPlatform.Common.Cache;
-using TBotPlatform.Common.Factories;
 using TBotPlatform.Contracts.Abstractions.Cache;
-using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Dependencies;
@@ -13,8 +11,7 @@ public static partial class DependencyInjection
 {
     internal static IServiceCollection AddCache<T>(this IServiceCollection services)
         where T : ICacheService
-        => services
-           .AddSingleton(typeof(ICacheService), typeof(T));
+        => services.AddSingleton(typeof(ICacheService), typeof(T));
 
     internal static IServiceCollection AddCache(this IServiceCollection services, string redisConnectionString, ConnectionMultiplexer? client = null, string? prefix = null, string[]? tags = null)
     {

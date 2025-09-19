@@ -4,8 +4,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 
-public class InlineMarkupCallBackGame(string buttonName)
-    : InlineMarkupBase(buttonName, EInlineMarkupType.CallbackGame)
+public class InlineMarkupCallBackGame(string buttonName) : InlineMarkupBase(buttonName, InlineMarkupType.CallbackGame)
 {
     public override InlineKeyboardButton Format()
     {

@@ -3,8 +3,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 
-public class InlineMarkupPayment(string buttonName)
-    : InlineMarkupBase(buttonName, EInlineMarkupType.Payment)
+public class InlineMarkupPayment(string buttonName) : InlineMarkupBase(buttonName, InlineMarkupType.Payment)
 {
     public override InlineKeyboardButton Format()
     {

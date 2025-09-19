@@ -6,12 +6,14 @@ using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
 using TBotPlatform.Contracts.Bots.Users;
 using TBotPlatform.Extension;
+using TBotPlatform.Results;
+using TBotPlatform.Results.Abstractions;
 
 namespace TBotPlatform.Common.Factories;
 
 internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMenuButtonFactory
 {
-    public Task<MainButtonMassiveList> GetMainButtons<T>(T user, StateHistory stateHistory)
+    public Task<IResult<MainButtonMassiveList>> GetMainButtons<T>(T user, StateHistory stateHistory)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(stateHistory.MenuStateTypeOrNull);
@@ -19,9 +21,11 @@ internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMe
         return GetMainButtons(user, stateHistory.MenuStateTypeOrNull);
     }
 
-    public async Task<MainButtonMassiveList> GetMainButtons<T>(T user, Type menuStateType)
+    public async Task<IResult<MainButtonMassiveList>> GetMainButtons<T>(T user, Type menuStateType)
         where T : UserBase
     {
+        ArgumentNullException.ThrowIfNull(menuStateType);
+
         var isMenuType = menuStateType.GetInterfaces().Any(x => x.Name == nameof(IMenuButton));
 
         if (!isMenuType)
@@ -34,7 +38,7 @@ internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMe
 
         if (menuButtons.IsNull())
         {
-            throw new("Не смог активировать меню");
+            return ResultT<MainButtonMassiveList>.Failure(ErrorResult.NotFound("Не смог активировать меню"));
         }
 
         return await menuButtons!.GetMainButtons(user);
@@ -58,11 +62,11 @@ internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMe
 
         var mainButtons = await GetMainButtons(user, menuStateType);
 
-        if (mainButtons?.Count == 0)
+        if (mainButtons.IsSuccess && mainButtons.Value?.Count == 0)
         {
             return;
         }
 
-        await stateContext.UpdateMainButtons(mainButtons!, cancellationToken);
+        await stateContext.UpdateMainButtons(mainButtons.Value, cancellationToken);
     }
 }

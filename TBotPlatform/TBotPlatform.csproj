@@ -9,7 +9,7 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<RepositoryUrl>https://github.com/BolotnikovPS/TBotPlatform</RepositoryUrl>
 		<Description>C# библиотека для облегчения создания бота Telegram</Description>
-		<Version>2.0.0-beta1.4</Version>
+		<Version>2.0.0-beta1.6</Version>
 		<IncludeSymbols>True</IncludeSymbols>
 	</PropertyGroup>
 
@@ -31,10 +31,10 @@
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Telegram.Bot" Version="22.7.2" />
-		<PackageReference Include="StackExchange.Redis" Version="2.9.11" PrivateAssets="compile" />
+		<PackageReference Include="StackExchange.Redis" Version="2.9.11" />
 		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.19" />
 		<PackageReference Include="RateLimiter" Version="2.2.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.Redis" Version="8.0.1" PrivateAssets="compile" />
+		<PackageReference Include="AspNetCore.HealthChecks.Redis" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
 	</ItemGroup>
 	

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System.Reflection;
 using TBotPlatform.Common.BackgroundServices;
 using TBotPlatform.Common.Dependencies;

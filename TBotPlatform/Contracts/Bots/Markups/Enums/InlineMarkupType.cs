@@ -1,6 +1,6 @@
 ﻿namespace TBotPlatform.Contracts.Bots.Markups.Enums;
 
-public enum EInlineMarkupType
+public enum InlineMarkupType
 {
     None = 0,
     CallbackData,

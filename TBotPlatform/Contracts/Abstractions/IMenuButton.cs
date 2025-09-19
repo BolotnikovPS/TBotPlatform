@@ -1,5 +1,6 @@
 ﻿using TBotPlatform.Contracts.Bots.Buttons;
 using TBotPlatform.Contracts.Bots.Users;
+using TBotPlatform.Results.Abstractions;
 
 namespace TBotPlatform.Contracts.Abstractions;
 
@@ -10,6 +11,6 @@ public interface IMenuButton
     /// </summary>
     /// <param name="user">Пользователь</param>
     /// <returns></returns>
-    Task<MainButtonMassiveList> GetMainButtons<T>(T user)
+    Task<IResult<MainButtonMassiveList>> GetMainButtons<T>(T user)
         where T : UserBase;
 }

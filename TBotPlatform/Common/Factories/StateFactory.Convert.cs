@@ -3,12 +3,13 @@ using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.StateFactory;
 using TBotPlatform.Extension;
+using TBotPlatform.Results;
 
 namespace TBotPlatform.Common.Factories;
 
 internal partial class StateFactory
 {
-    private StateHistory CreateContextFunc(string botName)
+    private ResultT<StateHistory> CreateContextFunc(string botName)
     {
         var state = GetStateFactoryDataCollection(botName)
            .FirstOrDefault(
@@ -19,27 +20,29 @@ internal partial class StateFactory
         return Convert(state);
     }
 
-    private StateHistory Convert(StateFactoryData? stateData)
+    private ResultT<StateHistory> Convert(StateFactoryData? stateData)
     {
         if (stateData.IsNull())
         {
-            throw new("Состояние не найдено");
+            return ResultT<StateHistory>.Failure(ErrorResult.NotFound(StateNotFound));
         }
 
         var stateType = FindType(stateData!.StateTypeName);
 
         if (stateType.IsNull())
         {
-            throw new("Состояние не найдено");
+            return ResultT<StateHistory>.Failure(ErrorResult.NotFound(StateNotFound));
         }
 
-        return new(
+        var state = new StateHistory(
             stateType!,
             stateData.MenuTypeName.IsNotNull()
                 ? FindType(stateData.MenuTypeName)
                 : null,
             stateData.IsInlineState
             );
+
+        return ResultT<StateHistory>.Success(state);
 
         Type? FindType(string name)
         {
@@ -52,7 +55,7 @@ internal partial class StateFactory
         }
     }
 
-    private StateHistory ConvertStateFactoryData(string botName, StateFactoryData? stateFactoryData = null)
+    private ResultT<StateHistory> ConvertStateFactoryData(string botName, StateFactoryData? stateFactoryData = null)
         => stateFactoryData.IsNotNull()
             ? Convert(stateFactoryData)
             : CreateContextFunc(botName);

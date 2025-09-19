@@ -12,7 +12,7 @@ public class InlineMarkupSwitchInlineQueryChosenChat(
     bool allowBotChats,
     bool allowGroupChats,
     bool allowChannelChats
-    ) : InlineMarkupBase(buttonName, EInlineMarkupType.SwitchInlineQueryChosenChat)
+    ) : InlineMarkupBase(buttonName, InlineMarkupType.SwitchInlineQueryChosenChat)
 {
     public override InlineKeyboardButton Format()
     {

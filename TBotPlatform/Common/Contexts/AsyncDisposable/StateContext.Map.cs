@@ -7,11 +7,9 @@ namespace TBotPlatform.Common.Contexts.AsyncDisposable;
 
 internal partial class StateContext
 {
-    private static ReplyKeyboardMarkup Map(MainButtonMassiveList cakes)
-        => GenerateButtons(cakes);
+    private static ReplyKeyboardMarkup Map(MainButtonMassiveList cakes) => GenerateButtons(cakes);
 
-    private static InlineKeyboardButton[][] Map(InlineMarkupMassiveList cakes)
-        => cakes.SelectMany(x => GenerateButtons(x.InlineMarkups, x.ButtonsPerRow)).ToArray();
+    private static InlineKeyboardButton[][] Map(InlineMarkupMassiveList cakes) => [.. cakes.SelectMany(x => GenerateButtons(x.InlineMarkups, x.ButtonsPerRow))];
 
     private static ReplyKeyboardMarkup GenerateButtons(MainButtonMassiveList cakes)
     {
@@ -27,20 +25,12 @@ internal partial class StateContext
         };
     }
 
-    private static IEnumerable<KeyboardButton> GenerateButtons(MainButtonList cakes)
-    {
-        return cakes
-              .Select(q => new KeyboardButton(q.ButtonName))
-              .ToArray();
-    }
+    private static IEnumerable<KeyboardButton> GenerateButtons(MainButtonList cakes) => cakes.Select(q => new KeyboardButton(q.ButtonName));
 
     private static IEnumerable<InlineKeyboardButton[]> GenerateButtons(InlineMarkupList cakes, int buttonsPerRow = 1)
-    {
-        return cakes
-              .Select(x => x.Format())
-              .Where(z => z.IsNotNull())
-              .Chunk(buttonsPerRow <= 0 ? 1 : buttonsPerRow)
-              .Select(c => c.ToArray())
-              .ToList();
-    }
+        => cakes
+        .Select(x => x.Format())
+        .Where(z => z.IsNotNull())
+        .Chunk(buttonsPerRow <= 0 ? 1 : buttonsPerRow)
+        .Select(c => c.ToArray());
 }

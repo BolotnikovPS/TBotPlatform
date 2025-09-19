@@ -4,8 +4,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 
-public class InlineMarkupCopyText(string buttonName, string copyText)
-    : InlineMarkupBase(buttonName, EInlineMarkupType.CopyText)
+public class InlineMarkupCopyText(string buttonName, string copyText) : InlineMarkupBase(buttonName, InlineMarkupType.CopyText)
 {
     public override InlineKeyboardButton Format()
     {

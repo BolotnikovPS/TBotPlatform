@@ -62,6 +62,11 @@ internal class TelegramContextHostedService(ILogger<TelegramContextHostedService
                                 await using var scope = services.CreateAsyncScope();
                                 var scopedStartReceivingHandler = scope.ServiceProvider.GetRequiredKeyedService<IStartReceivingHandler>(settings.BotName);
 
+                                if (scopedStartReceivingHandler.IsNull())
+                                {
+                                    throw new("Обработчик сообщений отсутвтует.");
+                                }
+
                                 MarkupNextState markupNextState = null;
 
                                 if (update.Type == UpdateType.CallbackQuery)
@@ -76,10 +81,16 @@ internal class TelegramContextHostedService(ILogger<TelegramContextHostedService
 
                                 if (!update.TryGetMessageUserData(out var telegramMessageUserData))
                                 {
-                                    throw new("Не удалось обработать сообщение с telegram");
+                                    throw new("Не удалось обработать входящий запрос с telegram");
                                 }
 
-                                await scopedStartReceivingHandler.HandleUpdate(settings.BotName, update, markupNextState, telegramMessageUserData, stoppingToken);
+                                var resultReceivingHandler = await scopedStartReceivingHandler.HandleUpdate(settings.BotName, update, markupNextState, telegramMessageUserData, stoppingToken);
+
+                                if (!resultReceivingHandler.IsSuccess)
+                                {
+                                    sbLog.AppendLine("Не удалось обработать данные запроса с telegram");
+                                    throw new(resultReceivingHandler.Error.ToJson());
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -91,11 +102,9 @@ internal class TelegramContextHostedService(ILogger<TelegramContextHostedService
 
                                 sbLog.AppendLine($"Время выполнения: {timer.Elapsed}");
 
-                                var logLevel = exception.IsNotNull()
-                                    ? LogLevel.Error
-                                    : LogLevel.Debug;
+                                var logLevel = exception.IsNotNull() ? LogLevel.Error : LogLevel.Debug;
 
-                                logger.Log(logLevel, exception, "Ошибка обработки входящего сообщения {updateId} {log}", update.Id, sbLog.ToString());
+                                logger.Log(logLevel, exception, "Ошибка обработки входящего сообщения {updateId}: {log}", update.Id, sbLog.ToString());
 
                                 offset = update.Id + 1;
                             }

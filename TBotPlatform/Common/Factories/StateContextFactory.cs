@@ -44,7 +44,7 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
     }
 
     public async Task<IStateContextMinimal> CreateStateContext<T>(
-        string botName, 
+        string botName,
         T user,
         StateHistory stateHistory,
         Update chatUpdate,
@@ -68,7 +68,7 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
 
         return stateContext;
     }
-    
+
     internal async Task Request<T>(IStateContext stateContext, T user, StateHistory stateHistory, CancellationToken cancellationToken)
         where T : UserBase
     {

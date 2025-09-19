@@ -2,6 +2,7 @@
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
 using TBotPlatform.Contracts.Bots.Users;
+using TBotPlatform.Results.Abstractions;
 
 namespace TBotPlatform.Contracts.Abstractions.Factories;
 
@@ -14,7 +15,7 @@ public interface IMenuButtonFactory
     /// <param name="user">Пользователь с которым будем взаимодействовать</param>
     /// <param name="stateHistory">Вызываемое состояние</param>
     /// <returns></returns>
-    Task<MainButtonMassiveList> GetMainButtons<T>(T user, StateHistory stateHistory)
+    Task<IResult<MainButtonMassiveList>> GetMainButtons<T>(T user, StateHistory stateHistory)
         where T : UserBase;
 
     /// <summary>
@@ -24,7 +25,7 @@ public interface IMenuButtonFactory
     /// <param name="user">Пользователь с которым будем взаимодействовать</param>
     /// <param name="menuStateType">Тип вызываемого меню</param>
     /// <returns></returns>
-    Task<MainButtonMassiveList> GetMainButtons<T>(T user, Type menuStateType)
+    Task<IResult<MainButtonMassiveList>> GetMainButtons<T>(T user, Type menuStateType)
         where T : UserBase;
 
     /// <summary>
