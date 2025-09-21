@@ -6,7 +6,7 @@ using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Cache;
 
-internal class CacheService(ILogger<CacheService> logger, Lazy<ConnectionMultiplexer> lazyMultiplexer, IOptions<CacheSettings> cacheSettings) : ICacheService
+internal class CacheService(ILogger<CacheService> logger, Lazy<ConnectionMultiplexer> lazyMultiplexer, string cachePrefix) : ICacheService
 {
     private IDatabase DbCache => lazyMultiplexer.Value.GetDatabase();
 
@@ -75,7 +75,7 @@ internal class CacheService(ILogger<CacheService> logger, Lazy<ConnectionMultipl
         }
     }
 
-    private string CreateCollectionName(string collection) => cacheSettings.Value.CachePrefix.IsNotNull() ? $"{cacheSettings.Value.CachePrefix}_{collection}" : collection;
+    private string CreateCollectionName(string collection) => cachePrefix.CheckAny() ? $"{cachePrefix}_{collection}" : collection;
 
-    private string CreateKeyName(string key) => cacheSettings.Value.CachePrefix.IsNotNull() ? $"{cacheSettings.Value.CachePrefix}_{key}" : key;
+    private string CreateKeyName(string key) => cachePrefix.CheckAny() ? $"{cachePrefix}_{key}" : key;
 }

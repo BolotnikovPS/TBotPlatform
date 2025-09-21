@@ -1,5 +1,4 @@
-﻿#nullable enable
-using ComposableAsync;
+﻿using ComposableAsync;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Polly;
@@ -13,18 +12,13 @@ using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Extension;
 
-namespace TBotPlatform.Common.Dependencies;
+namespace TBotPlatform.Common.Builder;
 
-public static partial class DependencyInjection
+internal partial class BotBuilder
 {
-    internal static IServiceCollection AddTelegramContext(this IServiceCollection services, TelegramSettings telegramSettings, Type tLog, Action<HttpClient>? httpClient = null)
+    internal void AddBotTelegramContext()
     {
-        if (telegramSettings.IsNull())
-        {
-            throw new ArgumentNullException(nameof(telegramSettings));
-        }
-
-        services
+        serviceCollection
            .AddKeyedSingleton(typeof(IDispatcher), telegramSettings.BotName, (z, s) => GetLimeLimiter(telegramSettings.HttpPolicy.TelegramRequestMilliSecondInterval))
            .AddKeyedScoped<TelegramHttpHandler>(telegramSettings.BotName, (z, o) =>
            {
@@ -32,34 +26,27 @@ public static partial class DependencyInjection
 
                return new(loggerFactory.CreateLogger<TelegramHttpHandler>(), z.GetRequiredKeyedService<IDispatcher>(telegramSettings.BotName));
            })
-           .AddKeyedScoped(typeof(ITelegramContextLog), telegramSettings.BotName, tLog);
+           .AddKeyedScoped(typeof(ITelegramContextLog), telegramSettings.BotName, Log);
 
         var policy = GetRetryPolicy(telegramSettings.HttpPolicy);
 
-        if (httpClient.IsNotNull())
+        var httpBuilder = serviceCollection.AddHttpClient(telegramSettings.BotName);
+
+        if (HttpClient.IsNotNull())
         {
-            services
-               .AddHttpClient(telegramSettings.BotName)
-               .ConfigureHttpClient(httpClient!)
-               .AddPolicyHandler(policy)
-               .AddHttpMessageHandler(z => z.GetRequiredKeyedService<TelegramHttpHandler>(telegramSettings.BotName));
-        }
-        else
-        {
-            services
-               .AddHttpClient(telegramSettings.BotName)
-               .AddPolicyHandler(policy)
-               .AddHttpMessageHandler(z => z.GetRequiredKeyedService<TelegramHttpHandler>(telegramSettings.BotName));
+            httpBuilder.ConfigureHttpClient(HttpClient!);
         }
 
-        services.AddKeyedScoped<ITelegramContext, TelegramContext>(telegramSettings.BotName, (z, o) =>
+        httpBuilder
+               .AddPolicyHandler(policy)
+               .AddHttpMessageHandler(z => z.GetRequiredKeyedService<TelegramHttpHandler>(telegramSettings.BotName));
+
+        serviceCollection.AddKeyedScoped<ITelegramContext, TelegramContext>(telegramSettings.BotName, (z, o) =>
         {
             var httpClientFactory = z.GetRequiredService<IHttpClientFactory>();
             var log = z.GetRequiredKeyedService<ITelegramContextLog>(telegramSettings.BotName);
             return new TelegramContext(httpClientFactory.CreateClient(telegramSettings.BotName), telegramSettings, log);
         });
-
-        return services;
     }
 
     private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(TelegramSettingsHttpPolicy httpPolicy)

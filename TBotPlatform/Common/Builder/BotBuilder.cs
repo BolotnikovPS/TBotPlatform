@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TBotPlatform.Common.Contexts;
-using TBotPlatform.Common.Dependencies;
 using TBotPlatform.Contracts.Abstractions.Builder;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Handlers;
@@ -12,7 +11,7 @@ using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Builder;
 
-internal class BotBuilder(IServiceCollection serviceCollection, IBotPlatformBuilder botPlatformBuilder, TelegramSettings telegramSettings) : IBotBuilder
+internal partial class BotBuilder(IServiceCollection serviceCollection, IBotPlatformBuilder botPlatformBuilder, TelegramSettings telegramSettings) : IBotBuilder
 {
     private Action<HttpClient>? HttpClient { get; set; }
     private Type? Log { get; set; }
@@ -102,12 +101,7 @@ internal class BotBuilder(IServiceCollection serviceCollection, IBotPlatformBuil
 
     public IBotPlatformBuilder Build()
     {
-        if (PotentialStateTypes.IsNull())
-        {
-            throw new InvalidDataException("Отсутствуют потенциальные состояния.");
-        }
-
-        if (HttpClient.IsNull() || Log.IsNull())
+        if (telegramSettings.IsNull() || Log.IsNull())
         {
             throw new InvalidOperationException("Отсутствует контекст telegram.");
         }
@@ -117,10 +111,10 @@ internal class BotBuilder(IServiceCollection serviceCollection, IBotPlatformBuil
             throw new InvalidOperationException("Отсутствует обработчик событий от telegram.");
         }
 
-        serviceCollection
-            .AddTelegramContext(telegramSettings, Log!, HttpClient)
-            .AddStates(telegramSettings.BotName, [.. PotentialStateTypes!.Distinct()])
-            .AddKeyedScoped(typeof(IStartReceivingHandler), telegramSettings.BotName, ReceivingHandlerType!);
+        AddBotTelegramContext();
+        AddBotStates();
+
+        serviceCollection.AddKeyedScoped(typeof(IStartReceivingHandler), telegramSettings.BotName, ReceivingHandlerType!);
 
         return botPlatformBuilder;
     }

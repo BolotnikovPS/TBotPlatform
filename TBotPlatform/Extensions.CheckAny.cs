@@ -8,7 +8,7 @@ public static partial class Extensions
     /// <param name="s"></param>
     /// <returns></returns>
     public static bool CheckAny(this string s)
-        => !string.IsNullOrEmpty(s);
+        => !string.IsNullOrWhiteSpace(s);
 
     /// <summary>
     /// Проверяет List на наличие данных

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using TBotPlatform.Common.Contracts;
+using System.Reflection;
 using TBotPlatform.Contracts.Abstractions.Cache;
 using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Bots;
@@ -11,7 +10,7 @@ using TBotPlatform.Results.Abstractions;
 
 namespace TBotPlatform.Common.Factories;
 
-internal partial class StateFactory(ICacheService cache, IOptions<StateFactorySettings> stateFactorySettings, IServiceProvider serviceProvider) : IStateFactory
+internal partial class StateFactory(ICacheService cache, IServiceProvider serviceProvider, Assembly assembly) : IStateFactory
 {
     private const string StateNotFound = "Состояние не найдено";
     

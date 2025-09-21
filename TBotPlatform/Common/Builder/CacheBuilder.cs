@@ -1,28 +1,25 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
-using TBotPlatform.Common.Dependencies;
 using TBotPlatform.Common.Factories;
 using TBotPlatform.Contracts.Abstractions.Builder;
 using TBotPlatform.Contracts.Abstractions.Cache;
 using TBotPlatform.Contracts.Abstractions.Factories;
 
 namespace TBotPlatform.Common.Builder;
+
 internal class CacheBuilder(IServiceCollection serviceCollection, IBotPlatformBuilder botPlatformBuilder) : ICacheBuilder
 {
     private bool IsCacheAdded { get; set; }
 
-    public ICacheBuilder AddRedisCache(string redisConnectionString, ConnectionMultiplexer client = null, string prefix = null, string[] tags = null)
+    public IRedisBuilder AddRedisCache(string redisConnectionString)
     {
         if (IsCacheAdded)
         {
             throw new InvalidOperationException("Кеш ранее был добавлен.");
         }
 
-        serviceCollection.AddCache(redisConnectionString, client, prefix, tags);
-
         IsCacheAdded = true;
 
-        return this;
+        return new RedisBuilder(serviceCollection, this, redisConnectionString);
     }
 
     public ICacheBuilder AddCustomCache<T>()
@@ -35,7 +32,7 @@ internal class CacheBuilder(IServiceCollection serviceCollection, IBotPlatformBu
 
         IsCacheAdded = true;
 
-        serviceCollection.AddCache<T>();
+        serviceCollection.AddSingleton(typeof(ICacheService), typeof(T));
 
         return this;
     }
@@ -46,7 +43,7 @@ internal class CacheBuilder(IServiceCollection serviceCollection, IBotPlatformBu
         {
             throw new InvalidOperationException("Отсутствует кеш.");
         }
-        
+
         serviceCollection.AddSingleton<IDistributedLockFactory, DistributedLockFactory>();
 
         return this;

@@ -46,12 +46,7 @@ internal partial class StateFactory
 
         Type? FindType(string name)
         {
-            return Array.Find(
-                stateFactorySettings.Value
-                                    .Assembly
-                                    .GetTypes(),
-                z => z.Name == name
-                );
+            return Array.Find(assembly.GetTypes(), z => z.Name == name);
         }
     }
 

@@ -9,7 +9,7 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<RepositoryUrl>https://github.com/BolotnikovPS/TBotPlatform</RepositoryUrl>
 		<Description>C# библиотека для облегчения создания бота Telegram</Description>
-		<Version>2.0.0-beta1.6</Version>
+		<Version>2.0.0-beta1.7</Version>
 		<IncludeSymbols>True</IncludeSymbols>
 	</PropertyGroup>
 
@@ -19,6 +19,9 @@
 		</Compile>
 		<Compile Update="**\StateFactory.*.cs">
 			<DependentUpon>StateFactory.cs</DependentUpon>
+		</Compile>
+		<Compile Update="**\BotBuilder.*.cs">
+			<DependentUpon>BotBuilder.cs</DependentUpon>
 		</Compile>
 		<Compile Update="**\DependencyInjection.*.cs">
 			<DependentUpon>DependencyInjection.cs</DependentUpon>

@@ -8,15 +8,15 @@ using TBotPlatform.Contracts.Bots.StateFactory;
 using TBotPlatform.Contracts.Bots.Users;
 using TBotPlatform.Extension;
 
-namespace TBotPlatform.Common.Dependencies;
+namespace TBotPlatform.Common.Builder;
 
-public static partial class DependencyInjection
+internal partial class BotBuilder
 {
-    internal static IServiceCollection AddStates(this IServiceCollection services, string botName, List<Type> potentialStateTypes)
+    internal void AddBotStates()
     {
-        if (potentialStateTypes.IsNull())
+        if (PotentialStateTypes.IsNull())
         {
-            throw new("Нет состояний");
+            throw new InvalidDataException("Отсутствуют потенциальные состояния.");
         }
 
         var stateInterfaceName = typeof(IState<UserBase>).Name;
@@ -24,7 +24,7 @@ public static partial class DependencyInjection
 
         var states = new List<StateFactoryData>();
 
-        foreach (var stateType in potentialStateTypes)
+        foreach (var stateType in PotentialStateTypes.Distinct())
         {
             if (states.Any(z => z.StateTypeName == stateType.Name))
             {
@@ -42,7 +42,7 @@ public static partial class DependencyInjection
 
             if (attr!.OnlyForBot.CheckAny() && attr.OnlyForBot.NotIn("None", ""))
             {
-                if (attr.OnlyForBot.NotIn(botName))
+                if (attr.OnlyForBot.NotIn(telegramSettings.BotName))
                 {
                     continue;
                 }
@@ -103,16 +103,16 @@ public static partial class DependencyInjection
 
             states.Add(newState);
 
-            if (services.Any(z => z.ServiceType.Name == newState.StateTypeName))
+            if (serviceCollection.Any(z => z.ServiceType.Name == newState.StateTypeName))
             {
                 continue;
             }
 
-            services.TryAddScoped(stateType);
+            serviceCollection.TryAddScoped(stateType);
 
-            if (attr.MenuType.IsNotNull() && !services.Any(z => z.ServiceType == attr.MenuType))
+            if (attr.MenuType.IsNotNull() && !serviceCollection.Any(z => z.ServiceType == attr.MenuType))
             {
-                services.TryAddScoped(attr!.MenuType!);
+                serviceCollection.TryAddScoped(attr!.MenuType!);
             }
         }
 
@@ -153,6 +153,6 @@ public static partial class DependencyInjection
 
         var statesCollection = new StateFactoryDataCollection(states);
 
-        return services.AddKeyedSingleton(botName, statesCollection);
+        serviceCollection.AddKeyedSingleton(telegramSettings.BotName, statesCollection);
     }
 }

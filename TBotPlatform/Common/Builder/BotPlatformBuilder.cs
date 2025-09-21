@@ -1,15 +1,17 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TBotPlatform.Common.BackgroundServices;
-using TBotPlatform.Common.Dependencies;
+using TBotPlatform.Common.Factories;
 using TBotPlatform.Contracts.Abstractions.Builder;
+using TBotPlatform.Contracts.Abstractions.Cache;
+using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Builder;
 
-internal class BotPlatformBuilder(IServiceCollection serviceCollection) : IBotPlatformBuilder
+internal partial class BotPlatformBuilder(IServiceCollection serviceCollection) : IBotPlatformBuilder
 {
     private readonly List<string> Bots = [];
 
@@ -83,8 +85,17 @@ internal class BotPlatformBuilder(IServiceCollection serviceCollection) : IBotPl
         }
 
         serviceCollection
-            .AddFactories(FactoriesExecutingAssembly)
-            .AddSingleton(new BotsDataCollection(Bots));
+           .AddScoped(s =>
+           {
+               var cache = s.GetRequiredService<ICacheService>();
+
+               return new StateFactory(cache, s, FactoriesExecutingAssembly);
+           })
+           .AddScoped<IStateFactory>(src => src.GetRequiredService<StateFactory>())
+           .AddScoped<IStateBindFactory>(src => src.GetRequiredService<StateFactory>())
+           .AddScoped<IStateContextFactory, StateContextFactory>()
+           .AddSingleton<IMenuButtonFactory, MenuButtonFactory>()
+           .AddSingleton(new BotsDataCollection(Bots));
 
         return serviceCollection;
     }
