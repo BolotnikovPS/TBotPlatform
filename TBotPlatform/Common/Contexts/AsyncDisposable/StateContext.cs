@@ -10,6 +10,7 @@ using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.Bots.States;
 using TBotPlatform.Extension;
+using TBotPlatform.Results.Abstractions;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -29,8 +30,6 @@ internal partial class StateContext(
     public StateResult StateResult { get; set; } = new();
     public MarkupNextState? MarkupNextState { get; private set; }
     public Update? ChatUpdate { get; private set; }
-
-    internal long ChatId { get; set; } = chatId;
 
     private const PMode ParseMode = PMode.Html;
     private const string ChooseAction = "😊 Выберите действие";
@@ -53,35 +52,35 @@ internal partial class StateContext(
     {
         ChatIdValidOrThrow(newChatId);
 
-        if (ChatId == newChatId)
+        if (chatId == newChatId)
         {
             return await request.Invoke(this);
         }
 
-        var baseChatId = ChatId;
+        var baseChatId = chatId;
         try
         {
-            ChatId = newChatId;
+            chatId = newChatId;
             return await request.Invoke(this);
         }
         finally
         {
-            ChatId = baseChatId;
+            chatId = baseChatId;
         }
     }
 
-    public Task BindState(CancellationToken cancellationToken)
+    public Task<IResult> BindState(CancellationToken cancellationToken)
     {
         if (stateHistory.IsNull())
         {
             throw new NullReferenceException("История состояния отсутствует.");
         }
 
-        return stateBindFactory.BindState(telegramContext.GetTelegramSettings().BotName, ChatId, stateHistory, cancellationToken);
+        return stateBindFactory.BindState(telegramContext.GetTelegramSettings().BotName, chatId, stateHistory, cancellationToken);
     }
 
-    public Task UnBindState(CancellationToken cancellationToken)
-        => stateBindFactory.UnBindState(telegramContext.GetTelegramSettings().BotName, ChatId, cancellationToken);
+    public Task<IResult> UnBindState(CancellationToken cancellationToken)
+        => stateBindFactory.UnBindState(telegramContext.GetTelegramSettings().BotName, chatId, cancellationToken);
 
     public async Task<Message> SendDocument(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken)
     {
@@ -92,7 +91,7 @@ internal partial class StateContext(
         var inputFile = InputFile.FromStream(fileStream, documentData.Name);
 
         return await telegramContext.SendDocument(
-            ChatId,
+            chatId,
             inputFile,
             caption,
             ParseMode,
@@ -116,7 +115,7 @@ internal partial class StateContext(
         var inputFile = InputFile.FromStream(fileStream, documentData.Name);
 
         return await telegramContext.SendPhoto(
-            ChatId,
+            chatId,
             inputFile,
             caption,
             ParseMode,
@@ -136,7 +135,7 @@ internal partial class StateContext(
     {
         ChatIdValidOrThrow();
 
-        return telegramContext.SendChatAction(ChatId, chatAction, cancellationToken: cancellationToken);
+        return telegramContext.SendChatAction(chatId, chatAction, cancellationToken: cancellationToken);
     }
 
     public Task<Message> RemoveMarkup(string text, CancellationToken cancellationToken)
@@ -145,7 +144,7 @@ internal partial class StateContext(
         TextLengthValidOrThrow(text);
 
         return telegramContext.SendMessage(
-            ChatId,
+            chatId,
             text,
             ParseMode,
             replyParameters: null,
@@ -171,7 +170,7 @@ internal partial class StateContext(
         }
 
         return telegramContext.SendMessage(
-            ChatId,
+            chatId,
             text,
             ParseMode,
             replyParameters: null,
@@ -202,7 +201,7 @@ internal partial class StateContext(
         if (ChatUpdate.CallbackQuery.WithPhoto())
         {
             return telegramContext.EditMessageCaption(
-                ChatId,
+                chatId,
                 ChatUpdate.CallbackQuery!.Message!.MessageId,
                 message,
                 ParseMode,
@@ -211,7 +210,7 @@ internal partial class StateContext(
         }
 
         return telegramContext.EditMessageText(
-            ChatId,
+            chatId,
             ChatUpdate.CallbackQuery!.Message!.MessageId,
             message,
             ParseMode,
@@ -227,7 +226,7 @@ internal partial class StateContext(
         ChatIdValidOrThrow();
         MessageIdValidOrThrow(messageId);
 
-        return telegramContext.DeleteMessage(ChatId, messageId, cancellationToken);
+        return telegramContext.DeleteMessage(chatId, messageId, cancellationToken);
     }
 
     public async ValueTask DisposeAsync()

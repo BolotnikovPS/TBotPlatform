@@ -16,7 +16,7 @@ internal partial class StateFactory(ICacheService cache, IServiceProvider servic
     
     public bool HasState(string botName, string nameOfState) => GetStateFactoryDataCollection(botName).Any(q => q.StateTypeName == nameOfState);
 
-    public bool HasState(string botName, string[] nameOfStates) => GetStateFactoryDataCollection(botName).Any(q => nameOfStates.Any(z => z == q.StateTypeName));
+    public bool HasStates(string botName, string[] nameOfStates) => GetStateFactoryDataCollection(botName).Any(q => nameOfStates.Any(z => z == q.StateTypeName));
 
     public IResult<StateHistory> GetStateByNameOrDefault(string botName, string nameOfState = "")
     {
@@ -136,24 +136,27 @@ internal partial class StateFactory(ICacheService cache, IServiceProvider servic
         ArgumentNullException.ThrowIfNull(chatId);
 
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmpty(botName, chatId, cancellationToken);
-        var result = await GetLastStateWithMenuOrMain(botName, statesInMemoryOrEmpty, chatId, cancellationToken);
-
-        return result.IsNotNull() ? result : ResultT<StateHistory>.Failure(ErrorResult.NotFound(StateNotFound));
+        return await GetLastStateWithMenuOrMain(botName, statesInMemoryOrEmpty, chatId, cancellationToken);
     }
 
-    public IResult<StateHistory> LockState(string botName) => GetStateHistory(botName, z => z.IsLockUserState);
+    public IResult<StateHistory> GetLockState(string botName) => GetStateHistory(botName, z => z.IsLockUserState);
 
-    public IResult<StateHistory> RegistrationState(string botName) => GetStateHistory(botName, z => z.IsRegistrationState);
+    public IResult<StateHistory> GetRegistrationState(string botName) => GetStateHistory(botName, z => z.IsRegistrationState);
 
     public async Task<IResult<StateHistory>> GetBindStateOrNull(string botName, long chatId, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        var value = await GetBindStateName(botName, chatId, cancellationToken);
+        var bindStateName = await GetBindStateName(botName, chatId, cancellationToken);
 
-        var state = GetStateFactoryDataCollection(botName).FirstOrDefault(z => z.StateTypeName == value);
+        if (!bindStateName.IsSuccess)
+        {
+            return ResultT<StateHistory>.Failure(bindStateName.Error);
+        }
 
-        return value.IsNotNull() ? Convert(state) : ResultT<StateHistory>.Failure(ErrorResult.NotFound(StateNotFound));
+        var state = GetStateFactoryDataCollection(botName).FirstOrDefault(z => z.StateTypeName == bindStateName.Value);
+
+        return Convert(state);
     }
 
     public async Task<IResult> BindState(string botName, long chatId, StateHistory state, CancellationToken cancellationToken)
@@ -161,14 +164,14 @@ internal partial class StateFactory(ICacheService cache, IServiceProvider servic
         ArgumentNullException.ThrowIfNull(chatId);
         ArgumentNullException.ThrowIfNull(state);
 
-        var value = GetStateFactoryDataCollection(botName).FirstOrDefault(z => z.StateTypeName == state.StateType.Name);
+        var stateValue = GetStateFactoryDataCollection(botName).FirstOrDefault(z => z.StateTypeName == state.StateType.Name);
 
-        if (value.IsNull())
+        if (stateValue.IsNull())
         {
             Result.Failure(ErrorResult.NotFound(StateNotFound));
         }
 
-        await AddBindState(botName, chatId, value?.StateTypeName, cancellationToken);
+        await AddBindState(botName, chatId, stateValue?.StateTypeName, cancellationToken);
 
         return Result.Success();
     }
@@ -188,7 +191,7 @@ internal partial class StateFactory(ICacheService cache, IServiceProvider servic
 
         var value = await GetBindStateName(botName, chatId, cancellationToken);
 
-        return value.CheckAny();
+        return value.IsSuccess;
     }
 
     private async Task<IResult<StateHistory>> GetLastStateWithMenuOrMain(string botName, List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)

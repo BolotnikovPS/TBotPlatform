@@ -6,7 +6,7 @@ namespace TBotPlatform.Contracts.Abstractions.Factories;
 public interface IStateBindFactory
 {
     /// <summary>
-    /// Получает зафиксированное состояние или null
+    /// Получает зафиксированное состояние
     /// </summary>
     /// <param name="botName">Наименование бота</param>
     /// <param name="chatId">Id чата</param>

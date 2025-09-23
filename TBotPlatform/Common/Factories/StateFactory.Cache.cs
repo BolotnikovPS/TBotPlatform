@@ -1,5 +1,6 @@
 ﻿using TBotPlatform.Contracts.Cache;
 using TBotPlatform.Extension;
+using TBotPlatform.Results;
 
 namespace TBotPlatform.Common.Factories;
 
@@ -43,15 +44,15 @@ internal partial class StateFactory
         await cache.AddValueToCollection(CacheCollectionKeyName(botName), values);
     }
 
-    private async Task<string> GetBindStateName(string botName, long chatId, CancellationToken cancellationToken)
+    private async Task<ResultT<string>> GetBindStateName(string botName, long chatId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         var values = await cache.GetValueFromCollection<UserBindStateInCache>(CacheBindCollectionKeyName(botName), chatId.ToString());
 
-        return values.IsNotNull()
-            ? values.StatesTypeName
-            : null;
+        return values.IsNull() 
+            ? ResultT<string>.Failure(ErrorResult.NotFound(StateNotFound)) 
+            : ResultT<string>.Success(values.StatesTypeName);
     }
 
     private async Task AddBindState(string botName, long chatId, string statesTypeName, CancellationToken cancellationToken)

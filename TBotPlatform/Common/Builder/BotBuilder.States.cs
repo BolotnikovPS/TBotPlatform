@@ -151,8 +151,6 @@ internal partial class BotBuilder
                 throw new("Состояний определяющих команду /start больше одного");
         }
 
-        var statesCollection = new StateFactoryDataCollection(states);
-
-        serviceCollection.AddKeyedSingleton(telegramSettings.BotName, statesCollection);
+        serviceCollection.AddKeyedSingleton(telegramSettings.BotName, new StateFactoryDataCollection(states));
     }
 }

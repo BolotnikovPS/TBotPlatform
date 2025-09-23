@@ -19,7 +19,7 @@ public interface IStateFactory : IStateBindFactory
     /// <param name="botName">Наименование бота</param>
     /// <param name="nameOfStates">Название состояний</param>
     /// <returns></returns>
-    bool HasState(string botName, string[] nameOfStates);
+    bool HasStates(string botName, string[] nameOfStates);
 
     /// <summary>
     /// Получает состояние по его названию или /start
@@ -90,12 +90,12 @@ public interface IStateFactory : IStateBindFactory
     /// </summary>
     /// <param name="botName">Наименование бота</param>
     /// <returns></returns>
-    IResult<StateHistory> LockState(string botName);
+    IResult<StateHistory> GetLockState(string botName);
 
     /// <summary>
     /// Получает состояние для заблокированных пользователей
     /// </summary>
     /// <param name="botName">Наименование бота</param>
     /// <returns></returns>
-    IResult<StateHistory> RegistrationState(string botName);
+    IResult<StateHistory> GetRegistrationState(string botName);
 }

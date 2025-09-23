@@ -24,7 +24,7 @@ public interface IRedisBuilder
     /// </summary>
     /// <param name="tags">Теги хелсчека</param>
     /// <returns></returns>
-    IRedisBuilder AddTags(string[] tags);
+    IRedisBuilder AddHealthTags(string[] tags);
 
     /// <summary>
     /// Добавляет название хелсчека

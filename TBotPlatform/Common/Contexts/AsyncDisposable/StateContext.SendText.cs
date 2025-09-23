@@ -39,7 +39,7 @@ internal partial class StateContext
             };
 
         return telegramContext.SendMessage(
-            ChatId,
+            chatId,
             text,
             ParseMode,
             replyMarkup: replyMarkup,
@@ -62,7 +62,7 @@ internal partial class StateContext
             foreach (var tf in text.SplitByLength(StateContextConstant.TextLength))
             {
                 await telegramContext.SendMessage(
-                    ChatId,
+                    chatId,
                     tf,
                     disableNotification: disableNotification,
                     cancellationToken: cancellationToken
@@ -73,7 +73,7 @@ internal partial class StateContext
         }
 
         await telegramContext.SendMessage(
-            ChatId,
+            chatId,
             text,
             ParseMode,
             disableNotification: disableNotification,

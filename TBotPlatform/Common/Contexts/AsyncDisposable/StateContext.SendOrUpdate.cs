@@ -128,12 +128,12 @@ internal partial class StateContext
             {
                 CallbackQueryValidOrThrow(ChatUpdate?.CallbackQuery);
 
-                await telegramContext.DeleteMessage(ChatId, ChatUpdate!.CallbackQuery!.Message!.MessageId, cancellationToken);
+                await telegramContext.DeleteMessage(chatId, ChatUpdate!.CallbackQuery!.Message!.MessageId, cancellationToken);
             }
 
             await using var fileStream = new MemoryStream(photoData!.Bytes);
             return await telegramContext.SendPhoto(
-                ChatId,
+                chatId,
                 InputFile.FromStream(fileStream),
                 text,
                 ParseMode,
@@ -146,7 +146,7 @@ internal partial class StateContext
         if (MarkupNextState.IsNull())
         {
             return await telegramContext.SendMessage(
-                ChatId,
+                chatId,
                 text,
                 ParseMode,
                 replyMarkup: inlineKeyboard,
@@ -159,7 +159,7 @@ internal partial class StateContext
 
         return ChatUpdate.CallbackQuery.WithPhoto()
             ? await telegramContext.EditMessageCaption(
-                ChatId,
+                chatId,
                 ChatUpdate.CallbackQuery!.Message!.Id,
                 text,
                 ParseMode,
@@ -167,7 +167,7 @@ internal partial class StateContext
                 cancellationToken: cancellationToken
                 )
             : await telegramContext.EditMessageText(
-                ChatId,
+                chatId,
                 ChatUpdate.CallbackQuery!.Message!.MessageId,
                 text,
                 ParseMode,

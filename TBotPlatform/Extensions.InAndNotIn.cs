@@ -91,6 +91,25 @@ public static partial class Extensions
     /// <param name="input"></param>
     /// <param name="value"></param>
     /// <returns>bool</returns>
+    public static bool In(this long input, params long[] value)
+    {
+        return value.Length != 0 && value.Any(z => z == input);
+    }
+
+    /// <summary>
+    /// Проверяет отсутствие input в value без регистровой зависимости
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="value"></param>
+    /// <returns>bool</returns>
+    public static bool NotIn(this long input, params long[] value) => !input.In(value);
+
+    /// <summary>
+    /// Проверяет наличие input в value без регистровой зависимости
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="value"></param>
+    /// <returns>bool</returns>
     public static bool In<T>(this T input, params T[] value)
         where T : Enum
     {

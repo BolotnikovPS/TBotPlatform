@@ -40,6 +40,6 @@ internal partial class StateContext
     {
         ChatIdValidOrThrow(chatIdToLeave);
 
-        return telegramContext.LeaveChat(ChatId, cancellationToken);
+        return telegramContext.LeaveChat(chatId, cancellationToken);
     }
 }

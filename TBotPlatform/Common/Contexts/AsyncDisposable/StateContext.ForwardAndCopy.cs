@@ -11,7 +11,7 @@ internal partial class StateContext
         ChatIdValidOrThrow();
         MessageIdValidOrThrow(messageId);
 
-        return telegramContext.ForwardMessage(ChatId, fromChatId, messageId, messageThreadId: null, disableNotification, cancellationToken: cancellationToken);
+        return telegramContext.ForwardMessage(chatId, fromChatId, messageId, messageThreadId: null, disableNotification, cancellationToken: cancellationToken);
     }
 
     public Task<Message> ForwardMessage(long fromChatId, int messageId, CancellationToken cancellationToken)
@@ -32,7 +32,7 @@ internal partial class StateContext
         MessageIdValidOrThrow(messageId);
 
         var result = await telegramContext.CopyMessage(
-            ChatId,
+            chatId,
             fromChatId,
             messageId,
             caption,

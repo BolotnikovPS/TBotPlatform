@@ -20,6 +20,11 @@ internal class RedisBuilder(IServiceCollection serviceCollection, ICacheBuilder 
 
     public IRedisBuilder AddMyRedisConnectionMultiplexer(ConnectionMultiplexer client)
     {
+        if (_client.IsNotNull())
+        {
+            throw new InvalidOperationException("Клиент добавлен ранее.");
+        }
+
         _client = client;
 
         return this;
@@ -27,13 +32,23 @@ internal class RedisBuilder(IServiceCollection serviceCollection, ICacheBuilder 
 
     public IRedisBuilder AddPrefix(string prefix)
     {
+        if (_prefix.IsNotNull())
+        {
+            throw new InvalidOperationException("Префикс добавлен ранее.");
+        }
+
         _prefix = prefix;
 
         return this;
     }
 
-    public IRedisBuilder AddTags(string[] tags)
+    public IRedisBuilder AddHealthTags(string[] tags)
     {
+        if (_tags.IsNotNull())
+        {
+            throw new InvalidOperationException("Тег хелсчека добавлен ранее.");
+        }
+
         _tags = tags;
 
         return this;
@@ -41,6 +56,11 @@ internal class RedisBuilder(IServiceCollection serviceCollection, ICacheBuilder 
 
     public IRedisBuilder AddHealthName(string healthName)
     {
+        if (_healthName.IsNotNull())
+        {
+            throw new InvalidOperationException("Название хелсчека добавлено ранее.");
+        }
+
         _healthName = healthName;
 
         return this;
@@ -48,6 +68,11 @@ internal class RedisBuilder(IServiceCollection serviceCollection, ICacheBuilder 
 
     public IRedisBuilder AddFailureHealthStatus(HealthStatus healthStatus)
     {
+        if (_healthStatus.IsNotNull())
+        {
+            throw new InvalidOperationException("Статус хелсчека добавлено ранее.");
+        }
+
         _healthStatus = healthStatus;
 
         return this;

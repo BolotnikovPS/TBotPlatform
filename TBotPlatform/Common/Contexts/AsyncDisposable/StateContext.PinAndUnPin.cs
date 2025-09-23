@@ -9,7 +9,7 @@ internal partial class StateContext
         ChatIdValidOrThrow();
         MessageIdValidOrThrow(messageId);
 
-        return telegramContext.PinChatMessage(ChatId, messageId, disableNotification, cancellationToken: cancellationToken);
+        return telegramContext.PinChatMessage(chatId, messageId, disableNotification, cancellationToken: cancellationToken);
     }
 
     public Task PinChatMessage(int messageId, CancellationToken cancellationToken)
@@ -20,13 +20,13 @@ internal partial class StateContext
         ChatIdValidOrThrow();
         MessageIdValidOrThrow(messageId);
 
-        return telegramContext.UnpinChatMessage(ChatId, messageId, cancellationToken: cancellationToken);
+        return telegramContext.UnpinChatMessage(chatId, messageId, cancellationToken: cancellationToken);
     }
 
     public Task UnpinAllChatMessages(CancellationToken cancellationToken)
     {
         ChatIdValidOrThrow();
 
-        return telegramContext.UnpinAllChatMessages(ChatId, cancellationToken);
+        return telegramContext.UnpinAllChatMessages(chatId, cancellationToken);
     }
 }

@@ -45,11 +45,12 @@ internal partial class BotBuilder
         {
             var httpClientFactory = z.GetRequiredService<IHttpClientFactory>();
             var log = z.GetRequiredKeyedService<ITelegramContextLog>(telegramSettings.BotName);
+
             return new TelegramContext(httpClientFactory.CreateClient(telegramSettings.BotName), telegramSettings, log);
         });
     }
 
-    private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(TelegramSettingsHttpPolicy httpPolicy)
+    private static AsyncPolicy<HttpResponseMessage> GetRetryPolicy(TelegramSettingsHttpPolicy httpPolicy)
         => HttpPolicyExtensions
           .HandleTransientHttpError()
           .OrResult(
@@ -65,6 +66,6 @@ internal partial class BotBuilder
                (_, _, _, _) => Task.CompletedTask
                );
 
-    private static IDispatcher GetLimeLimiter(int telegramRequestMilliSecondInterval)
+    private static TimeLimiter GetLimeLimiter(int telegramRequestMilliSecondInterval)
         => TimeLimiter.GetFromMaxCountByInterval(RateContextConstant.MaxCountIteration, TimeSpan.FromMilliseconds(telegramRequestMilliSecondInterval));
 }

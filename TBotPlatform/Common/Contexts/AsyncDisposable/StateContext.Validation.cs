@@ -10,7 +10,7 @@ internal partial class StateContext
 {
     private void ChatIdValidOrThrow()
     {
-        if (ChatId.IsDefault())
+        if (chatId.IsDefault() || chatId.In(0, long.MinValue, long.MaxValue))
         {
             throw new ChatIdArgException();
         }
@@ -18,7 +18,7 @@ internal partial class StateContext
 
     internal static void ChatIdValidOrThrow(long chatId)
     {
-        if (chatId.IsDefault())
+        if (chatId.IsDefault() || chatId.In(0, long.MinValue, long.MaxValue))
         {
             throw new ChatIdArgException();
         }
@@ -42,7 +42,7 @@ internal partial class StateContext
 
     public static void MessageIdValidOrThrow(long messageId)
     {
-        if (messageId.IsNull())
+        if (messageId.IsDefault() || messageId.In(0, long.MinValue, long.MaxValue))
         {
             throw new MessageIdArgException();
         }

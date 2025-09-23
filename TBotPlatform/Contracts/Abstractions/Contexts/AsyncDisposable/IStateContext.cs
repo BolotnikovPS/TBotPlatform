@@ -1,6 +1,7 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.States;
+using TBotPlatform.Results.Abstractions;
 using Telegram.Bot.Types;
 
 namespace TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
@@ -40,12 +41,12 @@ public interface IStateContext : IStateContextMinimal
     /// Устанавливает необходимость зафиксировать состояние
     /// </summary>
     /// <param name="cancellationToken"></param>
-    Task BindState(CancellationToken cancellationToken);
+    Task<IResult> BindState(CancellationToken cancellationToken);
 
     /// <summary>
     /// Снимает необходимость зафиксировать состояние
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task UnBindState(CancellationToken cancellationToken);
+    Task<IResult> UnBindState(CancellationToken cancellationToken);
 }

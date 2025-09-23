@@ -9,7 +9,7 @@ namespace TBotPlatform.Contracts.Abstractions.Handlers;
 public interface IStartReceivingHandler
 {
     /// <summary>
-    /// Обрабатывает данные при поступлении сообщения
+    /// Обрабатывает данные при поступлении запроса от telegram
     /// </summary>
     /// <param name="botName">Наименование бота</param>
     /// <param name="update">Запрос с telegram</param>
