@@ -1,4 +1,5 @@
 # TBotPlatform
+[![NuGet version (TBotPlatform)](https://img.shields.io/nuget/v/TBotPlatform.svg?style=flat-square)](https://www.nuget.org/packages/TBotPlatform/)
 
 C# библиотека для облегчения создания бота [Telegram](https://core.telegram.org/bots/api)
 
