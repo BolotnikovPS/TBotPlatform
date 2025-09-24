@@ -104,7 +104,7 @@ internal class TelegramContextHostedService(ILogger<TelegramContextHostedService
 
                                 var logLevel = exception.IsNotNull() ? LogLevel.Error : LogLevel.Debug;
 
-                                logger.Log(logLevel, exception, "Ошибка обработки входящего сообщения {updateId}: {log}", update.Id, sbLog.ToString());
+                                logger.Log(logLevel, exception, "Результат обработки входящего сообщения {updateId}: {log}", update.Id, sbLog.ToString());
 
                                 offset = update.Id + 1;
                             }

@@ -34,7 +34,7 @@ internal partial class BotBuilder
 
         if (HttpClient.IsNotNull())
         {
-            httpBuilder.ConfigureHttpClient(HttpClient!);
+            httpBuilder.ConfigureHttpClient(HttpClient);
         }
 
         httpBuilder
