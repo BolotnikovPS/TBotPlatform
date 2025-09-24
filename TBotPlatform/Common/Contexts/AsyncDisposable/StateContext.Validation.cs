@@ -1,0 +1,50 @@
+﻿#nullable enable
+using TBotPlatform.Contracts.Bots.Constant;
+using TBotPlatform.Contracts.Bots.Exceptions;
+using TBotPlatform.Extension;
+using Telegram.Bot.Types;
+
+namespace TBotPlatform.Common.Contexts.AsyncDisposable;
+
+internal partial class StateContext
+{
+    private void ChatIdValidOrThrow()
+    {
+        if (chatId.IsDefault() || chatId.In(0, long.MinValue, long.MaxValue))
+        {
+            throw new ChatIdArgException();
+        }
+    }
+
+    internal static void ChatIdValidOrThrow(long chatId)
+    {
+        if (chatId.IsDefault() || chatId.In(0, long.MinValue, long.MaxValue))
+        {
+            throw new ChatIdArgException();
+        }
+    }
+
+    private static void TextLengthValidOrThrow(string? text)
+    {
+        if (text?.Length > StateContextConstant.TextLength)
+        {
+            throw new TextLengthException(text.Length, StateContextConstant.TextLength);
+        }
+    }
+
+    private static void CallbackQueryValidOrThrow(CallbackQuery? callbackQueryOrNull)
+    {
+        if (callbackQueryOrNull.IsNull())
+        {
+            throw new CallbackQueryArgException();
+        }
+    }
+
+    public static void MessageIdValidOrThrow(long messageId)
+    {
+        if (messageId.IsDefault() || messageId.In(0, long.MinValue, long.MaxValue))
+        {
+            throw new MessageIdArgException();
+        }
+    }
+}
