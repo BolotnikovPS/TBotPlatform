@@ -47,7 +47,7 @@ public interface IStateContextFactory
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<IStateContextMinimal> CreateStateContext<T>(
-        string botName, 
+        string botName,
         T user,
         StateHistory stateHistory,
         Update update,

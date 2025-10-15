@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TBotPlatform.Contracts.Bots;
+﻿using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.Pagination;
 using TBotPlatform.Extension;

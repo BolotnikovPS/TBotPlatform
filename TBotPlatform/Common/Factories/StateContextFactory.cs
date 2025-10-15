@@ -5,6 +5,7 @@ using TBotPlatform.Common.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Factories;
+using TBotPlatform.Contracts.Abstractions.Queues;
 using TBotPlatform.Contracts.Abstractions.State;
 using TBotPlatform.Contracts.Attributes;
 using TBotPlatform.Contracts.Bots;
@@ -24,24 +25,20 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
 
     public IStateContextMinimal GetStateContext(string botName, long chatId)
     {
+        ArgumentNullException.ThrowIfNull(botName);
         ArgumentNullException.ThrowIfNull(chatId);
 
         var scope = serviceScopeFactory.CreateAsyncScope();
         var telegramContext = scope.ServiceProvider.GetRequiredKeyedService<ITelegramContext>(botName);
         var stateBindFactory = scope.ServiceProvider.GetRequiredService<IStateBindFactory>();
+        var delayQueue = scope.ServiceProvider.GetRequiredService<IDelayQueue>();
 
-        return new StateContext(scope, stateHistory: null, stateBindFactory, telegramContext, chatId);
+        return new StateContext(scope, stateHistory: null, stateBindFactory, telegramContext, delayQueue, chatId);
     }
 
     public Task<IStateContextMinimal> CreateStateContext<T>(string botName, T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
         where T : UserBase
-    {
-        ArgumentNullException.ThrowIfNull(user);
-        ArgumentNullException.ThrowIfNull(stateHistory);
-        ArgumentNullException.ThrowIfNull(update);
-
-        return CreateStateContext(botName, user, stateHistory, update, markupNextState: null, cancellationToken);
-    }
+        => CreateStateContext(botName, user, stateHistory, update, markupNextState: null, cancellationToken);
 
     public async Task<IStateContextMinimal> CreateStateContext<T>(
         string botName,
@@ -53,6 +50,7 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         )
         where T : UserBase
     {
+        ArgumentNullException.ThrowIfNull(botName);
         ArgumentNullException.ThrowIfNull(user);
         ArgumentNullException.ThrowIfNull(stateHistory);
         ArgumentNullException.ThrowIfNull(chatUpdate);
@@ -60,8 +58,9 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         var scope = serviceScopeFactory.CreateAsyncScope();
         var telegramContext = scope.ServiceProvider.GetRequiredKeyedService<ITelegramContext>(botName);
         var stateBindFactory = scope.ServiceProvider.GetRequiredService<IStateBindFactory>();
+        var delayQueue = scope.ServiceProvider.GetRequiredService<IDelayQueue>();
 
-        var stateContext = new StateContext(scope, stateHistory, stateBindFactory, telegramContext, user.ChatId);
+        var stateContext = new StateContext(scope, stateHistory, stateBindFactory, telegramContext, delayQueue, user.ChatId);
         stateContext.CreateStateContext(chatUpdate, markupNextState);
 
         await Request(stateContext, user, stateHistory, cancellationToken);
@@ -69,7 +68,7 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         return stateContext;
     }
 
-    internal async Task Request<T>(IStateContext stateContext, T user, StateHistory stateHistory, CancellationToken cancellationToken)
+    private async Task Request<T>(StateContext stateContext, T user, StateHistory stateHistory, CancellationToken cancellationToken)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(stateContext);

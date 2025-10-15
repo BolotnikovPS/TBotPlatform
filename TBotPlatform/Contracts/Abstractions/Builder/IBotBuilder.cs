@@ -1,9 +1,7 @@
 ﻿#nullable enable
-using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Handlers;
-using TBotPlatform.Contracts.Bots.Config;
 
 namespace TBotPlatform.Contracts.Abstractions.Builder;
 

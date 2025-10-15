@@ -26,7 +26,7 @@ internal partial class StateContext
 
         var result = await telegramContext.GetChatAdministrators(chatIdToCheck, cancellationToken);
 
-        return result.CheckAny() ? result.ToList() : null;
+        return result.CheckAny() ? [.. result] : null;
     }
 
     public Task<ChatFullInfo> GetChat(long chatIdToCheck, CancellationToken cancellationToken)

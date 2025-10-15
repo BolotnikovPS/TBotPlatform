@@ -13,7 +13,7 @@ namespace TBotPlatform.Common.Factories;
 internal partial class StateFactory(ICacheService cache, IServiceProvider serviceProvider, Assembly assembly) : IStateFactory
 {
     private const string StateNotFound = "Состояние не найдено";
-    
+
     public bool HasState(string botName, string nameOfState) => GetStateFactoryDataCollection(botName).Any(q => q.StateTypeName == nameOfState);
 
     public bool HasStates(string botName, string[] nameOfStates) => GetStateFactoryDataCollection(botName).Any(q => nameOfStates.Any(z => z == q.StateTypeName));

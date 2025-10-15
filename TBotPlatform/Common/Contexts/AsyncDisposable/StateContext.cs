@@ -4,6 +4,7 @@ using System.Text;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Factories;
+using TBotPlatform.Contracts.Abstractions.Queues;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Buttons;
 using TBotPlatform.Contracts.Bots.Exceptions;
@@ -24,6 +25,7 @@ internal partial class StateContext(
     StateHistory? stateHistory,
     IStateBindFactory stateBindFactory,
     ITelegramContext telegramContext,
+    IDelayQueue delayQueue,
     long chatId
     ) : IStateContext
 {
@@ -68,6 +70,9 @@ internal partial class StateContext(
             chatId = baseChatId;
         }
     }
+
+    public void MakeDelayRequest(TimeSpan timeSpan, Func<IStateContextMinimal, Task<Message>> request)
+        => delayQueue.Enqueue(telegramContext.GetTelegramSettings().BotName, chatId, timeSpan, request);
 
     public Task<IResult> BindState(CancellationToken cancellationToken)
     {

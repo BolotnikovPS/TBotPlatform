@@ -1,6 +1,6 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Cache;
 
-namespace TBotPlatform.Common.Contracts;
+namespace TBotPlatform.Contracts.Cache.Lock;
 
 internal class DistributedLockContract : IKeyInCache
 {

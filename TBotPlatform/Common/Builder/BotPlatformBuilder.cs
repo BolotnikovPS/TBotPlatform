@@ -2,9 +2,11 @@
 using System.Reflection;
 using TBotPlatform.Common.BackgroundServices;
 using TBotPlatform.Common.Factories;
+using TBotPlatform.Common.Queues;
 using TBotPlatform.Contracts.Abstractions.Builder;
 using TBotPlatform.Contracts.Abstractions.Cache;
 using TBotPlatform.Contracts.Abstractions.Factories;
+using TBotPlatform.Contracts.Abstractions.Queues;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Extension;
@@ -85,6 +87,7 @@ internal partial class BotPlatformBuilder(IServiceCollection serviceCollection) 
         }
 
         serviceCollection
+           .AddSingleton<IDelayQueue, DelayQueue>()
            .AddScoped(s =>
            {
                var cache = s.GetRequiredService<ICacheService>();
@@ -95,7 +98,8 @@ internal partial class BotPlatformBuilder(IServiceCollection serviceCollection) 
            .AddScoped<IStateBindFactory>(src => src.GetRequiredService<StateFactory>())
            .AddScoped<IStateContextFactory, StateContextFactory>()
            .AddSingleton<IMenuButtonFactory, MenuButtonFactory>()
-           .AddSingleton(new BotsDataCollection(Bots));
+           .AddSingleton(new BotsDataCollection(Bots))
+           .AddHostedService<TelegramDelayHostedService>();
 
         return serviceCollection;
     }
