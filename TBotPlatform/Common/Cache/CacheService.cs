@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using TBotPlatform.Contracts.Abstractions.Cache;
 using TBotPlatform.Extension;

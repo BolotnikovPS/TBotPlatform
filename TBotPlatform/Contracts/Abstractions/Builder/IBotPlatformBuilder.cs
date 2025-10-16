@@ -32,7 +32,7 @@ public interface IBotPlatformBuilder
     /// <param name="executingAssembly">Сборка в которой находятся потенциальные состояния</param>
     /// <returns></returns>
     IBotPlatformBuilder AddFactories(Assembly executingAssembly);
-    
+
     /// <summary>
     /// Собирает платформу
     /// </summary>

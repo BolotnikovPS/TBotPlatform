@@ -117,7 +117,6 @@ internal class TelegramContextHostedService(ILogger<TelegramContextHostedService
                         logger.LogError(ex, "Неожиданное исключение при обработке обновлений");
                     }
                 }
-
             },
             stoppingToken,
             TaskCreationOptions.LongRunning,

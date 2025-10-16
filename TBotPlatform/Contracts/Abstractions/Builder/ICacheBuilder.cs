@@ -11,7 +11,7 @@ public interface ICacheBuilder
     /// <param name="redisConnectionString">Строка подключения к redis</param>
     /// <returns></returns>
     IRedisBuilder AddRedisCache(string redisConnectionString);
-    
+
     /// <summary>
     /// Добавляет кастомный кеш
     /// </summary>

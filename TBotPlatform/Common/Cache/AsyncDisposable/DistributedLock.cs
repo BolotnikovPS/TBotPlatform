@@ -1,6 +1,6 @@
-﻿using TBotPlatform.Common.Contracts;
-using TBotPlatform.Contracts.Abstractions.Cache;
+﻿using TBotPlatform.Contracts.Abstractions.Cache;
 using TBotPlatform.Contracts.Abstractions.Cache.AsyncDisposable;
+using TBotPlatform.Contracts.Cache.Lock;
 
 namespace TBotPlatform.Common.Cache.AsyncDisposable;
 
@@ -28,10 +28,7 @@ internal class DistributedLock(ICacheService cacheService, string key) : IDistri
         throw new TimeoutException($"Превышено время ожидания {waitingTimeOut} для ключа {key}");
     }
 
-    public async ValueTask DisposeAsync()
-    {
-        await cacheService.RemoveValue(key);
-    }
+    public async ValueTask DisposeAsync() => await cacheService.RemoveValue(key);
 
     private async Task<bool> TryGetLock(TimeSpan blockingTimeOut, CancellationToken cancellationToken)
     {

@@ -50,8 +50,8 @@ internal partial class StateFactory
 
         var values = await cache.GetValueFromCollection<UserBindStateInCache>(CacheBindCollectionKeyName(botName), chatId.ToString());
 
-        return values.IsNull() 
-            ? ResultT<string>.Failure(ErrorResult.NotFound(StateNotFound)) 
+        return values.IsNull()
+            ? ResultT<string>.Failure(ErrorResult.NotFound(StateNotFound))
             : ResultT<string>.Success(values.StatesTypeName);
     }
 

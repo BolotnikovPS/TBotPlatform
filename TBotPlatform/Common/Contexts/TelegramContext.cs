@@ -14,21 +14,19 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
 {
     private readonly ITelegramContextLog _telegramContextLog;
     private readonly TelegramSettings _telegramSettings;
-    private readonly Guid _operationGuid = Guid.NewGuid();
-
     private readonly Stopwatch _timer = new();
     private int _iteration;
 
     public TelegramContext(HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog)
         : base(telegramSettings.Token ?? throw new ArgumentException("Token"), client)
     {
-        client.DefaultRequestHeaders.TryAddWithoutValidation(DefaultHeadersConstant.ContextOperation, _operationGuid.ToString());
+        client.DefaultRequestHeaders.TryAddWithoutValidation(DefaultHeadersConstant.ContextOperation, CurrentOperation.ToString());
 
         _telegramSettings = telegramSettings;
         _telegramContextLog = telegramContextLog;
     }
 
-    public Guid CurrentOperation => _operationGuid;
+    public Guid CurrentOperation { get; } = Guid.NewGuid();
 
     public override async Task<TResponse> SendRequest<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
@@ -48,7 +46,7 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
             Request = new()
             {
                 ChatId = chatIdValue?.Identifier ?? 0,
-                OperationGuid = _operationGuid,
+                OperationGuid = CurrentOperation,
                 OperationType = methodValue ?? "",
                 MessageBody = properties
                              .Where(z => z.Name.NotIn("HttpMethod", "MethodName", "IsWebhookResponse", "ChatId"))
@@ -90,7 +88,7 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
     {
         try
         {
-            await _telegramContextLog.HandleEnqueueLog(_iteration, _timer.Elapsed.Milliseconds, _operationGuid, CancellationToken.None);
+            await _telegramContextLog.HandleEnqueueLog(_iteration, _timer.Elapsed.Milliseconds, CurrentOperation, CancellationToken.None);
         }
         catch
         {

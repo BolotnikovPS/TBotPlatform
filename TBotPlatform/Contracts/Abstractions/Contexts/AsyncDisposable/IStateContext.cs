@@ -32,10 +32,19 @@ public interface IStateContext : IStateContextMinimal
     /// Осуществляет запрос в чат, отличающийся от заданного в <see cref="IStateContextFactory"/>
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="newChatId"></param>
-    /// <param name="request"></param>
+    /// <param name="newChatId">Id нового чата</param>
+    /// <param name="request">Запрос для отправки сообщения</param>
     /// <returns></returns>
     Task<T> MakeRequestToOtherChat<T>(long newChatId, Func<IStateContextMinimal, Task<T>> request);
+
+    /// <summary>
+    /// Осуществляет запрос в чат с задержкой
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="timeSpan">Время задержки</param>
+    /// <param name="request">Запрос для отправки сообщения</param>
+    /// <returns></returns>
+    void MakeDelayRequest(TimeSpan timeSpan, Func<IStateContextMinimal, Task<Message>> request);
 
     /// <summary>
     /// Устанавливает необходимость зафиксировать состояние
