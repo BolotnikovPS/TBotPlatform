@@ -9,8 +9,10 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<RepositoryUrl>https://github.com/BolotnikovPS/TBotPlatform</RepositoryUrl>
 		<Description>C# библиотека для облегчения создания бота Telegram</Description>
-		<Version>2.1.0-beta1.0</Version>
+		<Version>2.1.0-beta2.0</Version>
 		<IncludeSymbols>True</IncludeSymbols>
+		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -29,6 +31,11 @@
 		<Compile Update="Extensions.*.cs">
 			<DependentUpon>Extensions.cs</DependentUpon>
 		</Compile>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<None Include="..\LICENSE.md" Pack="true" PackagePath=""/>
+		<None Include="..\README.md" Pack="true" PackagePath=""/>
 	</ItemGroup>
 	
 	<ItemGroup>

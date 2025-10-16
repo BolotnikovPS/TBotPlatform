@@ -32,7 +32,7 @@ internal class TelegramDelayHostedService(ILogger<TelegramDelayHostedService> lo
             {
                 var logLevel = exception.IsNotNull() ? LogLevel.Error : LogLevel.Debug;
 
-                logger.Log(logLevel, exception, "Отправка сообщения с задержкой от бота {botName} в чат {user}", request.BotName, request.ChatId);
+                logger.Log(logLevel, exception, "Отправка сообщения с задержкой от бота {botName} в чат {chatId}", request.BotName, request.ChatId);
             }
         }
     }
