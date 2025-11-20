@@ -9,6 +9,7 @@ namespace TBotPlatform.Common.Builder;
 internal class CacheBuilder(IServiceCollection serviceCollection, IBotPlatformBuilder botPlatformBuilder) : ICacheBuilder
 {
     private bool IsCacheAdded { get; set; }
+    private bool IsDistributedLockAdded { get; set; }
 
     public IRedisBuilder AddRedisCache(string redisConnectionString)
     {
@@ -43,6 +44,13 @@ internal class CacheBuilder(IServiceCollection serviceCollection, IBotPlatformBu
         {
             throw new InvalidOperationException("Отсутствует кеш.");
         }
+
+        if (IsDistributedLockAdded)
+        {
+            throw new InvalidOperationException("Распределенная блокировка ранее была добавлена.");
+        }
+
+        IsDistributedLockAdded = true;
 
         serviceCollection.AddSingleton<IDistributedLockFactory, DistributedLockFactory>();
 
