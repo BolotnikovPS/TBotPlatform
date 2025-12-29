@@ -32,15 +32,19 @@ internal class TelegramContextHostedService(ILogger<TelegramContextHostedService
 
                 var offset = 0;
 
-                var updateType = settings.UpdateType.IsNotNull()
-                    ? settings?.UpdateType?.ToList()
+                var updateType = settings.Updates.IsNotNull()
+                    ? settings.Updates.Type?.ToList()
+                    : null;
+
+                var limit = settings.Updates.IsNotNull()
+                    ? settings.Updates?.Capacity
                     : null;
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     try
                     {
-                        var updates = await telegramContext.GetUpdates(offset, allowedUpdates: updateType, cancellationToken: stoppingToken);
+                        var updates = await telegramContext.GetUpdates(offset, limit, allowedUpdates: updateType, cancellationToken: stoppingToken);
 
                         if (updates.IsNull())
                         {

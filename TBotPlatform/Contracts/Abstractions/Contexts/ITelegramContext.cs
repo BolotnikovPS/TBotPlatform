@@ -1,4 +1,7 @@
-﻿using TBotPlatform.Contracts.Bots.Config;
+﻿#nullable enable
+
+using TBotPlatform.Contracts.Bots.Config;
+using TBotPlatform.Contracts.Bots.FileDatas;
 using Telegram.Bot;
 
 namespace TBotPlatform.Contracts.Abstractions.Contexts;
@@ -16,4 +19,12 @@ public interface ITelegramContext : ITelegramBotClient
     /// </summary>
     /// <returns></returns>
     TelegramSettings GetTelegramSettings();
+
+    /// <summary>
+    /// Скачивает файл
+    /// </summary>
+    /// <param name="fileId">Id файла</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<FileData?> DownloadFileData(string fileId, CancellationToken cancellationToken);
 }

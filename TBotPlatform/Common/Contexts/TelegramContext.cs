@@ -1,7 +1,11 @@
-﻿using System.Diagnostics;
+﻿#nullable enable
+
+using Microsoft.IO;
+using System.Diagnostics;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Bots.Constant;
+using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.Statistics;
 using TBotPlatform.Extension;
 using Telegram.Bot;
@@ -14,16 +18,18 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
 {
     private readonly ITelegramContextLog _telegramContextLog;
     private readonly TelegramSettings _telegramSettings;
+    private readonly RecyclableMemoryStreamManager _mgr;
     private readonly Stopwatch _timer = new();
     private int _iteration;
 
-    public TelegramContext(HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog)
+    public TelegramContext(HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog, RecyclableMemoryStreamManager mgr)
         : base(telegramSettings.Token ?? throw new ArgumentException("Token"), client)
     {
         client.DefaultRequestHeaders.TryAddWithoutValidation(DefaultHeadersConstant.ContextOperation, CurrentOperation.ToString());
 
         _telegramSettings = telegramSettings;
         _telegramContextLog = telegramContextLog;
+        _mgr = mgr;
     }
 
     public Guid CurrentOperation { get; } = Guid.NewGuid();
@@ -83,6 +89,28 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
     }
 
     public TelegramSettings GetTelegramSettings() => _telegramSettings;
+
+    public async Task<FileData?> DownloadFileData(string fileId, CancellationToken cancellationToken)
+    {
+        var file = await this.GetFile(fileId, cancellationToken);
+
+        if (file.IsNull())
+        {
+            return null;
+        }
+
+        await using var fileStream = _mgr.GetStream();
+
+        await DownloadFile(file.FilePath!, fileStream, cancellationToken);
+
+        return new()
+        {
+            Bytes = fileStream.GetBuffer(),
+            Name = file.FilePath,
+            Size = file.FileSize!.Value,
+            FileId = fileId,
+        };
+    }
 
     public async ValueTask DisposeAsync()
     {

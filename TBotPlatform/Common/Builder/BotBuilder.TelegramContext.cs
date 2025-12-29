@@ -1,6 +1,7 @@
 ﻿using ComposableAsync;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IO;
 using Polly;
 using Polly.Extensions.Http;
 using RateLimiter;
@@ -45,8 +46,9 @@ internal partial class BotBuilder
         {
             var httpClientFactory = z.GetRequiredService<IHttpClientFactory>();
             var log = z.GetRequiredKeyedService<ITelegramContextLog>(telegramSettings.BotName);
+            var mgr = z.GetRequiredService<RecyclableMemoryStreamManager>();
 
-            return new TelegramContext(httpClientFactory.CreateClient(telegramSettings.BotName), telegramSettings, log);
+            return new(httpClientFactory.CreateClient(telegramSettings.BotName), telegramSettings, log, mgr);
         });
     }
 

@@ -1,6 +1,7 @@
 ﻿#nullable enable
+
 using Newtonsoft.Json;
-using Telegram.Bot.Types.Enums;
+using TBotPlatform.Contracts.Abstractions.Builder;
 
 namespace TBotPlatform.Contracts.Bots.Config;
 
@@ -22,14 +23,13 @@ public class TelegramSettings
     public bool ProtectContent { get; init; }
 
     /// <summary>
-    /// Типы обновлений которые будет получать бот
+    /// Информация о механимзе получения обновлений от telegram
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    public UpdateType[]? UpdateType { get; set; }
+    public TelegramSettingsUpdate? Updates { get; set; }
 
     /// <summary>
-    /// Время ожидания между получением новых сообщений от telegram
-    /// заполнить в случае использования HostedService
+    /// Время ожидания между получением новых сообщений от telegram. Заполнить в случае использования <see cref="IBotPlatformBuilder.AddHostedService" />
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public int HostWaitMilliSecond { get; set; } = 1000;

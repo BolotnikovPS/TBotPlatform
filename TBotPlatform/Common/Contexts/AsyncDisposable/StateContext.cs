@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IO;
 using System.Text;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
@@ -26,6 +27,7 @@ internal partial class StateContext(
     IStateBindFactory stateBindFactory,
     ITelegramContext telegramContext,
     IDelayQueue delayQueue,
+    RecyclableMemoryStreamManager mgr,
     long chatId
     ) : IStateContext
 {
@@ -91,7 +93,7 @@ internal partial class StateContext(
     {
         ChatIdValidOrThrow();
 
-        await using var fileStream = new MemoryStream(documentData.Bytes);
+        await using var fileStream = mgr.GetStream(documentData.Bytes);
 
         var inputFile = InputFile.FromStream(fileStream, documentData.Name);
 
@@ -115,7 +117,7 @@ internal partial class StateContext(
     {
         ChatIdValidOrThrow();
 
-        await using var fileStream = new MemoryStream(documentData.Bytes);
+        await using var fileStream = mgr.GetStream(documentData.Bytes);
 
         var inputFile = InputFile.FromStream(fileStream, documentData.Name);
 

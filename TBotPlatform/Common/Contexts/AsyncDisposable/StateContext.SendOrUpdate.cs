@@ -131,7 +131,7 @@ internal partial class StateContext
                 await telegramContext.DeleteMessage(chatId, ChatUpdate!.CallbackQuery!.Message!.MessageId, cancellationToken);
             }
 
-            await using var fileStream = new MemoryStream(photoData!.Bytes);
+            await using var fileStream = mgr.GetStream(photoData!.Bytes);
             return await telegramContext.SendPhoto(
                 chatId,
                 InputFile.FromStream(fileStream),

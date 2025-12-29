@@ -3,7 +3,6 @@ using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Extension;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace TBotPlatform.Common;
@@ -38,7 +37,7 @@ public static partial class Extensions
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static Task<FileData?> DownloadFile(this IStateContext stateContext, string fileId, CancellationToken cancellationToken)
-        => stateContext.TelegramContext.DownloadFile(fileId, cancellationToken);
+        => stateContext.TelegramContext.DownloadFileData(fileId, cancellationToken);
 
     /// <summary>
     /// Скачивает изображение
@@ -54,7 +53,7 @@ public static partial class Extensions
            )
         {
             var photo = message.Photo![^1];
-            return DownloadFile(telegramContext, photo.FileId, cancellationToken);
+            return telegramContext.DownloadFileData(photo.FileId, cancellationToken);
         }
 
         if (message.IsNull()
@@ -66,7 +65,7 @@ public static partial class Extensions
         }
 
         var photoDocument = message.Document;
-        return DownloadFile(telegramContext, photoDocument.FileId, cancellationToken);
+        return telegramContext.DownloadFileData(photoDocument.FileId, cancellationToken);
     }
 
     /// <summary>
@@ -86,35 +85,6 @@ public static partial class Extensions
         }
 
         var document = message.Document!;
-        return DownloadFile(telegramContext, document.FileId, cancellationToken);
-    }
-
-    /// <summary>
-    /// Скачивает файл
-    /// </summary>
-    /// <param name="telegramContext">Контекст telegram</param>
-    /// <param name="fileId">Id файла</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public static async Task<FileData?> DownloadFile(this ITelegramContext telegramContext, string fileId, CancellationToken cancellationToken)
-    {
-        var file = await telegramContext.GetFile(fileId, cancellationToken);
-
-        if (file.IsNull())
-        {
-            return null;
-        }
-
-        await using var fileStream = new MemoryStream();
-
-        await telegramContext.DownloadFile(file.FilePath!, fileStream, cancellationToken);
-
-        return new()
-        {
-            Bytes = fileStream.ToArray(),
-            Name = file.FilePath,
-            Size = file.FileSize!.Value,
-            FileId = fileId,
-        };
+        return telegramContext.DownloadFileData(document.FileId, cancellationToken);
     }
 }

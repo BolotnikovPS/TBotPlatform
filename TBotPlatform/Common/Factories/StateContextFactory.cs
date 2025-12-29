@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IO;
 using TBotPlatform.Common.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
@@ -32,8 +33,9 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         var telegramContext = scope.ServiceProvider.GetRequiredKeyedService<ITelegramContext>(botName);
         var stateBindFactory = scope.ServiceProvider.GetRequiredService<IStateBindFactory>();
         var delayQueue = scope.ServiceProvider.GetRequiredService<IDelayQueue>();
+        var mgr = scope.ServiceProvider.GetRequiredService<RecyclableMemoryStreamManager>();
 
-        return new StateContext(scope, stateHistory: null, stateBindFactory, telegramContext, delayQueue, chatId);
+        return new StateContext(scope, stateHistory: null, stateBindFactory, telegramContext, delayQueue, mgr, chatId);
     }
 
     public Task<IStateContextMinimal> CreateStateContext<T>(string botName, T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
@@ -59,8 +61,9 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         var telegramContext = scope.ServiceProvider.GetRequiredKeyedService<ITelegramContext>(botName);
         var stateBindFactory = scope.ServiceProvider.GetRequiredService<IStateBindFactory>();
         var delayQueue = scope.ServiceProvider.GetRequiredService<IDelayQueue>();
+        var mgr = scope.ServiceProvider.GetRequiredService<RecyclableMemoryStreamManager>();
 
-        var stateContext = new StateContext(scope, stateHistory, stateBindFactory, telegramContext, delayQueue, user.ChatId);
+        var stateContext = new StateContext(scope, stateHistory, stateBindFactory, telegramContext, delayQueue, mgr, user.ChatId);
         stateContext.CreateStateContext(chatUpdate, markupNextState);
 
         await Request(stateContext, user, stateHistory, cancellationToken);

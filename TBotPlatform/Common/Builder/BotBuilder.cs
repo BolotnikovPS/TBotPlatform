@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IO;
 using System.Reflection;
 using TBotPlatform.Common.Contexts;
 using TBotPlatform.Contracts.Abstractions.Builder;
@@ -110,6 +111,8 @@ internal partial class BotBuilder(IServiceCollection serviceCollection, IBotPlat
         {
             throw new InvalidOperationException("Отсутствует обработчик событий от telegram.");
         }
+
+        serviceCollection.AddSingleton<RecyclableMemoryStreamManager>();
 
         AddBotTelegramContext();
         AddBotStates();
