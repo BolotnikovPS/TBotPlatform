@@ -2,6 +2,7 @@
 
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Bots.FileDatas;
+using TBotPlatform.Results.Abstractions;
 using Telegram.Bot;
 
 namespace TBotPlatform.Contracts.Abstractions.Contexts;
@@ -26,5 +27,5 @@ public interface ITelegramContext : ITelegramBotClient
     /// <param name="fileId">Id файла</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<FileData?> DownloadFileData(string fileId, CancellationToken cancellationToken);
+    Task<IResult<FileData?>> DownloadFileData(string fileId, CancellationToken cancellationToken);
 }

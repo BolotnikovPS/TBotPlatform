@@ -1,4 +1,6 @@
-﻿namespace TBotPlatform.Contracts.Bots.StateFactory;
+﻿using TBotPlatform.Contracts.Bots.Users;
+
+namespace TBotPlatform.Contracts.Bots.StateFactory;
 
 /// <summary>
 /// Описание состояния
@@ -45,12 +47,18 @@ public class StateFactoryData
     /// </summary>
     public bool IsRegistrationState { get; set; }
 
+    /// <summary>
+    /// Показывает что состояние относится к пользователя <see cref="UserBase.IsAdmin"/>
+    /// </summary>
+    public bool IsAdminState { get; set; }
+
     public StateFactoryData(
         string stateTypeName,
         string menuTypeName = null,
         bool? isInlineState = null,
         bool? isLockState = null,
         bool? isRegistrationState = null,
+        bool? isAdminState = null,
         IEnumerable<string> buttonsTypes = null,
         IEnumerable<string> textsTypes = null,
         IEnumerable<string> commandsTypes = null
@@ -75,6 +83,11 @@ public class StateFactoryData
         if (isRegistrationState.HasValue)
         {
             IsRegistrationState = isRegistrationState.Value;
+        }
+
+        if (isAdminState.HasValue)
+        {
+            IsAdminState = isAdminState.Value;
         }
     }
 }

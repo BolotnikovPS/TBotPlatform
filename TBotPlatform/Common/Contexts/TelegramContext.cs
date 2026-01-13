@@ -8,6 +8,8 @@ using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.Statistics;
 using TBotPlatform.Extension;
+using TBotPlatform.Results;
+using TBotPlatform.Results.Abstractions;
 using Telegram.Bot;
 using Telegram.Bot.Requests.Abstractions;
 using Telegram.Bot.Types;
@@ -90,26 +92,26 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
 
     public TelegramSettings GetTelegramSettings() => _telegramSettings;
 
-    public async Task<FileData?> DownloadFileData(string fileId, CancellationToken cancellationToken)
+    public async Task<IResult<FileData?>> DownloadFileData(string fileId, CancellationToken cancellationToken)
     {
         var file = await this.GetFile(fileId, cancellationToken);
 
         if (file.IsNull())
         {
-            return null;
+            return ResultT<FileData?>.Failure(ErrorResult.NotFound(""));
         }
 
         await using var fileStream = _mgr.GetStream();
 
         await DownloadFile(file.FilePath!, fileStream, cancellationToken);
 
-        return new()
+        return ResultT<FileData>.Success(new()
         {
             Bytes = fileStream.GetBuffer(),
             Name = file.FilePath,
             Size = file.FileSize!.Value,
             FileId = fileId,
-        };
+        });
     }
 
     public async ValueTask DisposeAsync()

@@ -96,6 +96,7 @@ internal partial class BotBuilder
                 attr.IsInlineState,
                 attr.IsLockUserState,
                 attr.IsRegistrationState,
+                attr.IsAdminState,
                 attr.ButtonsTypes,
                 attr.TextsTypes,
                 attr.CommandsTypes

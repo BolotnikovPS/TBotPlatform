@@ -56,6 +56,8 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         ArgumentNullException.ThrowIfNull(user);
         ArgumentNullException.ThrowIfNull(stateHistory);
         ArgumentNullException.ThrowIfNull(chatUpdate);
+        
+        Validation(stateHistory, user);
 
         var scope = serviceScopeFactory.CreateAsyncScope();
         var telegramContext = scope.ServiceProvider.GetRequiredKeyedService<ITelegramContext>(botName);
@@ -133,5 +135,13 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         }
 
         await state!.HandleError(stateContext, user, exception, cancellationToken);
+    }
+
+    private static void Validation<T>(StateHistory stateHistory, T user) where T : UserBase
+    {
+        if (stateHistory.IsAdminState && !user.IsAdmin())
+        {
+            throw new("Пользователь не является администратором.");
+        }
     }
 }

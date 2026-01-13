@@ -9,7 +9,7 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<RepositoryUrl>https://github.com/BolotnikovPS/TBotPlatform</RepositoryUrl>
 		<Description>C# библиотека для облегчения создания бота Telegram</Description>
-		<Version>2.1.2-beta1</Version>
+		<Version>2.1.2-beta2</Version>
 		<IncludeSymbols>True</IncludeSymbols>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>

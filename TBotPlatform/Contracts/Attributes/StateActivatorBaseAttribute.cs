@@ -1,7 +1,9 @@
-﻿namespace TBotPlatform.Contracts.Attributes;
+﻿using TBotPlatform.Contracts.Bots.Users;
+
+namespace TBotPlatform.Contracts.Attributes;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class StateActivatorBaseAttribute(bool isInlineState, Type menuType) : Attribute
+public class StateActivatorBaseAttribute(bool isInlineState, Type menuType, bool isAdminState = false) : Attribute
 {
     /// <summary>
     /// Перечень типов кнопок соответствующих состоянию
@@ -37,6 +39,11 @@ public class StateActivatorBaseAttribute(bool isInlineState, Type menuType) : At
     /// Показывает что состояние относится уровню регистрации пользователя
     /// </summary>
     public bool IsRegistrationState { get; set; }
+
+    /// <summary>
+    /// Показывает что состояние относится к пользователя <see cref="UserBase.IsAdmin"/>
+    /// </summary>
+    public bool IsAdminState { get; private set; } = isAdminState;
 
     /// <summary>
     /// Для какого бота доступно состояние
