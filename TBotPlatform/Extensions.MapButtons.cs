@@ -3,15 +3,15 @@ using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TBotPlatform.Common.Contexts.AsyncDisposable;
+namespace TBotPlatform;
 
-internal partial class StateContext
+public static partial class Extensions
 {
-    private static ReplyKeyboardMarkup Map(MainButtonMassiveList cakes) => GenerateButtons(cakes);
+    public static ReplyKeyboardMarkup Map(this MainButtonMassiveList cakes) => GenerateButtons(cakes);
 
-    private static InlineKeyboardButton[][] Map(InlineMarkupMassiveList cakes) => [.. cakes.SelectMany(x => GenerateButtons(x.InlineMarkups, x.ButtonsPerRow))];
+    public static InlineKeyboardButton[][] Map(this InlineMarkupMassiveList cakes) => [.. cakes.SelectMany(x => GenerateButtons(x.InlineMarkups, x.ButtonsPerRow))];
 
-    private static ReplyKeyboardMarkup GenerateButtons(MainButtonMassiveList cakes)
+    public static ReplyKeyboardMarkup GenerateButtons(this MainButtonMassiveList cakes)
     {
         var result = cakes.Select(x => GenerateButtons(x.MainButtons)).ToArray();
 
@@ -25,9 +25,9 @@ internal partial class StateContext
         };
     }
 
-    private static IEnumerable<KeyboardButton> GenerateButtons(MainButtonList cakes) => cakes.Select(q => new KeyboardButton(q.ButtonName));
+    public static IEnumerable<KeyboardButton> GenerateButtons(this MainButtonList cakes) => cakes.Select(q => new KeyboardButton(q.ButtonName));
 
-    private static IEnumerable<InlineKeyboardButton[]> GenerateButtons(InlineMarkupList cakes, int buttonsPerRow = 1)
+    public static IEnumerable<InlineKeyboardButton[]> GenerateButtons(this InlineMarkupList cakes, int buttonsPerRow = 1)
         => cakes
         .Select(x => x.Format())
         .Where(z => z.IsNotNull())

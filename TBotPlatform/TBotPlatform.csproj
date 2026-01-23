@@ -16,6 +16,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="TBotPlatform.Tests"/>
+	</ItemGroup>
+	
+	<ItemGroup>
 		<Compile Update="**\StateContext.*.cs">
 			<DependentUpon>StateContext.cs</DependentUpon>
 		</Compile>

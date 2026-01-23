@@ -22,15 +22,14 @@ internal partial class StateContext
 
         if (inlineMarkupList.CheckAny())
         {
-            inlineKeyboard = Map(
-                new InlineMarkupMassiveList
+            inlineKeyboard = new InlineMarkupMassiveList
                 {
                     new()
                     {
                         InlineMarkups = inlineMarkupList,
                         ButtonsPerRow = 1,
                     },
-                });
+                }.Map();
         }
 
         return SendOrUpdateTextMessage(text, inlineKeyboard, photoData, disableNotification, cancellationToken);
@@ -54,15 +53,14 @@ internal partial class StateContext
 
         if (inlineMarkupList.CheckAny())
         {
-            inlineKeyboard = Map(
-                new InlineMarkupMassiveList
+            inlineKeyboard = new InlineMarkupMassiveList
+            {
+                new()
                 {
-                    new()
-                    {
-                        InlineMarkups = inlineMarkupList,
-                        ButtonsPerRow = 1,
-                    },
-                });
+                    InlineMarkups = inlineMarkupList,
+                    ButtonsPerRow = 1,
+                },
+            }.Map();
         }
 
         return SendOrUpdateTextMessage(text, inlineKeyboard, photoData: null, disableNotification, cancellationToken);
@@ -82,7 +80,7 @@ internal partial class StateContext
 
         if (inlineMarkupMassiveList.CheckAny())
         {
-            inlineKeyboard = Map(inlineMarkupMassiveList);
+            inlineKeyboard = inlineMarkupMassiveList.Map();
         }
 
         return SendOrUpdateTextMessage(text, inlineKeyboard, photoData: null, disableNotification, cancellationToken);

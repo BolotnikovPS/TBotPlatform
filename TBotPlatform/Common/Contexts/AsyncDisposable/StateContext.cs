@@ -169,7 +169,7 @@ internal partial class StateContext(
         ChatIdValidOrThrow();
         TextLengthValidOrThrow(text);
 
-        var newMarkup = Map(mainButtonMassiveList);
+        var newMarkup = mainButtonMassiveList.Map();
 
         if (newMarkup.IsNull())
         {
