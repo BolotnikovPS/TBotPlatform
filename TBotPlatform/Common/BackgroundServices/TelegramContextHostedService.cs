@@ -64,12 +64,8 @@ internal class TelegramContextHostedService(ILogger<TelegramContextHostedService
                                 sbLog.AppendLine($"Поступило сообщение: {update.ToJson()}");
 
                                 await using var scope = services.CreateAsyncScope();
-                                var scopedStartReceivingHandler = scope.ServiceProvider.GetRequiredKeyedService<IStartReceivingHandler>(settings.BotName);
+                                var scopedStartReceivingHandler = scope.ServiceProvider.GetRequiredKeyedService<IStartReceivingHandler>(settings.BotName) ?? throw new("Обработчик сообщений отсутствует.");
 
-                                if (scopedStartReceivingHandler.IsNull())
-                                {
-                                    throw new("Обработчик сообщений отсутвтует.");
-                                }
 
                                 MarkupNextState markupNextState = null;
 

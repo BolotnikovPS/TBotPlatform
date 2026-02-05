@@ -168,7 +168,7 @@ internal partial class StateFactory(ICacheService cache, IServiceProvider servic
 
         if (stateValue.IsNull())
         {
-            Result.Failure(ErrorResult.NotFound(StateNotFound));
+            return Result.Failure(ErrorResult.NotFound(StateNotFound));
         }
 
         await AddBindState(botName, chatId, stateValue?.StateTypeName, cancellationToken);

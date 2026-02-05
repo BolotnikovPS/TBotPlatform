@@ -1,6 +1,7 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Cache;
 using TBotPlatform.Contracts.Abstractions.Cache.AsyncDisposable;
 using TBotPlatform.Contracts.Cache.Lock;
+using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Cache.AsyncDisposable;
 
@@ -41,7 +42,7 @@ internal class DistributedLock(ICacheService cacheService, string key) : IDistri
 
         var data = await cacheService.GetValue<DistributedLockContract>(key);
 
-        if (data.Value > DateTime.UtcNow)
+        if (data.IsNull() || data?.Value > DateTime.UtcNow)
         {
             return false;
         }

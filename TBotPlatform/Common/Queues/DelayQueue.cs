@@ -1,6 +1,7 @@
 ﻿using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Queues;
 using TBotPlatform.Contracts.Queues;
+using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 
 namespace TBotPlatform.Common.Queues;
@@ -14,7 +15,11 @@ internal class DelayQueue : IDelayQueue
     public void Enqueue(string botName, long chatId, TimeSpan delay, Func<IStateContextMinimal, Task<Message>> item)
     {
         ArgumentNullException.ThrowIfNull(botName);
-        ArgumentNullException.ThrowIfNull(chatId);
+
+        if (chatId.IsDefault() || chatId.In(0, long.MinValue, long.MaxValue))
+        {
+            throw new ArgumentNullException(nameof(chatId));
+        }
 
         var dateTimeNow = DateTime.UtcNow;
         var readyTime = dateTimeNow.Add(delay);

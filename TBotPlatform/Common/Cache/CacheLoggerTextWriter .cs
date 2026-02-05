@@ -10,7 +10,7 @@ internal class CacheLoggerTextWriter(ILogger logger) : TextWriter
 
     public override void WriteLine(string value)
     {
-        if (value.CheckAny())
+        if (value.IsNull())
         {
             return;
         }
@@ -20,7 +20,7 @@ internal class CacheLoggerTextWriter(ILogger logger) : TextWriter
 
     public override void Write(char value)
     {
-        if (value.IsNotDefault())
+        if (value.IsDefault())
         {
             return;
         }
