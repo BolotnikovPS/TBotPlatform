@@ -50,7 +50,7 @@ public class DistributedLockTests
         };
 
         _cacheService.Setup(c => c.KeyExists(TestKey)).ReturnsAsync(true);
-        _cacheService.Setup(c => c.GetValue<DistributedLockContract>(TestKey)).ReturnsAsync((DistributedLockContract?)expiredLock);
+        _cacheService.Setup(c => c.GetValue<DistributedLockContract>(TestKey)).ReturnsAsync(expiredLock);
         _cacheService.Setup(c => c.SetValue(It.IsAny<IKeyInCache>())).ReturnsAsync(true);
 
         var result = await InvokeTryGetLock(TimeSpan.FromSeconds(10));
@@ -69,7 +69,7 @@ public class DistributedLockTests
         };
 
         _cacheService.Setup(c => c.KeyExists(TestKey)).ReturnsAsync(true);
-        _cacheService.Setup(c => c.GetValue<DistributedLockContract>(TestKey)).ReturnsAsync((DistributedLockContract?)activeLock);
+        _cacheService.Setup(c => c.GetValue<DistributedLockContract>(TestKey)).ReturnsAsync(activeLock);
 
         var result = await InvokeTryGetLock(TimeSpan.FromSeconds(10));
 
@@ -81,7 +81,7 @@ public class DistributedLockTests
     public async Task TryGetLock_WhenKeyExistsButDataIsNull_ReturnsFalse()
     {
         _cacheService.Setup(c => c.KeyExists(TestKey)).ReturnsAsync(true);
-        _cacheService.Setup(c => c.GetValue<DistributedLockContract>(TestKey)).ReturnsAsync((DistributedLockContract?)null);
+        _cacheService.Setup(c => c.GetValue<DistributedLockContract>(TestKey)).ReturnsAsync((DistributedLockContract?)default);
 
         var result = await InvokeTryGetLock(TimeSpan.FromSeconds(10));
 
@@ -113,7 +113,7 @@ public class DistributedLockTests
     {
         _cacheService.Setup(c => c.KeyExists(TestKey)).ReturnsAsync(true);
         _cacheService.Setup(c => c.GetValue<DistributedLockContract>(TestKey))
-            .ReturnsAsync((DistributedLockContract?)new DistributedLockContract { Key = TestKey, Value = DateTime.UtcNow.AddMinutes(5) });
+            .ReturnsAsync(new DistributedLockContract { Key = TestKey, Value = DateTime.UtcNow.AddMinutes(5) });
 
         Assert.ThrowsAsync<TimeoutException>(async () =>
             await _lock.RetryUntilTrue(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(10), CancellationToken.None));

@@ -82,11 +82,11 @@ public class StateFactoryTests
 
         var result = _factory.GetStateByNameOrDefault("bot1", "");
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.True);
             Assert.That(result.Value.StateType.Name, Is.EqualTo("Result"));
-        });
+        }
     }
 
     [Test]
@@ -97,11 +97,11 @@ public class StateFactoryTests
 
         var result = _factory.GetStateByNameOrDefault("bot1", "Result");
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.True);
             Assert.That(result.Value.StateType.Name, Is.EqualTo("Result"));
-        });
+        }
     }
 
     [Test]
@@ -195,7 +195,7 @@ public class StateFactoryTests
         var stateHistory = new StateHistory(typeof(Result));
 
         _cache.Setup(c => c.GetValueFromCollection<UserBindStateInCache>(
-            It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((UserBindStateInCache?)null!);
+            It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((UserBindStateInCache?)default);
         _cache.Setup(c => c.AddValueToCollection(It.IsAny<string>(), It.IsAny<IKeyInCache>()))
             .Returns(Task.CompletedTask);
 
@@ -250,7 +250,7 @@ public class StateFactoryTests
     {
         CreateFactory("bot1", []);
         _cache.Setup(c => c.GetValueFromCollection<UserBindStateInCache>(
-            It.IsAny<string>(), "123")).ReturnsAsync((UserBindStateInCache?)null);
+            It.IsAny<string>(), "123")).ReturnsAsync((UserBindStateInCache?)default);
 
         var result = await _factory.HasBindState("bot1", 123L, CancellationToken.None);
 
@@ -272,11 +272,11 @@ public class StateFactoryTests
 
         var result = await _factory.GetBindStateOrNull("bot1", 123L, CancellationToken.None);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.True);
             Assert.That(result.Value.StateType.Name, Is.EqualTo("Result"));
-        });
+        }
     }
 
     [Test]
@@ -284,7 +284,7 @@ public class StateFactoryTests
     {
         CreateFactory("bot1", []);
         _cache.Setup(c => c.GetValueFromCollection<UserBindStateInCache>(
-            It.IsAny<string>(), "123")).ReturnsAsync((UserBindStateInCache?)null);
+            It.IsAny<string>(), "123")).ReturnsAsync((UserBindStateInCache?)default);
 
         var result = await _factory.GetBindStateOrNull("bot1", 123L, CancellationToken.None);
 
@@ -296,16 +296,16 @@ public class StateFactoryTests
     {
         var stateData = new StateFactoryData("Result", buttonsTypes: ["button1"]);
         CreateFactory("bot1", [stateData]);
-        _cache.Setup(c => c.GetValueFromCollection<TBotPlatform.Contracts.Cache.UserStateInCache>(
-            It.IsAny<string>(), "123")).ReturnsAsync((TBotPlatform.Contracts.Cache.UserStateInCache?)null);
+        _cache.Setup(c => c.GetValueFromCollection<UserStateInCache>(
+            It.IsAny<string>(), "123")).ReturnsAsync((UserStateInCache?)default);
 
         var result = await _factory.GetStateByButtonsTypeOrDefault("bot1", 123L, "button1", CancellationToken.None);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.True);
             Assert.That(result.Value.StateType.Name, Is.EqualTo("Result"));
-        });
+        }
     }
 
     [Test]
@@ -313,16 +313,16 @@ public class StateFactoryTests
     {
         var stateData = new StateFactoryData("Result", commandsTypes: ["/test"]);
         CreateFactory("bot1", [stateData]);
-        _cache.Setup(c => c.GetValueFromCollection<TBotPlatform.Contracts.Cache.UserStateInCache>(
-            It.IsAny<string>(), "123")).ReturnsAsync((TBotPlatform.Contracts.Cache.UserStateInCache?)null);
+        _cache.Setup(c => c.GetValueFromCollection<UserStateInCache>(
+            It.IsAny<string>(), "123")).ReturnsAsync((UserStateInCache?)default);
 
         var result = await _factory.GetStateByCommandsTypeOrDefault("bot1", 123L, "/test", CancellationToken.None);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.True);
             Assert.That(result.Value.StateType.Name, Is.EqualTo("Result"));
-        });
+        }
     }
 
     [Test]
@@ -336,7 +336,7 @@ public class StateFactoryTests
             ChatId = "123",
             StatesTypeName = ["State1", "State2"]
         };
-        _cache.Setup(c => c.GetValueFromCollection<TBotPlatform.Contracts.Cache.UserStateInCache>(
+        _cache.Setup(c => c.GetValueFromCollection<UserStateInCache>(
             It.IsAny<string>(), "123")).ReturnsAsync(existingState);
         _cache.Setup(c => c.AddValueToCollection(It.IsAny<string>(), It.IsAny<IKeyInCache>()))
             .Returns(Task.CompletedTask);

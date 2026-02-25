@@ -59,12 +59,12 @@ public class DelayQueueTests
         var item = await _queue.Dequeue(cts.Token);
 
         Assert.That(item, Is.Not.Null);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(item.BotName, Is.EqualTo("bot"));
             Assert.That(item.ChatId, Is.EqualTo(1L));
             Assert.That(item.Value, Is.Not.Null);
-        });
+        }
     }
 
     [Test]

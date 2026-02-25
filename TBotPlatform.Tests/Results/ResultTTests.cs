@@ -12,11 +12,11 @@ public class ResultTTests
         var value = 42;
         var result = ResultT<int>.Success(value);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.True);
             Assert.That(result.Value, Is.EqualTo(42));
-        });
+        }
     }
 
     [Test]
@@ -25,12 +25,12 @@ public class ResultTTests
         var error = ErrorResult.NotFound("Not found");
         var result = ResultT<string>.Failure(error);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.False);
             Assert.That(result.Error, Is.SameAs(error));
             Assert.That(() => result.Value, Throws.InvalidOperationException);
-        });
+        }
     }
 
     [Test]
@@ -38,11 +38,11 @@ public class ResultTTests
     {
         ResultT<int> result = 100;
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.True);
             Assert.That(result.Value, Is.EqualTo(100));
-        });
+        }
     }
 
     [Test]
@@ -50,10 +50,10 @@ public class ResultTTests
     {
         ResultT<object> result = ErrorResult.Conflict("Conflict");
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.False);
             Assert.That(result.Error!.ErrorType, Is.EqualTo(ErrorResultType.Conflict));
-        });
+        }
     }
 }

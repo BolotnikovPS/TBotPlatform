@@ -1,22 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
 		<SelfContained>True</SelfContained>
 		<IncludeNativeLibrariesForSelfExtract>True</IncludeNativeLibrariesForSelfExtract>
 		<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<RepositoryUrl>https://github.com/BolotnikovPS/TBotPlatform</RepositoryUrl>
 		<Description>C# библиотека для облегчения создания бота Telegram</Description>
-		<Version>2.1.2-beta3</Version>
+		<Version>2.1.2-beta4</Version>
 		<IncludeSymbols>True</IncludeSymbols>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="TBotPlatform.Tests"/>
+		<InternalsVisibleTo Include="TBotPlatform.Tests" />
 	</ItemGroup>
 	
 	<ItemGroup>
@@ -43,14 +41,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AspNetCore.HealthChecks.Redis" Version="8.0.1" PrivateAssets="compile" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.22" />
-		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-		<PackageReference Include="RateLimiter" Version="2.2.0" />
-		<PackageReference Include="StackExchange.Redis" Version="2.10.1" PrivateAssets="compile" />
-		<PackageReference Include="Telegram.Bot" Version="22.7.6" />
+		<PackageReference Include="AspNetCore.HealthChecks.Redis" PrivateAssets="compile" />
+		<PackageReference Include="Microsoft.Extensions.Http" />
+		<PackageReference Include="Microsoft.Extensions.Http.Polly" />
+		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" />
+		<PackageReference Include="Newtonsoft.Json" />
+		<PackageReference Include="RateLimiter" />
+		<PackageReference Include="StackExchange.Redis" PrivateAssets="compile" />
+		<PackageReference Include="Telegram.Bot" />
 	</ItemGroup>
 	
 </Project>

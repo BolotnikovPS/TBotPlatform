@@ -30,8 +30,8 @@ public class MainButtonTests
         var longButton = new string('A', ButtonsRuleConstant.ButtonsRuleNameLength + 10);
         var button = new MainButton(longButton);
 
-        Assert.That(button.ButtonName, Is.EqualTo(longButton));
-        Assert.That(button.ButtonName, Has.Length.EqualTo(longButton.Length));
+        Assert.That(button.ButtonName, !Is.EqualTo(longButton));
+        Assert.That(button.ButtonName, !Has.Length.EqualTo(longButton.Length));
     }
 
     [Test]

@@ -27,26 +27,26 @@ public class ExtensionsJsonTests
         var json = "{\"A\":1,\"B\":\"x\"}";
         var result = json.FromJson<JsonTestDto>();
         Assert.That(result, Is.Not.Null);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result!.A, Is.EqualTo(1));
             Assert.That(result.B, Is.EqualTo("x"));
-        });
+        }
     }
 
     [Test]
-    public void FromJson_NullOrEmpty_ReturnsDefault() => Assert.That(((string?)null).FromJson<JsonTestDto>(), Is.Null);
+    public void FromJson_NullOrEmpty_ReturnsDefault() => Assert.That(((string?)default).FromJson<JsonTestDto>(), Is.Null);
 
     [Test]
     public void TryParseJson_ValidJson_ReturnsTrueAndResult()
     {
         var json = "{\"A\":10,\"B\":\"y\"}";
         var ok = json.TryParseJson<JsonTestDto>(out var result);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(ok, Is.True);
             Assert.That(result, Is.Not.Null);
-        });
+        }
         Assert.That(result!.A, Is.EqualTo(10));
     }
 
@@ -54,22 +54,22 @@ public class ExtensionsJsonTests
     public void TryParseJson_InvalidJson_ReturnsFalseAndDefault()
     {
         var ok = "not json".TryParseJson<JsonTestDto>(out var result);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(ok, Is.False);
             Assert.That(result, Is.Null);
-        });
+        }
     }
 
     [Test]
     public void TryParseJson_Null_ReturnsFalseAndDefault()
     {
-        var ok = ((string?)null).TryParseJson<JsonTestDto>(out var result);
-        Assert.Multiple(() =>
+        var ok = ((string?)default).TryParseJson<JsonTestDto>(out var result);
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(ok, Is.False);
             Assert.That(result, Is.Null);
-        });
+        }
     }
 
     private class JsonTestDto

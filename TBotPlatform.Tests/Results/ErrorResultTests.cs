@@ -11,11 +11,11 @@ public class ErrorResultTests
     {
         var error = ErrorResult.None();
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(error.Description, Is.EqualTo(""));
             Assert.That(error.ErrorType, Is.EqualTo(ErrorResultType.None));
-        });
+        }
     }
 
     [Test]
@@ -23,11 +23,11 @@ public class ErrorResultTests
     {
         var error = ErrorResult.Failure("Something failed");
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(error.Description, Is.EqualTo("Something failed"));
             Assert.That(error.ErrorType, Is.EqualTo(ErrorResultType.Failure));
-        });
+        }
     }
 
     [Test]
@@ -35,11 +35,11 @@ public class ErrorResultTests
     {
         var error = ErrorResult.NotFound("Resource missing");
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(error.Description, Is.EqualTo("Resource missing"));
             Assert.That(error.ErrorType, Is.EqualTo(ErrorResultType.NotFound));
-        });
+        }
     }
 
     [Test]
@@ -47,11 +47,11 @@ public class ErrorResultTests
     {
         var error = ErrorResult.Validation("Invalid input");
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(error.Description, Is.EqualTo("Invalid input"));
             Assert.That(error.ErrorType, Is.EqualTo(ErrorResultType.Validation));
-        });
+        }
     }
 
     [Test]
@@ -59,11 +59,11 @@ public class ErrorResultTests
     {
         var error = ErrorResult.Conflict("Duplicate entry");
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(error.Description, Is.EqualTo("Duplicate entry"));
             Assert.That(error.ErrorType, Is.EqualTo(ErrorResultType.Conflict));
-        });
+        }
     }
 
     [Test]
@@ -71,11 +71,11 @@ public class ErrorResultTests
     {
         var error = ErrorResult.AccessUnAuthorized("Not authenticated");
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(error.Description, Is.EqualTo("Not authenticated"));
             Assert.That(error.ErrorType, Is.EqualTo(ErrorResultType.AccessUnAuthorized));
-        });
+        }
     }
 
     [Test]
@@ -83,10 +83,10 @@ public class ErrorResultTests
     {
         var error = ErrorResult.AccessForbidden("No permission");
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(error.Description, Is.EqualTo("No permission"));
             Assert.That(error.ErrorType, Is.EqualTo(ErrorResultType.AccessForbidden));
-        });
+        }
     }
 }

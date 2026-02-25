@@ -11,11 +11,11 @@ public class ResultTests
     {
         var result = Result.Success();
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.True);
             Assert.That(result.Error, Is.Not.Null);
-        });
+        }
         Assert.That(result.Error!.ErrorType, Is.EqualTo(ErrorResultType.None));
     }
 
@@ -25,11 +25,11 @@ public class ResultTests
         var error = ErrorResult.Failure("Test error");
         var result = Result.Failure(error);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.False);
             Assert.That(result.Error, Is.SameAs(error));
-        });
+        }
         Assert.That(result.Error!.Description, Is.EqualTo("Test error"));
     }
 
@@ -38,10 +38,10 @@ public class ResultTests
     {
         Result result = ErrorResult.Validation("Validation failed");
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsSuccess, Is.False);
             Assert.That(result.Error!.ErrorType, Is.EqualTo(ErrorResultType.Validation));
-        });
+        }
     }
 }

@@ -9,14 +9,17 @@ public class ExtensionsIsNullIsNotNullTests
     public void IsNotNull_NonNullObject_ReturnsTrue() => Assert.That(new object().IsNotNull(), Is.True);
 
     [Test]
-    public void IsNotNull_NullObject_ReturnsFalse() => Assert.That(((object?)null).IsNotNull(), Is.False);
+    public void IsNotNull_NullObject_ReturnsFalse() => Assert.That(((object?)default).IsNotNull(), Is.False);
 
     [Test]
-    public void IsNull_Object_ReturnsOppositeOfIsNotNull() => Assert.Multiple(() =>
-                                                                   {
-                                                                       Assert.That(new object().IsNull(), Is.False);
-                                                                       Assert.That(((object?)null).IsNull(), Is.True);
-                                                                   });
+    public void IsNull_Object_ReturnsOppositeOfIsNotNull()
+    {
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(new object().IsNull(), Is.False);
+            Assert.That(((object?)default).IsNull(), Is.True);
+        };
+    }
 
     [TestCase("", true)]
     [TestCase("   ", true)]
@@ -31,35 +34,44 @@ public class ExtensionsIsNullIsNotNullTests
     }
 
     [Test]
-    public void IsNotDefault_Struct_WhenNotDefault_ReturnsTrue() => Assert.Multiple(() =>
-                                                                         {
-                                                                             Assert.That(42.IsNotDefault(), Is.True);
-                                                                             Assert.That(DateTime.MinValue.AddDays(1).IsNotDefault(), Is.True);
-                                                                         });
+    public void IsNotDefault_Struct_WhenNotDefault_ReturnsTrue()
+    {
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(42.IsNotDefault(), Is.True);
+            Assert.That(DateTime.MinValue.AddDays(1).IsNotDefault(), Is.True);
+        };
+    }
 
     [Test]
-    public void IsNotDefault_Struct_WhenDefault_ReturnsFalse() => Assert.Multiple(() =>
-                                                                       {
-                                                                           Assert.That(0.IsNotDefault(), Is.False);
-                                                                           Assert.That(default(DateTime).IsNotDefault(), Is.False);
-                                                                       });
+    public void IsNotDefault_Struct_WhenDefault_ReturnsFalse()
+    {
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(0.IsNotDefault(), Is.False);
+            Assert.That(default(DateTime).IsNotDefault(), Is.False);
+        };
+    }
 
     [Test]
-    public void IsDefault_Struct_ReturnsOppositeOfIsNotDefault() => Assert.Multiple(() =>
-                                                                         {
-                                                                             Assert.That(0.IsDefault(), Is.True);
-                                                                             Assert.That(1.IsDefault(), Is.False);
-                                                                         });
+    public void IsDefault_Struct_ReturnsOppositeOfIsNotDefault()
+    {
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(0.IsDefault(), Is.True);
+            Assert.That(1.IsDefault(), Is.False);
+        };
+    }
 
     [Test]
     public void IsNull_List_WhenEmptyOrNull_ReturnsTrue()
     {
         List<object>? nullList = null;
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(nullList!.IsNull(), Is.True);
             Assert.That(new List<object>().IsNull(), Is.True);
-        });
+        }
     }
 
     [Test]
