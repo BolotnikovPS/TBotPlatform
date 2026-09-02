@@ -1,12 +1,12 @@
-﻿using TBotPlatform.Contracts.Abstractions.Cache;
-using TBotPlatform.Contracts.Cache;
+﻿using TBotPlatform.Contracts.Cache;
 using TBotPlatform.Extension;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace TBotPlatform.Contracts.Bots.States;
 
-public abstract class BaseState(ICacheService cacheService)
+public abstract class BaseState(IFusionCache cacheService)
 {
-    protected readonly ICacheService CacheService = cacheService;
+    protected readonly IFusionCache CacheService = cacheService;
 
     protected string StateName
         => GetType().Name;
@@ -17,8 +17,8 @@ public abstract class BaseState(ICacheService cacheService)
 
         var result = await CacheService.GetValueFromCollection<BaseStateInCache<T>>(GetCacheCollectionName(userId), GetCacheKeyName());
 
-        return result.IsNotNull()
-            ? result.Value
+        return result.IsSuccess
+            ? result.Value.Value
             : default;
     }
 
@@ -56,7 +56,7 @@ public abstract class BaseState(ICacheService cacheService)
             return;
         }
 
-        throw new NotImplementedException($"Для состояния {StateName} не реализован интерфейс {nameof(ICacheService)}");
+        throw new NotImplementedException($"Для состояния {StateName} не реализован интерфейс {nameof(IFusionCache)}");
     }
 
     private string GetCacheKeyName()

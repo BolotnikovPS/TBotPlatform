@@ -1,22 +1,32 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using TBotPlatform.Contracts.Abstractions.Cache;
 using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.StateFactory;
 using TBotPlatform.Extension;
 using TBotPlatform.Results;
 using TBotPlatform.Results.Abstractions;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace TBotPlatform.Common.Factories;
 
-internal partial class StateFactory(ICacheService cache, IServiceProvider serviceProvider, Assembly assembly) : IStateFactory
+internal partial class StateFactory(IFusionCache cache, IServiceProvider serviceProvider, Assembly assembly) : IStateFactory
 {
     private const string StateNotFound = "Состояние не найдено";
 
-    public bool HasState(string botName, string nameOfState) => GetStateFactoryDataCollection(botName).Any(q => q.StateTypeName == nameOfState);
+    public IResult<bool> HasState(string botName, string nameOfState)
+    {
+        var result = GetStateFactoryDataCollection(botName).Any(q => q.StateTypeName == nameOfState);
 
-    public bool HasStates(string botName, string[] nameOfStates) => GetStateFactoryDataCollection(botName).Any(q => nameOfStates.Any(z => z == q.StateTypeName));
+        return result ? ResultT<bool>.Success(true) : ResultT<bool>.Failure(ErrorResult.NotFound(StateNotFound));
+    }
+
+    public IResult<bool> HasStates(string botName, string[] nameOfStates)
+    {
+        var result = GetStateFactoryDataCollection(botName).Any(q => nameOfStates.Any(z => z == q.StateTypeName));
+
+        return result ? ResultT<bool>.Success(true) : ResultT<bool>.Failure(ErrorResult.NotFound(StateNotFound));
+    }
 
     public IResult<StateHistory> GetStateByNameOrDefault(string botName, string nameOfState = "")
     {
@@ -154,7 +164,7 @@ internal partial class StateFactory(ICacheService cache, IServiceProvider servic
             return ResultT<StateHistory>.Failure(bindStateName.Error);
         }
 
-        var state = GetStateFactoryDataCollection(botName).FirstOrDefault(z => z.StateTypeName == bindStateName.Value);
+        var state = GetStateFactoryDataCollection(botName).FirstOrDefault(z => z.StateTypeName == bindStateName.Value.StatesTypeName);
 
         return Convert(state);
     }
@@ -176,22 +186,20 @@ internal partial class StateFactory(ICacheService cache, IServiceProvider servic
         return Result.Success();
     }
 
-    public async Task<IResult> UnBindState(string botName, long chatId, CancellationToken cancellationToken)
+    public Task<IResult> UnBindState(string botName, long chatId, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        await RemoveBindState(botName, chatId, cancellationToken);
-
-        return Result.Success();
+        return RemoveBindState(botName, chatId, cancellationToken);
     }
 
-    public async Task<bool> HasBindState(string botName, long chatId, CancellationToken cancellationToken)
+    public async Task<IResult<bool>> HasBindState(string botName, long chatId, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(chatId);
 
-        var value = await GetBindStateName(botName, chatId, cancellationToken);
+        var result = await GetBindStateName(botName, chatId, cancellationToken);
 
-        return value.IsSuccess;
+        return result.IsSuccess ? ResultT<bool>.Success(result.IsSuccess) : ResultT<bool>.Failure(result.Error);
     }
 
     private async Task<IResult<StateHistory>> GetLastStateWithMenuOrMain(string botName, List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)

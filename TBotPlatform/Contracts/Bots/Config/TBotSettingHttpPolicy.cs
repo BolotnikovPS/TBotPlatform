@@ -4,7 +4,7 @@ using System.Net;
 
 namespace TBotPlatform.Contracts.Bots.Config;
 
-public class TelegramSettingsHttpPolicy
+public class TBotSettingHttpPolicy
 {
     /// <summary>
     /// <see cref="HttpStatusCode"/> по которым требуется выполнить повторный запрос в telegram

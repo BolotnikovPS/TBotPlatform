@@ -44,7 +44,7 @@ public interface IStateContext : IStateContextMinimal
     /// <param name="timeSpan">Время задержки</param>
     /// <param name="request">Запрос для отправки сообщения</param>
     /// <returns></returns>
-    void MakeDelayRequest(TimeSpan timeSpan, Func<IStateContextMinimal, Task<Message>> request);
+    IResult MakeDelayRequest(TimeSpan timeSpan, Func<IStateContextMinimal, Task<Message>> request);
 
     /// <summary>
     /// Устанавливает необходимость зафиксировать состояние

@@ -24,7 +24,7 @@ internal partial class StateContext
     {
         ChatIdValidOrThrow(chatIdToCheck);
 
-        var result = await telegramContext.GetChatAdministrators(chatIdToCheck, cancellationToken);
+        var result = await telegramContext.GetChatAdministrators(chatIdToCheck, false, cancellationToken);
 
         return result.CheckAny() ? [.. result] : null;
     }

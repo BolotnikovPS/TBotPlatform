@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using TBotPlatform.Common.BackgroundServices.Base;
 using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Abstractions.Queues;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.BackgroundServices;
 
-internal class TelegramDelayHostedService(ILogger<TelegramDelayHostedService> logger, IDelayQueue delayQueue, IServiceProvider services) : BackgroundService
+internal class TelegramDelayHostedService(ILogger<TelegramDelayHostedService> logger, IDelayQueue delayQueue, IServiceProvider services) : BackgroundServiceBase<TelegramDelayHostedService>
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

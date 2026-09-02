@@ -19,17 +19,17 @@ namespace TBotPlatform.Common.Contexts;
 internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisposable
 {
     private readonly ITelegramContextLog _telegramContextLog;
-    private readonly TelegramSettings _telegramSettings;
+    private readonly TBotSetting _botSetting;
     private readonly RecyclableMemoryStreamManager _mgr;
     private readonly Stopwatch _timer = new();
     private int _iteration;
 
-    public TelegramContext(HttpClient client, TelegramSettings telegramSettings, ITelegramContextLog telegramContextLog, RecyclableMemoryStreamManager mgr)
-        : base(telegramSettings.Token ?? throw new ArgumentException("Token"), client)
+    public TelegramContext(HttpClient client, TBotSetting botSetting, ITelegramContextLog telegramContextLog, RecyclableMemoryStreamManager mgr)
+        : base(botSetting.Token ?? throw new ArgumentException("Token"), client)
     {
         client.DefaultRequestHeaders.TryAddWithoutValidation(DefaultHeadersConstant.ContextOperation, CurrentOperation.ToString());
 
-        _telegramSettings = telegramSettings;
+        _botSetting = botSetting;
         _telegramContextLog = telegramContextLog;
         _mgr = mgr;
     }
@@ -44,9 +44,9 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
         var methodValue = properties.FirstOrDefault(z => z.Name == "MethodName")?.GetValue(request) as string;
 
         var protectContentValue = properties.FirstOrDefault(z => z.Name == "ProtectContent");
-        if (protectContentValue.IsNotNull() && _telegramSettings.ProtectContent)
+        if (protectContentValue.IsNotNull() && _botSetting.ProtectContent)
         {
-            protectContentValue?.SetValue(request, _telegramSettings.ProtectContent);
+            protectContentValue?.SetValue(request, _botSetting.ProtectContent);
         }
 
         var fullLogMessage = new TelegramContextFullLogMessage
@@ -90,7 +90,7 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
         }
     }
 
-    public TelegramSettings GetTelegramSettings() => _telegramSettings;
+    public TBotSetting GetBotSetting() => _botSetting;
 
     public async Task<IResult<FileData?>> DownloadFileData(string fileId, CancellationToken cancellationToken)
     {

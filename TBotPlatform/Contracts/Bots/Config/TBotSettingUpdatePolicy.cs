@@ -5,7 +5,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace TBotPlatform.Contracts.Bots.Config;
 
-public class TelegramSettingsUpdate
+public class TBotSettingUpdatePolicy
 {
     /// <summary>
     /// Типы обновлений которые будет получать бот

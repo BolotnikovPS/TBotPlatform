@@ -5,7 +5,7 @@ using TBotPlatform.Contracts.Abstractions.Builder;
 
 namespace TBotPlatform.Contracts.Bots.Config;
 
-public class TelegramSettings
+public class TBotSetting
 {
     /// <summary>
     /// Наименование бота
@@ -26,7 +26,7 @@ public class TelegramSettings
     /// Информация о механимзе получения обновлений от telegram
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    public TelegramSettingsUpdate? Updates { get; set; }
+    public TBotSettingUpdatePolicy? UpdatePolicy { get; set; }
 
     /// <summary>
     /// Время ожидания между получением новых сообщений от telegram. Заполнить в случае использования <see cref="IBotPlatformBuilder.AddHostedService" />
@@ -38,5 +38,5 @@ public class TelegramSettings
     /// Настройки политик для работы с telegram
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    public TelegramSettingsHttpPolicy HttpPolicy { get; set; } = new();
+    public TBotSettingHttpPolicy HttpPolicy { get; set; } = new();
 }

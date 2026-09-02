@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IO;
 using System.Reflection;
@@ -12,7 +13,7 @@ using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Builder;
 
-internal partial class BotBuilder(IServiceCollection serviceCollection, IBotPlatformBuilder botPlatformBuilder, TelegramSettings telegramSettings) : IBotBuilder
+internal partial class BotBuilder(IServiceCollection serviceCollection, IBotPlatformBuilder botPlatformBuilder, TBotSetting botSetting) : IBotBuilder
 {
     private Action<HttpClient>? HttpClient { get; set; }
     private Type? Log { get; set; }
@@ -34,17 +35,7 @@ internal partial class BotBuilder(IServiceCollection serviceCollection, IBotPlat
     }
 
     public IBotBuilder AddTelegramContext(Action<HttpClient>? httpClient = null)
-    {
-        if (HttpClient.IsNotNull() || Log.IsNotNull())
-        {
-            throw new InvalidOperationException("Контекст telegram ранее был добавлен.");
-        }
-
-        HttpClient = httpClient;
-        Log = typeof(TelegramContextLog);
-
-        return this;
-    }
+        => AddTelegramContext<TelegramContextLog>(httpClient);
 
     public IBotBuilder AddStates(Assembly executingAssembly)
     {
@@ -64,9 +55,7 @@ internal partial class BotBuilder(IServiceCollection serviceCollection, IBotPlat
             throw new InvalidDataException("Отсутствуют потенциальные состояния.");
         }
 
-        AddStates(potentialStateTypes!);
-
-        return this;
+        return AddStates(potentialStateTypes!);
     }
 
     public IBotBuilder AddStates(List<Type> potentialStateTypes)
@@ -102,7 +91,7 @@ internal partial class BotBuilder(IServiceCollection serviceCollection, IBotPlat
 
     public IBotPlatformBuilder Build()
     {
-        if (telegramSettings.IsNull() || Log.IsNull())
+        if (botSetting.IsNull() || Log.IsNull())
         {
             throw new InvalidOperationException("Отсутствует контекст telegram.");
         }
@@ -117,7 +106,7 @@ internal partial class BotBuilder(IServiceCollection serviceCollection, IBotPlat
         AddBotTelegramContext();
         AddBotStates();
 
-        serviceCollection.AddKeyedScoped(typeof(IStartReceivingHandler), telegramSettings.BotName, ReceivingHandlerType!);
+        serviceCollection.AddKeyedScoped(typeof(IStartReceivingHandler), botSetting.BotName, ReceivingHandlerType!);
 
         return botPlatformBuilder;
     }

@@ -2,6 +2,8 @@
 using TBotPlatform.Contracts.Abstractions.Queues;
 using TBotPlatform.Contracts.Queues;
 using TBotPlatform.Extension;
+using TBotPlatform.Results;
+using TBotPlatform.Results.Abstractions;
 using Telegram.Bot.Types;
 
 namespace TBotPlatform.Common.Queues;
@@ -12,34 +14,43 @@ internal class DelayQueue : IDelayQueue
 
     private readonly object _lock = new();
 
-    public void Enqueue(string botName, long chatId, TimeSpan delay, Func<IStateContextMinimal, Task<Message>> item)
+    public IResult Enqueue(string botName, long chatId, TimeSpan delay, Func<IStateContextMinimal, Task<Message>> item)
     {
-        ArgumentNullException.ThrowIfNull(botName);
-
-        if (chatId.IsDefault() || chatId.In(0, long.MinValue, long.MaxValue))
+        try
         {
-            throw new ArgumentNullException(nameof(chatId));
-        }
+            ArgumentNullException.ThrowIfNull(botName);
 
-        var dateTimeNow = DateTime.UtcNow;
-        var readyTime = dateTimeNow.Add(delay);
-
-        if (dateTimeNow >= readyTime)
-        {
-            throw new Exception("Будущее время отправки сообщения меньше или равно текущему.");
-        }
-
-        lock (_lock)
-        {
-            items.Add(new()
+            if (chatId.IsDefault() || chatId.In(0, long.MinValue, long.MaxValue))
             {
-                BotName = botName,
-                Value = item,
-                ChatId = chatId,
-                ReadyTime = readyTime,
-            });
+                throw new ArgumentNullException(nameof(chatId));
+            }
 
-            items = [.. items.OrderBy(item => item.ReadyTime)];
+            var dateTimeNow = DateTime.UtcNow;
+            var readyTime = dateTimeNow.Add(delay);
+
+            if (dateTimeNow >= readyTime)
+            {
+                throw new Exception("Будущее время отправки сообщения меньше или равно текущему.");
+            }
+
+            lock (_lock)
+            {
+                items.Add(new()
+                {
+                    BotName = botName,
+                    Value = item,
+                    ChatId = chatId,
+                    ReadyTime = readyTime,
+                });
+
+                items = [.. items.OrderBy(item => item.ReadyTime)];
+            }
+
+            return Result.Success();
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure(ErrorResult.Failure($"Message: {ex?.Message}; StackTrace: {ex?.StackTrace}"));
         }
     }
 

@@ -1,17 +1,7 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using StackExchange.Redis;
-
-namespace TBotPlatform.Contracts.Abstractions.Builder;
+﻿namespace TBotPlatform.Contracts.Abstractions.Builder;
 
 public interface IRedisBuilder
 {
-    /// <summary>
-    /// Добавляет кастомный клиент redis
-    /// </summary>
-    /// <param name="client">Клиент redis</param>
-    /// <returns></returns>
-    IRedisBuilder AddMyRedisConnectionMultiplexer(ConnectionMultiplexer client);
-
     /// <summary>
     /// Добавляет префикс для ключей redis
     /// </summary>
@@ -32,13 +22,6 @@ public interface IRedisBuilder
     /// <param name="healthName">Название хелсчека</param>
     /// <returns></returns>
     IRedisBuilder AddHealthName(string healthName);
-
-    /// <summary>
-    /// Добавляет статус хелсчека при возникновении failure
-    /// </summary>
-    /// <param name="healthStatus">Статус хелсчека при возникновении failure</param>
-    /// <returns></returns>
-    IRedisBuilder AddFailureHealthStatus(HealthStatus healthStatus);
 
     /// <summary>
     /// Собирает redis кеш

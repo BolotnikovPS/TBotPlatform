@@ -19,7 +19,7 @@ public interface ITelegramContext : ITelegramBotClient
     /// Получение настроек контекста бота
     /// </summary>
     /// <returns></returns>
-    TelegramSettings GetTelegramSettings();
+    TBotSetting GetBotSetting();
 
     /// <summary>
     /// Скачивает файл

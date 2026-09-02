@@ -50,7 +50,7 @@ internal partial class StateContext(
 
     public ITelegramContext TelegramContext => telegramContext;
 
-    public string BotName => telegramContext.GetTelegramSettings().BotName;
+    public string BotName => telegramContext.GetBotSetting().BotName;
 
     public async Task<T> MakeRequestToOtherChat<T>(long newChatId, Func<IStateContextMinimal, Task<T>> request)
     {
@@ -73,8 +73,8 @@ internal partial class StateContext(
         }
     }
 
-    public void MakeDelayRequest(TimeSpan timeSpan, Func<IStateContextMinimal, Task<Message>> request)
-        => delayQueue.Enqueue(telegramContext.GetTelegramSettings().BotName, chatId, timeSpan, request);
+    public IResult MakeDelayRequest(TimeSpan timeSpan, Func<IStateContextMinimal, Task<Message>> request)
+        => delayQueue.Enqueue(telegramContext.GetBotSetting().BotName, chatId, timeSpan, request);
 
     public Task<IResult> BindState(CancellationToken cancellationToken)
     {
@@ -83,11 +83,11 @@ internal partial class StateContext(
             throw new NullReferenceException("История состояния отсутствует.");
         }
 
-        return stateBindFactory.BindState(telegramContext.GetTelegramSettings().BotName, chatId, stateHistory, cancellationToken);
+        return stateBindFactory.BindState(telegramContext.GetBotSetting().BotName, chatId, stateHistory, cancellationToken);
     }
 
     public Task<IResult> UnBindState(CancellationToken cancellationToken)
-        => stateBindFactory.UnBindState(telegramContext.GetTelegramSettings().BotName, chatId, cancellationToken);
+        => stateBindFactory.UnBindState(telegramContext.GetBotSetting().BotName, chatId, cancellationToken);
 
     public async Task<Message> SendDocument(FileDataBase documentData, string? caption, bool disableNotification, CancellationToken cancellationToken)
     {

@@ -1,6 +1,6 @@
 ﻿using TBotPlatform.Contracts.Cache;
 using TBotPlatform.Extension;
-using TBotPlatform.Results;
+using TBotPlatform.Results.Abstractions;
 
 namespace TBotPlatform.Common.Factories;
 
@@ -17,12 +17,12 @@ internal partial class StateFactory
 
         var values = await cache.GetValueFromCollection<UserStateInCache>(CacheCollectionKeyName(botName), chatId.ToString());
 
-        if (values.IsNull())
+        if (!values.IsSuccess)
         {
             return [];
         }
 
-        return values.StatesTypeName.CheckAny() ? values.StatesTypeName : [];
+        return values.Value.StatesTypeName.CheckAny() ? values.Value.StatesTypeName : [];
     }
 
     private async Task UpdateValueState(string botName, List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)
@@ -44,15 +44,11 @@ internal partial class StateFactory
         await cache.AddValueToCollection(CacheCollectionKeyName(botName), values);
     }
 
-    private async Task<ResultT<string>> GetBindStateName(string botName, long chatId, CancellationToken cancellationToken)
+    private Task<IResult<UserBindStateInCache>> GetBindStateName(string botName, long chatId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var values = await cache.GetValueFromCollection<UserBindStateInCache>(CacheBindCollectionKeyName(botName), chatId.ToString());
-
-        return values.IsNull()
-            ? ResultT<string>.Failure(ErrorResult.NotFound(StateNotFound))
-            : ResultT<string>.Success(values.StatesTypeName);
+        return cache.GetValueFromCollection<UserBindStateInCache>(CacheBindCollectionKeyName(botName), chatId.ToString());
     }
 
     private async Task AddBindState(string botName, long chatId, string statesTypeName, CancellationToken cancellationToken)
@@ -61,21 +57,21 @@ internal partial class StateFactory
 
         var value = await cache.GetValueFromCollection<UserBindStateInCache>(CacheBindCollectionKeyName(botName), chatId.ToString());
 
-        if (value.IsNotNull())
+        if (value.IsSuccess)
         {
             await RemoveBindState(botName, chatId, cancellationToken);
         }
 
-        value = new()
+        var cacheValue = new UserBindStateInCache()
         {
             ChatId = chatId.ToString(),
             StatesTypeName = statesTypeName,
         };
 
-        await cache.AddValueToCollection(CacheBindCollectionKeyName(botName), value);
+        await cache.AddValueToCollection(CacheBindCollectionKeyName(botName), cacheValue);
     }
 
-    private Task RemoveBindState(string botName, long chatId, CancellationToken cancellationToken)
+    private Task<IResult> RemoveBindState(string botName, long chatId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 

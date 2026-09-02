@@ -1,11 +1,12 @@
-﻿using TBotPlatform.Contracts.Abstractions.Cache;
-using TBotPlatform.Contracts.Abstractions.Cache.AsyncDisposable;
+﻿using TBotPlatform.Contracts.Abstractions.Cache.AsyncDisposable;
 using TBotPlatform.Contracts.Cache.Lock;
-using TBotPlatform.Extension;
+using TBotPlatform.Results;
+using TBotPlatform.Results.Abstractions;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace TBotPlatform.Common.Cache.AsyncDisposable;
 
-internal class DistributedLock(ICacheService cacheService, string key) : IDistributedLock
+internal class DistributedLock(IFusionCache cacheService, string key) : IDistributedLock
 {
     public async Task<IDistributedLock> RetryUntilTrue(TimeSpan waitingTimeOut, TimeSpan blockingTimeOut, CancellationToken cancellationToken)
     {
@@ -17,8 +18,8 @@ internal class DistributedLock(ICacheService cacheService, string key) : IDistri
         while (DateTime.UtcNow - initialTime < waitingTimeOut)
         {
             i++;
-
-            if (await TryGetLock(blockingTimeOut, cancellationToken))
+            
+            if ((await TryGetLock(blockingTimeOut, cancellationToken)).IsSuccess)
             {
                 return this;
             }
@@ -31,20 +32,20 @@ internal class DistributedLock(ICacheService cacheService, string key) : IDistri
 
     public async ValueTask DisposeAsync() => await cacheService.RemoveValue(key);
 
-    private async Task<bool> TryGetLock(TimeSpan blockingTimeOut, CancellationToken cancellationToken)
+    private async Task<IResult> TryGetLock(TimeSpan blockingTimeOut, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (!await cacheService.KeyExists(key))
+        if (!(await cacheService.KeyExists(key)).Value)
         {
             return await cacheService.SetValue(CreateCacheValue(blockingTimeOut));
         }
 
         var data = await cacheService.GetValue<DistributedLockContract>(key);
 
-        if (data.IsNull() || data?.Value > DateTime.UtcNow)
+        if (!data.IsSuccess || data.Value.Value > DateTime.UtcNow)
         {
-            return false;
+            return Result.Failure(ErrorResult.None());
         }
 
         return await cacheService.SetValue(CreateCacheValue(blockingTimeOut));

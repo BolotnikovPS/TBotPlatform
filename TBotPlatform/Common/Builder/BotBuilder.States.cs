@@ -42,7 +42,7 @@ internal partial class BotBuilder
 
             if (attr!.OnlyForBot.CheckAny() && attr.OnlyForBot.NotIn("None", ""))
             {
-                if (attr.OnlyForBot.NotIn(telegramSettings.BotName))
+                if (attr.OnlyForBot.NotIn(botSetting.BotName))
                 {
                     continue;
                 }
@@ -152,6 +152,6 @@ internal partial class BotBuilder
                 throw new("Состояний определяющих команду /start больше одного");
         }
 
-        serviceCollection.AddKeyedSingleton(telegramSettings.BotName, new StateFactoryDataCollection(states));
+        serviceCollection.AddKeyedSingleton(botSetting.BotName, new StateFactoryDataCollection(states));
     }
 }

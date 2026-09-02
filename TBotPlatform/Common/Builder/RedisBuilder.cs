@@ -1,34 +1,19 @@
 ﻿#nullable enable
+
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Logging;
-using StackExchange.Redis;
-using TBotPlatform.Common.Cache;
 using TBotPlatform.Contracts.Abstractions.Builder;
-using TBotPlatform.Contracts.Abstractions.Cache;
 using TBotPlatform.Extension;
+using ZiggyCreatures.Caching.Fusion;
+using ZiggyCreatures.Caching.Fusion.Serialization.NewtonsoftJson;
 
 namespace TBotPlatform.Common.Builder;
 
 internal class RedisBuilder(IServiceCollection serviceCollection, ICacheBuilder cacheBuilder, string redisConnectionString) : IRedisBuilder
 {
-    private ConnectionMultiplexer? _client;
     private string? _prefix;
     private string[]? _tags;
     private string? _healthName;
-    private HealthStatus? _healthStatus;
-
-    public IRedisBuilder AddMyRedisConnectionMultiplexer(ConnectionMultiplexer client)
-    {
-        if (_client.IsNotNull())
-        {
-            throw new InvalidOperationException("Клиент добавлен ранее.");
-        }
-
-        _client = client;
-
-        return this;
-    }
 
     public IRedisBuilder AddPrefix(string prefix)
     {
@@ -66,52 +51,40 @@ internal class RedisBuilder(IServiceCollection serviceCollection, ICacheBuilder 
         return this;
     }
 
-    public IRedisBuilder AddFailureHealthStatus(HealthStatus healthStatus)
-    {
-        if (_healthStatus.IsNotNull())
-        {
-            throw new InvalidOperationException("Статус хелсчека добавлено ранее.");
-        }
-
-        _healthStatus = healthStatus;
-
-        return this;
-    }
-
     public ICacheBuilder Build()
     {
-        if (_client.IsNotNull())
-        {
-            serviceCollection.AddSingleton(new Lazy<ConnectionMultiplexer>(_client!));
-        }
-        else
-        {
-            serviceCollection.AddSingleton(s =>
+        serviceCollection
+            .AddFusionCache()
+            .WithCacheKeyPrefix(_prefix)
+            .WithOptions(options =>
             {
-                var loggerFactory = s.GetRequiredService<ILoggerFactory>();
-                var loggerWriter = new CacheLoggerTextWriter(loggerFactory.CreateLogger<ConnectionMultiplexer>());
+                options.DistributedCacheCircuitBreakerDuration = TimeSpan.FromSeconds(2);
+            })
+            .WithDefaultEntryOptions(new FusionCacheEntryOptions
+            {
+                Duration = TimeSpan.FromMinutes(1),
+                IsFailSafeEnabled = true,
+                FailSafeMaxDuration = TimeSpan.FromHours(2),
+                FailSafeThrottleDuration = TimeSpan.FromSeconds(30),
+                EagerRefreshThreshold = 0.9f,
+                FactorySoftTimeout = TimeSpan.FromMilliseconds(100),
+                FactoryHardTimeout = TimeSpan.FromMilliseconds(1500),
+                DistributedCacheSoftTimeout = TimeSpan.FromSeconds(1),
+                DistributedCacheHardTimeout = TimeSpan.FromSeconds(2),
+                AllowBackgroundDistributedCacheOperations = true,
+                JitterMaxDuration = TimeSpan.FromSeconds(2),
+            })
+            .WithDistributedCache(_ =>
+            {
+                var options = new RedisCacheOptions { Configuration = redisConnectionString };
 
-                _client = ConnectionMultiplexer.Connect(redisConnectionString, loggerWriter);
-
-                return new Lazy<ConnectionMultiplexer>(_client);
-            });
-        }
+                return new RedisCache(options);
+            })
+            .WithSerializer(new FusionCacheNewtonsoftJsonSerializer());
 
         serviceCollection
-           .AddSingleton<ICacheService>(s =>
-           {
-               var loggerFactory = s.GetRequiredService<ILoggerFactory>();
-               var lazyConnectionMultiplexer = s.GetRequiredService<Lazy<ConnectionMultiplexer>>();
-
-               return new CacheService(loggerFactory.CreateLogger<CacheService>(), lazyConnectionMultiplexer, _prefix);
-           });
-
-        if (_tags.IsNotNull())
-        {
-            serviceCollection
-               .AddHealthChecks()
-               .AddRedis(redisConnectionString, _healthName, _healthStatus, _tags);
-        }
+           .AddHealthChecks()
+           .AddRedis(redisConnectionString, _healthName, tags: _tags, timeout: TimeSpan.FromSeconds(3));
 
         return cacheBuilder;
     }

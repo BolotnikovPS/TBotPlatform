@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using TBotPlatform.Results.Abstractions;
 
 namespace TBotPlatform.Results;

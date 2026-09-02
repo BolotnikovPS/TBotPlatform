@@ -13,6 +13,8 @@ public class ErrorResult(string description, ErrorResultType errorType)
 
     public static ErrorResult None() => new("", ErrorResultType.None);
 
+    public static ErrorResult None(string description) => new(description, ErrorResultType.None);
+
     public static ErrorResult Failure(string description) => new(description, ErrorResultType.Failure);
 
     public static ErrorResult NotFound(string description) => new(description, ErrorResultType.NotFound);

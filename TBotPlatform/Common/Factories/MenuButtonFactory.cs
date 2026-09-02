@@ -44,7 +44,7 @@ internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMe
         return await menuButtons!.GetMainButtons(user);
     }
 
-    public Task UpdateMainButtonsByState<T>(T user, IStateContextMinimal stateContext, StateHistory stateHistory, CancellationToken cancellationToken)
+    public Task<IResult> UpdateMainButtonsByState<T>(T user, IStateContextMinimal stateContext, StateHistory stateHistory, CancellationToken cancellationToken)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(stateHistory);
@@ -53,7 +53,7 @@ internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMe
         return UpdateMainButtonsByState(user, stateContext, stateHistory.MenuStateTypeOrNull, cancellationToken);
     }
 
-    public async Task UpdateMainButtonsByState<T>(T user, IStateContextMinimal stateContext, Type menuStateType, CancellationToken cancellationToken)
+    public async Task<IResult> UpdateMainButtonsByState<T>(T user, IStateContextMinimal stateContext, Type menuStateType, CancellationToken cancellationToken)
         where T : UserBase
     {
         ArgumentNullException.ThrowIfNull(user);
@@ -64,9 +64,11 @@ internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMe
 
         if (mainButtons.IsSuccess && mainButtons.Value?.Count == 0)
         {
-            return;
+            return Result.Failure(ErrorResult.Failure("Кнопки не сформированы или массив равен 0."));
         }
 
         await stateContext.UpdateMainButtons(mainButtons.Value, cancellationToken);
+
+        return Result.Success();
     }
 }

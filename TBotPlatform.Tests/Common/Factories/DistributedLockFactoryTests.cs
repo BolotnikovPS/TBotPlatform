@@ -1,6 +1,6 @@
 using Moq;
 using TBotPlatform.Common.Factories;
-using TBotPlatform.Contracts.Abstractions.Cache;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace TBotPlatform.Tests.Common.Factories;
 
@@ -8,12 +8,12 @@ namespace TBotPlatform.Tests.Common.Factories;
 public class DistributedLockFactoryTests
 {
     private DistributedLockFactory _testClass;
-    private Mock<ICacheService> _cacheService;
+    private Mock<IFusionCache> _cacheService;
 
     [SetUp]
     public void SetUp()
     {
-        _cacheService = new Mock<ICacheService>();
+        _cacheService = new Mock<IFusionCache>();
         _testClass = new DistributedLockFactory(_cacheService.Object);
     }
 
@@ -24,8 +24,8 @@ public class DistributedLockFactoryTests
         var key = "TestValue1749272468";
         var timeOut = TimeSpan.FromSeconds(79);
         var cancellationToken = CancellationToken.None;
-        _cacheService.Setup(c => c.KeyExists(It.Is<string>(k => k == "Locker_" + key))).ReturnsAsync(false);
-        _cacheService.Setup(c => c.SetValue(It.IsAny<IKeyInCache>())).ReturnsAsync(true);
+        _cacheService.Setup(c => c.TryGetAsync<string>(It.Is<string>(k => k == "Locker_" + key), null, cancellationToken)).ReturnsAsync(MaybeValue<string>.None);
+        _cacheService.Setup(c => c.SetAsync(It.IsAny<string>(), It.IsAny<string>(), null, null, cancellationToken)).Returns(ValueTask.CompletedTask);
 
         // Act
         var result = await _testClass.AcquireLock(key, timeOut, cancellationToken);
@@ -33,34 +33,12 @@ public class DistributedLockFactoryTests
         // Assert
         Assert.That(result, Is.Not.Null);
         await result.DisposeAsync();
-        _cacheService.Verify(c => c.RemoveValue("Locker_" + key), Times.Once);
+        _cacheService.Verify(c => c.RemoveAsync("Locker_" + key, null, cancellationToken), Times.Once);
     }
 
     [TestCase("")]
     [TestCase("   ")]
     public void CannotCallAcquireLockWithInvalidKey(string value) => Assert.ThrowsAsync<ArgumentNullException>(() => _testClass.AcquireLock(value, TimeSpan.FromSeconds(219), CancellationToken.None));
-
-    [Test]
-    public async Task CanCallIsLocked_WhenKeyExists_ReturnsTrue()
-    {
-        var key = "TestValue1948270513";
-        _cacheService.Setup(c => c.KeyExists("Locker_" + key)).ReturnsAsync(true);
-
-        var result = await _testClass.IsLocked(key, CancellationToken.None);
-
-        Assert.That(result, Is.True);
-    }
-
-    [Test]
-    public async Task CanCallIsLocked_WhenKeyDoesNotExist_ReturnsFalse()
-    {
-        var key = "MissingKey";
-        _cacheService.Setup(c => c.KeyExists("Locker_" + key)).ReturnsAsync(false);
-
-        var result = await _testClass.IsLocked(key, CancellationToken.None);
-
-        Assert.That(result, Is.False);
-    }
 
     [TestCase("")]
     [TestCase("   ")]

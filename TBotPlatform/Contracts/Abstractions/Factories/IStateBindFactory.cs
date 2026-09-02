@@ -40,5 +40,5 @@ public interface IStateBindFactory
     /// <param name="chatId">Id чата</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<bool> HasBindState(string botName, long chatId, CancellationToken cancellationToken);
+    Task<IResult<bool>> HasBindState(string botName, long chatId, CancellationToken cancellationToken);
 }

@@ -1,15 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 using TBotPlatform.Common.BackgroundServices;
 using TBotPlatform.Common.Factories;
 using TBotPlatform.Common.Queues;
 using TBotPlatform.Contracts.Abstractions.Builder;
-using TBotPlatform.Contracts.Abstractions.Cache;
 using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Abstractions.Queues;
-using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Extension;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace TBotPlatform.Common.Builder;
 
@@ -21,16 +21,16 @@ internal partial class BotPlatformBuilder(IServiceCollection serviceCollection) 
     private bool IsNeedAddHostedService { get; set; }
     private Assembly FactoriesExecutingAssembly { get; set; }
 
-    public IBotBuilder AddBot(TelegramSettings telegramSettings)
+    public IBotBuilder AddBot(TBotSetting botSetting)
     {
-        if (Bots.Any(z => z.Equals(telegramSettings.BotName, StringComparison.CurrentCultureIgnoreCase)))
+        if (Bots.Any(z => z.Equals(botSetting.BotName, StringComparison.CurrentCultureIgnoreCase)))
         {
             throw new InvalidOperationException("Бот ранее был добавлен.");
         }
 
-        Bots.Add(telegramSettings.BotName);
+        Bots.Add(botSetting.BotName);
 
-        return new BotBuilder(serviceCollection, this, telegramSettings);
+        return new BotBuilder(serviceCollection, this, botSetting);
     }
 
     public ICacheBuilder AddCache()
@@ -83,14 +83,19 @@ internal partial class BotPlatformBuilder(IServiceCollection serviceCollection) 
 
         if (IsNeedAddHostedService)
         {
-            serviceCollection.AddHostedService<TelegramContextHostedService>();
+            serviceCollection.AddHostedService(z =>
+            {
+                var loggerFactory = z.GetRequiredService<ILoggerFactory>();
+
+                return new TelegramContextHostedService(loggerFactory.CreateLogger<TelegramContextHostedService>(), Bots, z);
+            });
         }
 
         serviceCollection
            .AddSingleton<IDelayQueue, DelayQueue>()
            .AddScoped(s =>
            {
-               var cache = s.GetRequiredService<ICacheService>();
+               var cache = s.GetRequiredService<IFusionCache>();
 
                return new StateFactory(cache, s, FactoriesExecutingAssembly);
            })
@@ -98,7 +103,6 @@ internal partial class BotPlatformBuilder(IServiceCollection serviceCollection) 
            .AddScoped<IStateBindFactory>(src => src.GetRequiredService<StateFactory>())
            .AddScoped<IStateContextFactory, StateContextFactory>()
            .AddSingleton<IMenuButtonFactory, MenuButtonFactory>()
-           .AddSingleton(new BotsDataCollection(Bots))
            .AddHostedService<TelegramDelayHostedService>();
 
         return serviceCollection;

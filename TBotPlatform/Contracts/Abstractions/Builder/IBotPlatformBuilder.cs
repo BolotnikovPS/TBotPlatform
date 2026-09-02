@@ -8,14 +8,14 @@ namespace TBotPlatform.Contracts.Abstractions.Builder;
 public interface IBotPlatformBuilder
 {
     /// <summary>
-    /// Добавляет бота
+    /// Добавляет бота <see cref="IBotBuilder"/>
     /// </summary>
-    /// <param name="telegramSettings">Настройки контекста бота</param>
+    /// <param name="botSetting">Настройки контекста бота</param>
     /// <returns></returns>
-    IBotBuilder AddBot(TelegramSettings telegramSettings);
+    IBotBuilder AddBot(TBotSetting botSetting);
 
     /// <summary>
-    /// Добавляет кеш для работы ботов
+    /// Добавляет кеш для работы ботов <see cref="ICacheBuilder"/>
     /// </summary>
     /// <returns></returns>
     ICacheBuilder AddCache();

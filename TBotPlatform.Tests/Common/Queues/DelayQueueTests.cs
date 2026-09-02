@@ -12,25 +12,28 @@ public class DelayQueueTests
     public void SetUp() => _queue = new DelayQueue();
 
     [Test]
-    public void Enqueue_WhenBotNameIsNull_ThrowsArgumentNullException() => Assert.Throws<ArgumentNullException>(() => _queue.Enqueue(
-                                                                                            null!,
-                                                                                            12345L,
-                                                                                            TimeSpan.FromSeconds(5),
-                                                                                            _ => Task.FromResult(new Message())));
+    public void Enqueue_WhenBotNameIsNull_ThrowsArgumentNullException()
+    {
+        var result = _queue.Enqueue(null!, 12345L, TimeSpan.FromSeconds(5), _ => Task.FromResult(new Message()));
+
+        Assert.That(result.IsSuccess, Is.False);
+    }
 
     [Test]
-    public void Enqueue_WhenDelayIsZero_ThrowsException() => Assert.Throws<Exception>(() => _queue.Enqueue(
-                                                                              "bot",
-                                                                              12345L,
-                                                                              TimeSpan.Zero,
-                                                                              _ => Task.FromResult(new Message())));
+    public void Enqueue_WhenDelayIsZero_ThrowsException()
+    {
+        var result = _queue.Enqueue("bot", 12345L, TimeSpan.Zero, _ => Task.FromResult(new Message()));
+
+        Assert.That(result.IsSuccess, Is.False);
+    }
 
     [Test]
-    public void Enqueue_WhenDelayIsNegative_ThrowsException() => Assert.Throws<Exception>(() => _queue.Enqueue(
-                                                                              "bot",
-                                                                              12345L,
-                                                                              TimeSpan.FromSeconds(-1),
-                                                                              _ => Task.FromResult(new Message())));
+    public void Enqueue_WhenDelayIsNegative_ThrowsException()
+    {
+        var result = _queue.Enqueue("bot", 12345L, TimeSpan.FromSeconds(-1), _ => Task.FromResult(new Message()));
+
+        Assert.That(result.IsSuccess, Is.False);
+    }
 
     [Test]
     public void Enqueue_WithValidArguments_AddsItem()

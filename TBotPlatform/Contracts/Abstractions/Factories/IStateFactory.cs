@@ -11,7 +11,7 @@ public interface IStateFactory : IStateBindFactory
     /// <param name="botName">Наименование бота</param>
     /// <param name="nameOfState">Название состояния</param>
     /// <returns></returns>
-    bool HasState(string botName, string nameOfState);
+    IResult<bool> HasState(string botName, string nameOfState);
 
     /// <summary>
     /// Проверяет наличие состояниq
@@ -19,7 +19,7 @@ public interface IStateFactory : IStateBindFactory
     /// <param name="botName">Наименование бота</param>
     /// <param name="nameOfStates">Название состояний</param>
     /// <returns></returns>
-    bool HasStates(string botName, string[] nameOfStates);
+    IResult<bool> HasStates(string botName, string[] nameOfStates);
 
     /// <summary>
     /// Получает состояние по его названию или /start
