@@ -48,7 +48,7 @@ StateInlineActivatorAttribute  | атрибут для состояний опр
                     .AddReceivingHandler<StartReceivingHandler>()
                     .Build()
                 .AddCache()
-                    .AddRedisCache(redisConnectionString)
+                    .AddRedisFusionCache(redisConnectionString)
                         .AddHealthTags(tags)
                         .AddHealthName(redisHealthName)
                     .Build()
