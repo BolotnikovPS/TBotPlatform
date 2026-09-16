@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TBotPlatform.Common.BackgroundServices.Base;
 using TBotPlatform.Contracts.Abstractions.Factories;
@@ -15,7 +15,7 @@ internal class TelegramDelayHostedService(ILogger<TelegramDelayHostedService> lo
         {
             var request = await delayQueue.Dequeue(stoppingToken);
 
-            Exception exception = null;
+            Exception? exception = null;
             try
             {
                 await using var scope = services.CreateAsyncScope();

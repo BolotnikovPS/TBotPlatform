@@ -1,7 +1,9 @@
-﻿#nullable enable
+#nullable enable
 
 using Microsoft.IO;
+using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Reflection;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Bots.Constant;
@@ -24,6 +26,13 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
     private readonly Stopwatch _timer = new();
     private int _iteration;
 
+    private static readonly ConcurrentDictionary<Type, RequestMeta> RequestMetaCache = new();
+
+    private static RequestMeta GetRequestMeta(Type type)
+        => RequestMetaCache.GetOrAdd(type, static t => new(t.GetProperty("ChatId"), t.GetProperty("ProtectContent")));
+
+    private sealed record RequestMeta(PropertyInfo? ChatId, PropertyInfo? ProtectContent);
+
     public TelegramContext(HttpClient client, TBotSetting botSetting, ITelegramContextLog telegramContextLog, RecyclableMemoryStreamManager mgr)
         : base(botSetting.Token ?? throw new ArgumentException("Token"), client)
     {
@@ -38,15 +47,27 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
 
     public override async Task<TResponse> SendRequest<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
-        var properties = request.GetType().GetProperties();
+        var requestMeta = GetRequestMeta(request.GetType());
 
-        var chatIdValue = properties.FirstOrDefault(z => z.Name == "ChatId")?.GetValue(request) as ChatId;
-        var methodValue = properties.FirstOrDefault(z => z.Name == "MethodName")?.GetValue(request) as string;
+        var chatIdValue = requestMeta.ChatId?.GetValue(request) as ChatId;
+        var methodValue = request.MethodName;
 
-        var protectContentValue = properties.FirstOrDefault(z => z.Name == "ProtectContent");
-        if (protectContentValue.IsNotNull() && _botSetting.ProtectContent)
+        var protectContentProperty = requestMeta.ProtectContent;
+        if (protectContentProperty is not null && _botSetting.ProtectContent)
         {
-            protectContentValue?.SetValue(request, _botSetting.ProtectContent);
+            protectContentProperty.SetValue(request, _botSetting.ProtectContent);
+        }
+
+        Dictionary<string, string?> messageBody = [];
+        if (_botSetting.VerboseLog)
+        {
+            messageBody = request.GetType()
+                                 .GetProperties()
+                                 .Where(z => z.Name.NotIn("HttpMethod", "MethodName", "IsWebhookResponse", "ChatId"))
+                                 .ToDictionary(
+                                      property => property.Name,
+                                      property => property.PropertyType != typeof(InputFile) ? property.GetValue(request)?.ToString() : string.Empty
+                                      );
         }
 
         var fullLogMessage = new TelegramContextFullLogMessage
@@ -56,12 +77,7 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
                 ChatId = chatIdValue?.Identifier ?? 0,
                 OperationGuid = CurrentOperation,
                 OperationType = methodValue ?? "",
-                MessageBody = properties
-                             .Where(z => z.Name.NotIn("HttpMethod", "MethodName", "IsWebhookResponse", "ChatId"))
-                             .ToDictionary(
-                                  property => property.Name,
-                                  property => property.PropertyType != typeof(InputFile) ? property.GetValue(request)?.ToString() : string.Empty
-                                  ),
+                MessageBody = messageBody,
             },
         };
 
@@ -104,11 +120,14 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
         await using var fileStream = _mgr.GetStream();
 
         await DownloadFile(file.FilePath!, fileStream, cancellationToken);
+        fileStream.Position = 0;
+        var bytes = new byte[fileStream.Length];
+        _ = await fileStream.ReadAsync(bytes, cancellationToken);
 
         return ResultT<FileData>.Success(new()
         {
-            Bytes = fileStream.GetBuffer(),
-            Name = file.FilePath,
+            Bytes = bytes,
+            Name = file.FilePath!,
             Size = file.FileSize!.Value,
             FileId = fileId,
         });

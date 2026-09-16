@@ -1,4 +1,4 @@
-﻿namespace TBotPlatform.Extension;
+namespace TBotPlatform.Extension;
 
 public static partial class Extensions
 {
@@ -17,6 +17,6 @@ public static partial class Extensions
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public static bool IsNotNull(this object obj)
+    public static bool IsNotNull(this object? obj)
         => obj != null;
 }

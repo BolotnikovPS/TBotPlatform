@@ -1,11 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using TBotPlatform.Common.BackgroundServices;
 using TBotPlatform.Common.Factories;
+using TBotPlatform.Common.Handlers;
 using TBotPlatform.Common.Queues;
 using TBotPlatform.Contracts.Abstractions.Builder;
 using TBotPlatform.Contracts.Abstractions.Factories;
+using TBotPlatform.Contracts.Abstractions.Handlers;
 using TBotPlatform.Contracts.Abstractions.Queues;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Extension;
@@ -19,7 +21,7 @@ internal partial class BotPlatformBuilder(IServiceCollection serviceCollection) 
 
     private bool IsCacheAdded { get; set; }
     private bool IsNeedAddHostedService { get; set; }
-    private Assembly FactoriesExecutingAssembly { get; set; }
+    private Assembly FactoriesExecutingAssembly { get; set; } = null!;
 
     public IBotBuilder AddBot(TBotSetting botSetting)
     {
@@ -86,13 +88,16 @@ internal partial class BotPlatformBuilder(IServiceCollection serviceCollection) 
             serviceCollection.AddHostedService(z =>
             {
                 var loggerFactory = z.GetRequiredService<ILoggerFactory>();
+                var logger = loggerFactory.CreateLogger<TelegramContextHostedService>();
+                var telegramUpdateProcessor = z.GetRequiredService<ITelegramUpdateProcessor>();
 
-                return new TelegramContextHostedService(loggerFactory.CreateLogger<TelegramContextHostedService>(), Bots, z);
+                return new TelegramContextHostedService(logger, Bots, z, telegramUpdateProcessor);
             });
         }
 
         serviceCollection
            .AddSingleton<IDelayQueue, DelayQueue>()
+           .AddSingleton<ITelegramUpdateProcessor, TelegramUpdateProcessor>()
            .AddScoped(s =>
            {
                var cache = s.GetRequiredService<IFusionCache>();

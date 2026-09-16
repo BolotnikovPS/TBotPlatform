@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
@@ -30,6 +30,7 @@ public static partial class Extensions
                .InlineKeyboard
                .SelectMany(x => x.Select(z => z.TryGetInlineMarkup(out var e) ? e : null))
                .Where(z => z.IsNotNull())
+               .Select(z => z!)
             );
 
         return true;
@@ -55,7 +56,7 @@ public static partial class Extensions
 
         if (button.Url.IsNotNull())
         {
-            inlineMarkupBase = new InlineMarkupUrl(button.Text, button.Url);
+            inlineMarkupBase = new InlineMarkupUrl(button.Text, button.Url!);
             return true;
         }
 
@@ -86,7 +87,7 @@ public static partial class Extensions
 
         if (button.SwitchInlineQuery.IsNotNull())
         {
-            inlineMarkupBase = new InlineMarkupSwitchInlineQuery(button.Text, button.SwitchInlineQuery);
+            inlineMarkupBase = new InlineMarkupSwitchInlineQuery(button.Text, button.SwitchInlineQuery!);
             return true;
         }
 
@@ -106,7 +107,7 @@ public static partial class Extensions
 
         if (button.SwitchInlineQueryCurrentChat.IsNotNull())
         {
-            inlineMarkupBase = new InlineMarkupSwitchInlineQueryCurrentChat(button.Text, button.SwitchInlineQueryCurrentChat);
+            inlineMarkupBase = new InlineMarkupSwitchInlineQueryCurrentChat(button.Text, button.SwitchInlineQueryCurrentChat!);
             return true;
         }
 
@@ -118,7 +119,7 @@ public static partial class Extensions
 
         if (button.CopyText.IsNotNull())
         {
-            inlineMarkupBase = new InlineMarkupCopyText(button.Text, button.CopyText?.Text);
+            inlineMarkupBase = new InlineMarkupCopyText(button.Text, button.CopyText!.Text);
             return true;
         }
 

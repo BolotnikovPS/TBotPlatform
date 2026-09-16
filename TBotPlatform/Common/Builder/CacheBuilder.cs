@@ -4,6 +4,7 @@ using TBotPlatform.Contracts.Abstractions.Builder;
 using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Extension;
 using ZiggyCreatures.Caching.Fusion;
+using ZiggyCreatures.Caching.Fusion.Serialization.NewtonsoftJson;
 
 namespace TBotPlatform.Common.Builder;
 
@@ -25,6 +26,29 @@ internal class CacheBuilder(IServiceCollection serviceCollection, IBotPlatformBu
         IsCacheAdded = true;
 
         return new RedisBuilder(serviceCollection, this, redisConnectionString);
+    }
+
+    public ICacheBuilder AddMemoryFusionCache()
+    {
+        if (IsCacheAdded)
+        {
+            throw new InvalidOperationException("Кеш ранее был добавлен.");
+        }
+
+        IsCacheAdded = true;
+
+        serviceCollection
+           .AddFusionCache()
+           .WithDefaultEntryOptions(new FusionCacheEntryOptions
+           {
+               Duration = TimeSpan.FromMinutes(1),
+               IsFailSafeEnabled = true,
+               FailSafeMaxDuration = TimeSpan.FromHours(2),
+               FailSafeThrottleDuration = TimeSpan.FromSeconds(30),
+           })
+           .WithSerializer(new FusionCacheNewtonsoftJsonSerializer());
+
+        return this;
     }
 
     public ICacheBuilder CheckCustomFusionCache()

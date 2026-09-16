@@ -14,6 +14,12 @@ public interface ICacheBuilder
     IRedisBuilder AddRedisFusionCache(string redisConnectionString);
 
     /// <summary>
+    /// Добавляет in-memory cache <see cref="IFusionCache"/> без Redis
+    /// </summary>
+    /// <returns></returns>
+    ICacheBuilder AddMemoryFusionCache();
+
+    /// <summary>
     /// Проверяет наличие ранее добавленного кеша <see cref="IFusionCache"/>
     /// </summary>
     /// <returns></returns>

@@ -1,4 +1,4 @@
-﻿namespace TBotPlatform.Extension;
+namespace TBotPlatform.Extension;
 
 public static partial class Extensions
 {
@@ -17,7 +17,7 @@ public static partial class Extensions
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public static bool IsNull(this object obj)
+    public static bool IsNull(this object? obj)
         => !obj.IsNotNull();
 
     /// <summary>
@@ -25,7 +25,7 @@ public static partial class Extensions
     /// </summary>
     /// <param name="s"></param>
     /// <returns></returns>
-    public static bool IsNull(this string s)
+    public static bool IsNull(this string? s)
         => !s.CheckAny();
 
     /// <summary>
@@ -34,7 +34,7 @@ public static partial class Extensions
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
     /// <returns></returns>
-    public static bool IsNull<T>(this List<T> collection)
+    public static bool IsNull<T>(this List<T>? collection)
         where T : class
         => !collection.CheckAny();
 
@@ -44,7 +44,7 @@ public static partial class Extensions
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
     /// <returns></returns>
-    public static bool IsNull<T>(this IEnumerable<T> collection)
+    public static bool IsNull<T>(this IEnumerable<T>? collection)
         where T : class
         => !collection.CheckAny();
 
@@ -54,7 +54,7 @@ public static partial class Extensions
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
     /// <returns></returns>
-    public static bool IsNull<T>(this IQueryable<T> collection)
+    public static bool IsNull<T>(this IQueryable<T>? collection)
         where T : class
         => !collection.CheckAny();
 }

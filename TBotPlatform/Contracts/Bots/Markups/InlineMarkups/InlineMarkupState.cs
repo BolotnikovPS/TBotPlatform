@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.Markups.Enums;
 using TBotPlatform.Extension;
@@ -6,7 +6,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 
-public class InlineMarkupState(string buttonName, string state, string data = null) : InlineMarkupBase(buttonName, InlineMarkupType.CallbackData)
+public class InlineMarkupState(string buttonName, string state, string? data = null) : InlineMarkupBase(buttonName, InlineMarkupType.CallbackData)
 {
     public InlineMarkupState(string buttonName, MarkupNextState markupNextState)
         : this(buttonName, markupNextState.State, markupNextState.Data)
@@ -30,11 +30,11 @@ public class InlineMarkupState(string buttonName, string state, string data = nu
 
         if (MarkupNextStateJson.IsNull())
         {
-            return null;
+            return null!;
         }
 
         return Encoding.Default.GetBytes(MarkupNextStateJson).Length > InlineMarkupConstant.MarkupNextStateJsonLength
-            ? null
+            ? null!
             : InlineKeyboardButton.WithCallbackData(ButtonName, MarkupNextStateJson);
     }
 

@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Extension;
+using TBotPlatform.Extension;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -26,7 +26,7 @@ internal partial class StateContext
 
         var result = await telegramContext.GetChatAdministrators(chatIdToCheck, false, cancellationToken);
 
-        return result.CheckAny() ? [.. result] : null;
+        return result.CheckAny() ? [.. result] : [];
     }
 
     public Task<ChatFullInfo> GetChat(long chatIdToCheck, CancellationToken cancellationToken)

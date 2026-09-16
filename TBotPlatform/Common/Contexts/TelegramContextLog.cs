@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Statistics;
-using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Contexts;
 
@@ -9,14 +8,23 @@ internal class TelegramContextLog(ILogger<TelegramContextLog> logger) : ITelegra
 {
     public Task HandleLog(TelegramContextFullLogMessage message, CancellationToken cancellationToken)
     {
-        logger.LogDebug("Отправка сообщения: {message}", message.ToJson());
+        logger.LogDebug(
+            "Telegram {operationType} chat {chatId} operation {operationGuid}",
+            message.Request?.OperationType,
+            message.Request?.ChatId,
+            message.Request?.OperationGuid);
 
         return Task.CompletedTask;
     }
 
     public Task HandleErrorLog(TelegramContextFullLogMessage message, Exception exception, CancellationToken cancellationToken)
     {
-        logger.LogError(exception, "Ошибка отправки сообщения: {message}", message.ToJson());
+        logger.LogError(
+            exception,
+            "Ошибка Telegram {operationType} chat {chatId} operation {operationGuid}",
+            message.Request?.OperationType,
+            message.Request?.ChatId,
+            message.Request?.OperationGuid);
 
         return Task.CompletedTask;
     }

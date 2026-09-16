@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Bots;
@@ -42,8 +42,8 @@ internal partial class StateFactory(IFusionCache cache, IServiceProvider service
 
     public async Task<IResult<StateHistory>> GetStateByButtonsTypeOrDefault(string botName, long chatId, string buttonTypeValue, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(chatId);
         ArgumentNullException.ThrowIfNull(buttonTypeValue);
+        chatId.ThrowIfInvalidChatId();
 
         var newState = GetStateFactoryDataCollection(botName).FirstOrDefault(
             q => q.ButtonsTypes.CheckAny()
@@ -54,14 +54,14 @@ internal partial class StateFactory(IFusionCache cache, IServiceProvider service
 
         var checkNewState = newState.IsNotNull()
                             && !newState!.IsInlineState
-                            && !newState.StateTypeName.In(statesInMemoryOrEmpty?.LastOrDefault());
+                            && !newState!.StateTypeName.In(statesInMemoryOrEmpty?.LastOrDefault());
 
         if (!checkNewState)
         {
             return ConvertStateFactoryData(botName, newState);
         }
 
-        statesInMemoryOrEmpty?.Add(newState.StateTypeName);
+        statesInMemoryOrEmpty!.Add(newState!.StateTypeName);
         await UpdateValueState(botName, statesInMemoryOrEmpty, chatId, cancellationToken);
 
         await UnBindState(botName, chatId, cancellationToken);
@@ -71,8 +71,8 @@ internal partial class StateFactory(IFusionCache cache, IServiceProvider service
 
     public async Task<IResult<StateHistory>> GetStateByCommandsTypeOrDefault(string botName, long chatId, string commandTypeValue, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(chatId);
         ArgumentNullException.ThrowIfNull(commandTypeValue);
+        chatId.ThrowIfInvalidChatId();
 
         var newState = GetStateFactoryDataCollection(botName)
            .FirstOrDefault(
@@ -84,14 +84,14 @@ internal partial class StateFactory(IFusionCache cache, IServiceProvider service
 
         var checkNewState = newState.IsNotNull()
                             && !newState!.IsInlineState
-                            && !newState.StateTypeName.In(statesInMemoryOrEmpty?.LastOrDefault());
+                            && !newState!.StateTypeName.In(statesInMemoryOrEmpty?.LastOrDefault());
 
         if (!checkNewState)
         {
             return ConvertStateFactoryData(botName, newState);
         }
 
-        statesInMemoryOrEmpty?.Add(newState.StateTypeName);
+        statesInMemoryOrEmpty!.Add(newState!.StateTypeName);
         await UpdateValueState(botName, statesInMemoryOrEmpty, chatId, cancellationToken);
 
         await UnBindState(botName, chatId, cancellationToken);
@@ -101,8 +101,8 @@ internal partial class StateFactory(IFusionCache cache, IServiceProvider service
 
     public IResult<StateHistory> GetStateByTextsTypeOrDefault(string botName, long chatId, string textTypeValue)
     {
-        ArgumentNullException.ThrowIfNull(chatId);
         ArgumentNullException.ThrowIfNull(textTypeValue);
+        chatId.ThrowIfInvalidChatId();
 
         var newState = GetStateFactoryDataCollection(botName)
            .FirstOrDefault(
@@ -115,7 +115,7 @@ internal partial class StateFactory(IFusionCache cache, IServiceProvider service
 
     public async Task<IResult<StateHistory>> GetStateMain(string botName, long chatId, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(chatId);
+        chatId.ThrowIfInvalidChatId();
 
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmpty(botName, chatId, cancellationToken);
         statesInMemoryOrEmpty.Clear();
@@ -128,7 +128,7 @@ internal partial class StateFactory(IFusionCache cache, IServiceProvider service
 
     public async Task<IResult<StateHistory>> GetStatePreviousOrMain(string botName, long chatId, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(chatId);
+        chatId.ThrowIfInvalidChatId();
 
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmpty(botName, chatId, cancellationToken);
         if (statesInMemoryOrEmpty.Count == 0)
@@ -143,7 +143,7 @@ internal partial class StateFactory(IFusionCache cache, IServiceProvider service
 
     public async Task<IResult<StateHistory>> GetLastStateWithMenu(string botName, long chatId, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(chatId);
+        chatId.ThrowIfInvalidChatId();
 
         var statesInMemoryOrEmpty = await GetStatesInCacheOrEmpty(botName, chatId, cancellationToken);
         return await GetLastStateWithMenuOrMain(botName, statesInMemoryOrEmpty, chatId, cancellationToken);
@@ -155,13 +155,13 @@ internal partial class StateFactory(IFusionCache cache, IServiceProvider service
 
     public async Task<IResult<StateHistory>> GetBindStateOrNull(string botName, long chatId, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(chatId);
+        chatId.ThrowIfInvalidChatId();
 
         var bindStateName = await GetBindStateName(botName, chatId, cancellationToken);
 
         if (!bindStateName.IsSuccess)
         {
-            return ResultT<StateHistory>.Failure(bindStateName.Error);
+            return ResultT<StateHistory>.Failure(bindStateName.Error!);
         }
 
         var state = GetStateFactoryDataCollection(botName).FirstOrDefault(z => z.StateTypeName == bindStateName.Value.StatesTypeName);
@@ -171,7 +171,7 @@ internal partial class StateFactory(IFusionCache cache, IServiceProvider service
 
     public async Task<IResult> BindState(string botName, long chatId, StateHistory state, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(chatId);
+        chatId.ThrowIfInvalidChatId();
         ArgumentNullException.ThrowIfNull(state);
 
         var stateValue = GetStateFactoryDataCollection(botName).FirstOrDefault(z => z.StateTypeName == state.StateType.Name);
@@ -181,25 +181,25 @@ internal partial class StateFactory(IFusionCache cache, IServiceProvider service
             return Result.Failure(ErrorResult.NotFound(StateNotFound));
         }
 
-        await AddBindState(botName, chatId, stateValue?.StateTypeName, cancellationToken);
+        await AddBindState(botName, chatId, stateValue!.StateTypeName, cancellationToken);
 
         return Result.Success();
     }
 
     public Task<IResult> UnBindState(string botName, long chatId, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(chatId);
+        chatId.ThrowIfInvalidChatId();
 
         return RemoveBindState(botName, chatId, cancellationToken);
     }
 
     public async Task<IResult<bool>> HasBindState(string botName, long chatId, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(chatId);
+        chatId.ThrowIfInvalidChatId();
 
         var result = await GetBindStateName(botName, chatId, cancellationToken);
 
-        return result.IsSuccess ? ResultT<bool>.Success(result.IsSuccess) : ResultT<bool>.Failure(result.Error);
+        return result.IsSuccess ? ResultT<bool>.Success(result.IsSuccess) : ResultT<bool>.Failure(result.Error!);
     }
 
     private async Task<IResult<StateHistory>> GetLastStateWithMenuOrMain(string botName, List<string> statesInMemoryOrEmpty, long chatId, CancellationToken cancellationToken)
@@ -239,7 +239,7 @@ internal partial class StateFactory(IFusionCache cache, IServiceProvider service
                 return Convert(state);
             }
 
-            statesInMemoryOrEmpty.Remove(lastState);
+            statesInMemoryOrEmpty.Remove(lastState!);
         }
     }
 

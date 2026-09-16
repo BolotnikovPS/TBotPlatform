@@ -1,4 +1,4 @@
-﻿namespace TBotPlatform.Contracts.Bots.Pagination;
+namespace TBotPlatform.Contracts.Bots.Pagination;
 
 public class PaginationData<T>
     where T : class
@@ -6,7 +6,7 @@ public class PaginationData<T>
     /// <summary>
     /// Коллекция значений
     /// </summary>
-    public List<T> Values { get; set; }
+    public List<T> Values { get; set; } = null!;
 
     /// <summary>
     /// Необходимость следующей страницы
@@ -21,10 +21,10 @@ public class PaginationData<T>
     /// <summary>
     /// Значение кнопки для перехода на следующую страницу
     /// </summary>
-    public string NextValue { get; set; }
+    public string NextValue { get; set; } = null!;
 
     /// <summary>
     /// Значение кнопки для перехода на предыдущую страницу
     /// </summary>
-    public string PreviousValue { get; set; }
+    public string PreviousValue { get; set; } = null!;
 }

@@ -1,4 +1,4 @@
-﻿namespace TBotPlatform.Contracts.Bots.States;
+namespace TBotPlatform.Contracts.Bots.States;
 
 public class StateResult
 {
@@ -11,10 +11,10 @@ public class StateResult
     /// <summary>
     /// Название следующего состояния
     /// </summary>
-    public string NextStateName { get; set; }
+    public string NextStateName { get; set; } = null!;
 
     /// <summary>
     /// Дополнительная информация по состоянию
     /// </summary>
-    public string Data { get; set; }
+    public string Data { get; set; } = null!;
 }

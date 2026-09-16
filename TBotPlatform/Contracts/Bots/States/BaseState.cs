@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Contracts.Cache;
+using TBotPlatform.Contracts.Cache;
 using TBotPlatform.Extension;
 using ZiggyCreatures.Caching.Fusion;
 
@@ -19,7 +19,7 @@ public abstract class BaseState(IFusionCache cacheService)
 
         return result.IsSuccess
             ? result.Value.Value
-            : default;
+            : default!;
     }
 
     protected virtual Task AddValueStateInCache<T>(int userId, T value)

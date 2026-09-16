@@ -1,4 +1,4 @@
-﻿namespace TBotPlatform.Contracts.Bots.FileDatas;
+namespace TBotPlatform.Contracts.Bots.FileDatas;
 
 public class FileData : FileDataBase
 {
@@ -10,5 +10,5 @@ public class FileData : FileDataBase
     /// <summary>
     /// Идентификатор файла
     /// </summary>
-    public string FileId { get; set; }
+    public string FileId { get; set; } = null!;
 }

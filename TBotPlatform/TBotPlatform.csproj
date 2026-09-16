@@ -1,22 +1,37 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<SelfContained>True</SelfContained>
-		<IncludeNativeLibrariesForSelfExtract>True</IncludeNativeLibrariesForSelfExtract>
-		<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
+		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<RepositoryUrl>https://github.com/BolotnikovPS/TBotPlatform</RepositoryUrl>
-		<Description>C# библиотека для облегчения создания бота Telegram</Description>
-		<Version>2.1.2</Version>
 		<IncludeSymbols>True</IncludeSymbols>
-		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+		<PackageId>TBotPlatform</PackageId>
+		<Authors>BolotnikovPS</Authors>
+		<Description>A C# library that simplifies building Telegram bots on top of Telegram.Bot: a state machine, resilient HTTP pipeline, caching, delayed-message queues and distributed locks.</Description>
+		<PackageTags>telegram;bot;telegram-bot;telegram-bot-api;state-machine;fsm;redis;fusioncache;polly;rate-limit;queue;distributed-lock;webhook</PackageTags>
+		<PackageProjectUrl>https://github.com/BolotnikovPS/TBotPlatform</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/BolotnikovPS/TBotPlatform</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageReleaseNotes>See the release notes on GitHub: https://github.com/BolotnikovPS/TBotPlatform/releases</PackageReleaseNotes>
+
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);CS1591</NoWarn>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<Deterministic>true</Deterministic>
+		<ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+
+		<Version>2.3.0-beta1</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="TBotPlatform.Tests" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<Compile Update="**\StateContext.*.cs">
 			<DependentUpon>StateContext.cs</DependentUpon>
@@ -30,13 +45,12 @@
 		<Compile Update="**\DependencyInjection.*.cs">
 			<DependentUpon>DependencyInjection.cs</DependentUpon>
 		</Compile>
-		<Compile Update="Extensions.*.cs">
+		<Compile Update="**\Extensions.*.cs">
 			<DependentUpon>Extensions.cs</DependentUpon>
 		</Compile>
 	</ItemGroup>
-	
+
 	<ItemGroup>
-		<None Include="..\LICENSE.md" Pack="true" PackagePath="" />
 		<None Include="..\README.md" Pack="true" PackagePath="" />
 	</ItemGroup>
 
@@ -46,11 +60,12 @@
 		<PackageReference Include="Microsoft.Extensions.Http" />
 		<PackageReference Include="Microsoft.Extensions.Http.Polly" />
 		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
 		<PackageReference Include="Newtonsoft.Json" />
 		<PackageReference Include="RateLimiter" />
 		<PackageReference Include="Telegram.Bot" />
 		<PackageReference Include="ZiggyCreatures.FusionCache" />
 		<PackageReference Include="ZiggyCreatures.FusionCache.Serialization.NewtonsoftJson" PrivateAssets="compile" />
 	</ItemGroup>
-	
+
 </Project>

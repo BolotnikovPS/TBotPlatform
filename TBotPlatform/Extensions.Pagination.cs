@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Contracts.Bots;
+using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.Pagination;
 using TBotPlatform.Extension;
@@ -31,7 +31,7 @@ public static partial class Extensions
             return false;
         }
 
-        return markupNextState.Data.Contains(PaginationsConstant.PaginationIdentity)
+        return markupNextState.Data!.Contains(PaginationsConstant.PaginationIdentity)
                && int.TryParse(markupNextState.Data.Replace(PaginationsConstant.PaginationIdentity, ""), out result);
     }
 

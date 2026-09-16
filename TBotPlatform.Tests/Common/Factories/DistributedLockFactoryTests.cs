@@ -1,4 +1,4 @@
-using Moq;
+using Microsoft.Extensions.DependencyInjection;
 using TBotPlatform.Common.Factories;
 using ZiggyCreatures.Caching.Fusion;
 
@@ -7,33 +7,52 @@ namespace TBotPlatform.Tests.Common.Factories;
 [TestFixture]
 public class DistributedLockFactoryTests
 {
-    private DistributedLockFactory _testClass;
-    private Mock<IFusionCache> _cacheService;
+    private ServiceProvider _provider = null!;
+    private DistributedLockFactory _testClass = null!;
 
     [SetUp]
     public void SetUp()
     {
-        _cacheService = new Mock<IFusionCache>();
-        _testClass = new DistributedLockFactory(_cacheService.Object);
+        var services = new ServiceCollection();
+        services.AddFusionCache();
+        _provider = services.BuildServiceProvider();
+        _testClass = new DistributedLockFactory(_provider.GetRequiredService<IFusionCache>());
+    }
+
+    [TearDown]
+    public async Task TearDown()
+    {
+        if (_provider is not null)
+        {
+            await _provider.DisposeAsync();
+        }
     }
 
     [Test]
     public async Task CanCallAcquireLock()
     {
-        // Arrange
         var key = "TestValue1749272468";
-        var timeOut = TimeSpan.FromSeconds(79);
-        var cancellationToken = CancellationToken.None;
-        _cacheService.Setup(c => c.TryGetAsync<string>(It.Is<string>(k => k == "Locker_" + key), null, cancellationToken)).ReturnsAsync(MaybeValue<string>.None);
-        _cacheService.Setup(c => c.SetAsync(It.IsAny<string>(), It.IsAny<string>(), null, null, cancellationToken)).Returns(ValueTask.CompletedTask);
+        var timeOut = TimeSpan.FromSeconds(5);
 
-        // Act
-        var result = await _testClass.AcquireLock(key, timeOut, cancellationToken);
+        var result = await _testClass.AcquireLock(key, timeOut, CancellationToken.None);
 
-        // Assert
         Assert.That(result, Is.Not.Null);
+        var locked = await _testClass.IsLocked(key, CancellationToken.None);
+        Assert.That(locked.IsSuccess && locked.Value, Is.True);
+
         await result.DisposeAsync();
-        _cacheService.Verify(c => c.RemoveAsync("Locker_" + key, null, cancellationToken), Times.Once);
+        var after = await _testClass.IsLocked(key, CancellationToken.None);
+        Assert.That(after.Value, Is.False);
+    }
+
+    [Test]
+    public async Task SecondAcquire_WaitsUntilTimeout_WhenLockHeld()
+    {
+        const string key = "held-lock";
+        await using var first = await _testClass.AcquireLock(key, TimeSpan.FromSeconds(5), CancellationToken.None);
+
+        Assert.ThrowsAsync<TimeoutException>(async () =>
+            await _testClass.AcquireLock(key, TimeSpan.FromMilliseconds(200), CancellationToken.None));
     }
 
     [TestCase("")]

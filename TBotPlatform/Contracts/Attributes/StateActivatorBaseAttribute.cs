@@ -1,29 +1,29 @@
-﻿using TBotPlatform.Contracts.Bots.Users;
+using TBotPlatform.Contracts.Bots.Users;
 
 namespace TBotPlatform.Contracts.Attributes;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class StateActivatorBaseAttribute(bool isInlineState, Type menuType, bool isAdminState = false) : Attribute
+public class StateActivatorBaseAttribute(bool isInlineState, Type? menuType, bool isAdminState = false) : Attribute
 {
     /// <summary>
     /// Перечень типов кнопок соответствующих состоянию
     /// </summary>
-    public string[] ButtonsTypes { get; set; }
+    public string[] ButtonsTypes { get; set; } = null!;
 
     /// <summary>
     /// Перечень типов текста соответствующих состоянию
-    /// </summary>}
-    public string[] TextsTypes { get; set; }
+    /// </summary>
+    public string[] TextsTypes { get; set; } = null!;
 
     /// <summary>
     /// Перечень типов команд соответствующих состоянию
-    /// </summary>}
-    public string[] CommandsTypes { get; set; }
+    /// </summary>
+    public string[] CommandsTypes { get; set; } = null!;
 
     /// <summary>
     /// Тип меню, которое отображается пользователю, для данного состояния
     /// </summary>
-    public Type MenuType { get; private set; } = menuType;
+    public Type MenuType { get; private set; } = menuType!;
 
     /// <summary>
     /// Состояние вызывается только с inline кнопок
@@ -48,5 +48,5 @@ public class StateActivatorBaseAttribute(bool isInlineState, Type menuType, bool
     /// <summary>
     /// Для какого бота доступно состояние
     /// </summary>
-    public string OnlyForBot { get; set; }
+    public string OnlyForBot { get; set; } = null!;
 }

@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Contracts.Bots.Constant;
+using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Extension;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -26,7 +26,7 @@ internal partial class StateContext
 
         if (text.IsNull())
         {
-            return null;
+            return null!;
         }
 
         TextLengthValidOrThrow(text);

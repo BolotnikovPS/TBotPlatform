@@ -1,66 +1,120 @@
 # TBotPlatform
-[![NuGet version (TBotPlatform)](https://img.shields.io/nuget/v/TBotPlatform.svg?style=flat-square)](https://www.nuget.org/packages/TBotPlatform/)
 
-C# библиотека для облегчения создания бота [Telegram](https://core.telegram.org/bots/api)
+[![NuGet version](https://img.shields.io/nuget/v/TBotPlatform.svg?style=flat-square)](https://www.nuget.org/packages/TBotPlatform/)
+[![NuGet downloads](https://img.shields.io/nuget/dt/TBotPlatform.svg?style=flat-square)](https://www.nuget.org/packages/TBotPlatform/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Библиотека использует [Telegram.Bot](https://www.nuget.org/packages/Telegram.Bot/) и дает вам дополнительный контроль над вашим ботом, обновлениями, методами, логированием, очередями вызовов, которые обычно невозможно использовать с API-интерфейсом бота.
+A C# library that makes it easy to build [Telegram](https://core.telegram.org/bots/api) bots.
+
+TBotPlatform is built on top of [Telegram.Bot](https://www.nuget.org/packages/Telegram.Bot/) and gives you additional control over your bot: a state machine, update routing, retries, rate limiting, logging, delayed-message queues, caching and distributed locks — capabilities that are hard or impossible to achieve with the raw Bot API.
+
+## Highlights
+
+- **State machine** — model your bot flow as states activated via attributes (`[StateActivator]`, `[StateInlineActivator]`, `[AdminStateActivator]`, ...).
+- **Multi-bot** — run several bots in a single host using keyed services.
+- **Resilient HTTP pipeline** — Polly retries (including `Retry-After` handling) plus request rate limiting.
+- **Caching** — FusionCache with Redis or in-memory backends, fail-safe enabled.
+- **Delayed messages** — schedule messages via a background queue.
+- **Distributed locks** — built on FusionCache.
+- **Result pattern** — typed, error-aware results instead of throwing exceptions everywhere.
+- **Logging** — every Telegram call is traced with an operation id.
 
 ## Supported Platforms
-Project targets .NET 8 at minimum.
 
-## Термины
-Термин  | Описание
-------------- | -------------
-Состояние  | класс выполняющий обработку данных запроса конкретного пользователя. Вызов определяется атрибутом состояния
-Атрибут состояния  | атрибут определяющий поведение получения состояния, на команду от пользователя
+Multi-targets .NET 8, .NET 9 and .NET 10.
 
-## Интерфейсы
-Термин  | Описание
-------------- | -------------
-IState  | методы состояния для обработки запроса
-IStateFactory  | фабрика помощник, определяет состояние по атрибуту состояния
-IStateBindFactory  | фабрика помощник, работает с зафиксированными состояниями
-IStateContextFactory  | фабрика обработки контекста состояния, вызовы методов из IState, обновление основого (нижнего) меню пользователя
-IMenuButtonFactory  | фабрика обработки основных кнопок меню
-IStateContext  | конекст работы с методами telegram. Набор методов, отправка/редактирование сообщений, документов, основного (нижнего) меню, кнопок сообщений, фото и т.д., со всеми необходимыми провеками и валидациями
-IStateContextMinimal  | тоже что и **IStateContext**, но для работы без конкретного состояния в **IStateContextFactory**
-ITelegramContext  | контекст с механизмом очереди и логирования для работы с telegram, прямые методы по отправке/редактирование сообщений, получений обновлений и т.д.
-ITelegramContextLog  | контекст логов от **ITelegramContext**
-IMenuButton  | формирует кнопки основного (нижнего) меню
-IStartReceivingHandler  | обрабатывает данные при поступлении запроса от telegram
-ICacheService  | сервис работы с кешем
-IDistributedLockFactory  | фабрика распределенной блокировка, использует **ICacheService**
-IDelayQueue  | очередь для отправки сообщения с задержкой
+## Quick Start
 
-## Атрибуты состояния
-Термин  | Описание
-------------- | -------------
-StateActivatorBaseAttribute  | базовый атрибут включающий все переменные для определения состояния
-StateActivatorAttribute  | атрибут для состояний определяющих основое (нижнее) меню
-StateInlineActivatorAttribute  | атрибут для состояний определяющих кнопки в сообщениях
+1. Install the package:
 
-## DI Code
+   ```bash
+   dotnet add package TBotPlatform
+   ```
+
+2. Define a user, states and a menu, then wire everything up:
+
+   ```csharp
+   builder.Services
+       .AddBotPlatform()
+           .AddBot(new TBotSetting { BotName = "echo", Token = token })
+               .AddTelegramContext()
+               .AddStates(Assembly.GetExecutingAssembly())
+               .AddReceivingHandler<EchoReceivingHandler>()
+               .Build()
+           .AddCache()
+               .AddMemoryFusionCache()
+               .Build()
+           .AddFactories(Assembly.GetExecutingAssembly())
+           .AddHostedService()
+       .Build();
+   ```
+
+See the [samples](samples/TBotPlatform.Samples.EchoBot) folder for a complete runnable echo bot.
+
+## Concepts
+
+| Term | Description |
+| --- | --- |
+| State | A class that handles a request from a specific user. Selected by a state attribute. |
+| State attribute | An attribute that maps a user command to a state. |
+
+## Interfaces
+
+| Interface | Description |
+| --- | --- |
+| `IState` | State methods for handling a request. |
+| `IStateFactory` | Helper factory; resolves a state by its attribute. |
+| `IStateBindFactory` | Helper factory; works with bound states. |
+| `IStateContextFactory` | Creates state contexts, invokes `IState` methods and refreshes the main (bottom) menu. |
+| `IMenuButtonFactory` | Builds the main menu buttons. |
+| `IStateContext` | Telegram API context: sending/editing messages, documents, the main menu, message buttons, photos, etc., with all necessary checks and validations. |
+| `IStateContextMinimal` | Same as `IStateContext`, but works without a concrete state inside `IStateContextFactory`. |
+| `ITelegramContext` | Context with queue and logging for Telegram: direct methods to send/edit messages, receive updates, etc. |
+| `ITelegramContextLog` | Log context for `ITelegramContext`. |
+| `IMenuButton` | Builds the main (bottom) menu buttons. |
+| `IStartReceivingHandler` | Handles incoming Telegram requests. |
+| `IKeyInCache` | A cache item with a key. |
+| `IDistributedLockFactory` | Distributed lock factory, based on FusionCache. |
+| `IDelayQueue` | Queue for sending delayed messages. |
+
+## State attributes
+
+| Attribute | Description |
+| --- | --- |
+| `StateActivatorBaseAttribute` | Base attribute holding all state-defining properties. |
+| `StateActivatorAttribute` | For states that define the main (bottom) menu. |
+| `StateInlineActivatorAttribute` | For states that define inline message buttons. |
+| `AdminStateActivatorAttribute` | Admin variant of `StateActivatorAttribute`. |
+| `AdminStateInlineActivatorAttribute` | Admin variant of `StateInlineActivatorAttribute`. |
+
+## DI configuration
+
 ```csharp
-           .AddBotPlatform()
-                .AddBot(telegramSettings)
-                    .AddTelegramContext()
-                    .AddStates(executingAssembly)
-                    .AddReceivingHandler<StartReceivingHandler>()
-                    .Build()
-                .AddCache()
-                    .AddRedisFusionCache(redisConnectionString)
-                        .AddHealthTags(tags)
-                        .AddHealthName(redisHealthName)
-                    .Build()
-                .Build()
-                    .AddFactories(executingAssembly)
-                    .AddHostedService()
-                .Build()
+services
+    .AddBotPlatform()
+        .AddBot(telegramSettings)
+            .AddTelegramContext()
+            .AddStates(executingAssembly)
+            .AddReceivingHandler<StartReceivingHandler>()
+            .Build()
+        .AddCache()
+            .AddRedisFusionCache(redisConnectionString)
+                .AddHealthTags(tags)
+                .AddHealthName(redisHealthName)
+            .Build()
+        .Build()
+        .AddFactories(executingAssembly)
+        .AddHostedService()
+    .Build();
 ```
 
-### Примеры проектов
-[AutoCareBot](https://t.me/mycarcarebot)
-[ChatBirthdayBot](https://t.me/mychatbirthday_bot)
+For webhook mode, set `TBotSetting.WebhookUrl` (and optionally `WebhookSecretToken`). The hosted service registers the webhook automatically. In your HTTP endpoint, deserialize the request body to `Update` and pass it to `ITelegramUpdateProcessor.ProcessUpdate`.
 
-### Контакты
+## Examples
+
+- [AutoCareBot](https://t.me/mycarcarebot)
+- [ChatBirthdayBot](https://t.me/mychatbirthday_bot)
+
+## Contacts
+
 [Telegram](https://t.me/PBolDeveloper)

@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types;
@@ -27,7 +27,7 @@ public static partial class Extensions
     /// </summary>
     /// <param name="message">Сообщение</param>
     /// <returns></returns>
-    public static bool WithDocument(this Message? message) => !message.WithImage() && message!.Document.IsNotNull();
+    public static bool WithDocument(this Message? message) => message.IsNotNull() && !message.WithImage() && message!.Document.IsNotNull();
 
     /// <summary>
     /// Проверяет тип сообщения
@@ -51,7 +51,7 @@ public static partial class Extensions
         }
 
         text = message.WithImage() ? message!.Caption : message!.Text;
-        return true;
+        return text != null;
     }
 
     /// <summary>

@@ -1,11 +1,11 @@
-﻿namespace TBotPlatform.Contracts.Bots.Markups;
+namespace TBotPlatform.Contracts.Bots.Markups;
 
 public sealed class InlineMarkupMassive
 {
     /// <summary>
     /// Коллекция кнопок inline
     /// </summary>
-    public InlineMarkupList InlineMarkups { get; set; }
+    public InlineMarkupList InlineMarkups { get; set; } = null!;
 
     /// <summary>
     /// Число кнопок в строке

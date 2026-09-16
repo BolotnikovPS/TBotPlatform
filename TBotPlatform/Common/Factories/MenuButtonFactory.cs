@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Factories;
@@ -26,9 +26,7 @@ internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMe
     {
         ArgumentNullException.ThrowIfNull(menuStateType);
 
-        var isMenuType = menuStateType.GetInterfaces().Any(x => x.Name == nameof(IMenuButton));
-
-        if (!isMenuType)
+        if (!typeof(IMenuButton).IsAssignableFrom(menuStateType))
         {
             throw new($"Класс {menuStateType.Name} не наследуется от {nameof(IMenuButton)}");
         }
@@ -62,7 +60,7 @@ internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMe
 
         var mainButtons = await GetMainButtons(user, menuStateType);
 
-        if (mainButtons.IsSuccess && mainButtons.Value?.Count == 0)
+        if (mainButtons.IsSuccess && mainButtons.Value.Count == 0)
         {
             return Result.Failure(ErrorResult.Failure("Кнопки не сформированы или массив равен 0."));
         }

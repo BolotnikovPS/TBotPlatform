@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Text.Json.Serialization;
 using TBotPlatform.Results.Enums;
 
 namespace TBotPlatform.Results;
@@ -8,7 +7,7 @@ public class ErrorResult(string description, ErrorResultType errorType)
 {
     public string Description { get; } = description;
 
-    [JsonConverter(typeof(StringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public ErrorResultType ErrorType { get; } = errorType;
 
     public static ErrorResult None() => new("", ErrorResultType.None);

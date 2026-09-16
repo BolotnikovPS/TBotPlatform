@@ -1,4 +1,4 @@
-﻿namespace TBotPlatform.Extension;
+namespace TBotPlatform.Extension;
 
 public static partial class Extensions
 {
@@ -8,7 +8,7 @@ public static partial class Extensions
     /// <param name="input"></param>
     /// <param name="value"></param>
     /// <returns>bool</returns>
-    public static bool In(this string input, params string[] value)
+    public static bool In(this string? input, params string?[] value)
     {
         if (string.IsNullOrEmpty(input)
             || value?.Length == 0
@@ -19,8 +19,8 @@ public static partial class Extensions
 
         return value!
               .Where(x => x.CheckAny())
-              .Select(z => z.ToUpper())
-              .Contains(input.ToUpper());
+              .Select(z => z!.ToUpper())
+              .Contains(input!.ToUpper());
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ public static partial class Extensions
     /// <param name="input"></param>
     /// <param name="value"></param>
     /// <returns>bool</returns>
-    public static bool NotIn(this string input, params string[] value) => !input.In(value);
+    public static bool NotIn(this string? input, params string?[] value) => !input.In(value);
 
     /// <summary>
     /// Проверяет наличие input в value без регистровой зависимости
@@ -37,7 +37,7 @@ public static partial class Extensions
     /// <param name="input"></param>
     /// <param name="value"></param>
     /// <returns>bool</returns>
-    public static bool In<T>(this string input, params T[] value)
+    public static bool In<T>(this string? input, params T[]? value)
         where T : Enum
     {
         if (string.IsNullOrEmpty(input)
@@ -54,7 +54,7 @@ public static partial class Extensions
                        .ToString()
                        .ToUpper()
                    )
-              .Contains(input.ToUpper());
+              .Contains(input!.ToUpper());
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public static partial class Extensions
     /// <param name="input"></param>
     /// <param name="value"></param>
     /// <returns>bool</returns>
-    public static bool NotIn<T>(this string input, params T[] value)
+    public static bool NotIn<T>(this string? input, params T[]? value)
         where T : Enum => !input.In(value);
 
     /// <summary>

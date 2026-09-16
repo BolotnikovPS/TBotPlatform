@@ -1,4 +1,4 @@
-﻿using ComposableAsync;
+using ComposableAsync;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IO;
@@ -25,9 +25,9 @@ internal partial class BotBuilder
            {
                var loggerFactory = z.GetRequiredService<ILoggerFactory>();
 
-               return new(loggerFactory.CreateLogger<TelegramHttpHandler>(), z.GetRequiredKeyedService<IDispatcher>(botSetting.BotName));
+               return new(loggerFactory.CreateLogger<TelegramHttpHandler>(), z.GetRequiredKeyedService<IDispatcher>(botSetting.BotName), botSetting);
            })
-           .AddKeyedScoped(typeof(ITelegramContextLog), botSetting.BotName, Log);
+           .AddKeyedScoped(typeof(ITelegramContextLog), botSetting.BotName, Log!);
 
         var policy = GetRetryPolicy(botSetting.HttpPolicy);
 
@@ -35,7 +35,7 @@ internal partial class BotBuilder
 
         if (HttpClient.IsNotNull())
         {
-            httpBuilder.ConfigureHttpClient(HttpClient);
+            httpBuilder.ConfigureHttpClient(HttpClient!);
         }
 
         httpBuilder
@@ -60,7 +60,7 @@ internal partial class BotBuilder
                    res.Headers.IsNotNull()
                    && httpPolicy.BadStatuses.IsNull()
                        ? res.StatusCode.NotIn(HttpStatusCode.OK, HttpStatusCode.NoContent)
-                       : ((int)res.StatusCode).In(httpPolicy.BadStatuses)
+                       : ((int)res.StatusCode).In(httpPolicy.BadStatuses!)
                )
           .WaitAndRetryAsync(
                httpPolicy.RetryCount,

@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
+using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.Queues;
 using TBotPlatform.Contracts.Queues;
 using TBotPlatform.Extension;
@@ -10,32 +10,29 @@ namespace TBotPlatform.Common.Queues;
 
 internal class DelayQueue : IDelayQueue
 {
-    private List<DelayQueueItem> items = [];
-
+    private readonly List<DelayQueueItem> _items = [];
     private readonly object _lock = new();
+    private TaskCompletionSource _signal = CreateSignal();
 
     public IResult Enqueue(string botName, long chatId, TimeSpan delay, Func<IStateContextMinimal, Task<Message>> item)
     {
         try
         {
             ArgumentNullException.ThrowIfNull(botName);
-
-            if (chatId.IsDefault() || chatId.In(0, long.MinValue, long.MaxValue))
-            {
-                throw new ArgumentNullException(nameof(chatId));
-            }
+            chatId.ThrowIfInvalidChatId();
+            ArgumentNullException.ThrowIfNull(item);
 
             var dateTimeNow = DateTime.UtcNow;
             var readyTime = dateTimeNow.Add(delay);
 
             if (dateTimeNow >= readyTime)
             {
-                throw new Exception("Будущее время отправки сообщения меньше или равно текущему.");
+                throw new InvalidOperationException("Будущее время отправки сообщения меньше или равно текущему.");
             }
 
             lock (_lock)
             {
-                items.Add(new()
+                _items.Add(new()
                 {
                     BotName = botName,
                     Value = item,
@@ -43,34 +40,63 @@ internal class DelayQueue : IDelayQueue
                     ReadyTime = readyTime,
                 });
 
-                items = [.. items.OrderBy(item => item.ReadyTime)];
+                _items.Sort(static (left, right) => left.ReadyTime.CompareTo(right.ReadyTime));
+                Pulse();
             }
 
             return Result.Success();
         }
         catch (Exception ex)
         {
-            return Result.Failure(ErrorResult.Failure($"Message: {ex?.Message}; StackTrace: {ex?.StackTrace}"));
+            return Result.Failure(ErrorResult.Failure(ex.Message));
         }
     }
 
     public async Task<DelayQueueItem> Dequeue(CancellationToken cancellationToken)
     {
-        while (!cancellationToken.IsCancellationRequested)
+        while (true)
         {
-            var now = DateTime.UtcNow;
+            cancellationToken.ThrowIfCancellationRequested();
 
-            var item = items.FirstOrDefault(i => i.ReadyTime <= now);
-            if (item == null)
+            TimeSpan wait;
+            Task signalTask;
+
+            lock (_lock)
             {
-                await Task.Delay(1000, cancellationToken);
-                continue;
+                var now = DateTime.UtcNow;
+                var ready = _items.Find(i => i.ReadyTime <= now);
+                if (ready is not null)
+                {
+                    _items.Remove(ready);
+                    return ready;
+                }
+
+                wait = _items.Count == 0
+                    ? Timeout.InfiniteTimeSpan
+                    : _items[0].ReadyTime - now;
+
+                if (wait < TimeSpan.Zero)
+                {
+                    wait = TimeSpan.Zero;
+                }
+
+                signalTask = _signal.Task;
             }
 
-            items.Remove(item);
-            return item;
-        }
+            var delayTask = wait == Timeout.InfiniteTimeSpan
+                ? Task.Delay(Timeout.Infinite, cancellationToken)
+                : Task.Delay(wait, cancellationToken);
 
-        throw new OperationCanceledException();
+            await Task.WhenAny(signalTask, delayTask).ConfigureAwait(false);
+        }
     }
+
+    private void Pulse()
+    {
+        _signal.TrySetResult();
+        _signal = CreateSignal();
+    }
+
+    private static TaskCompletionSource CreateSignal()
+        => new(TaskCreationOptions.RunContinuationsAsynchronously);
 }

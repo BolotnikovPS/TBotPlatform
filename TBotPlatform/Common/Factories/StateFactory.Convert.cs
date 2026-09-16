@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.StateFactory;
@@ -9,6 +9,8 @@ namespace TBotPlatform.Common.Factories;
 
 internal partial class StateFactory
 {
+    private readonly Type[] _assemblyTypes = assembly.GetTypes();
+
     private ResultT<StateHistory> CreateContextFunc(string botName)
     {
         var state = GetStateFactoryDataCollection(botName)
@@ -27,27 +29,30 @@ internal partial class StateFactory
             return ResultT<StateHistory>.Failure(ErrorResult.NotFound(StateNotFound));
         }
 
-        var stateType = FindType(stateData!.StateTypeName);
+        Type? FindType(string? name)
+        {
+            return name.IsNotNull() ? Array.Find(_assemblyTypes, z => z.Name == name) : null;
+        }
+
+        var stateType = stateData!.StateType ?? FindType(stateData.StateTypeName);
 
         if (stateType.IsNull())
         {
             return ResultT<StateHistory>.Failure(ErrorResult.NotFound(StateNotFound));
         }
 
+        var menuType = stateData.MenuType
+                       ?? (stateData.MenuTypeName.IsNotNull()
+                           ? FindType(stateData.MenuTypeName)
+                           : null);
+
         var state = new StateHistory(
             stateType!,
-            stateData.MenuTypeName.IsNotNull()
-                ? FindType(stateData.MenuTypeName)
-                : null,
+            menuType,
             stateData.IsInlineState
             );
 
         return ResultT<StateHistory>.Success(state);
-
-        Type? FindType(string name)
-        {
-            return Array.Find(assembly.GetTypes(), z => z.Name == name);
-        }
     }
 
     private ResultT<StateHistory> ConvertStateFactoryData(string botName, StateFactoryData? stateFactoryData = null)

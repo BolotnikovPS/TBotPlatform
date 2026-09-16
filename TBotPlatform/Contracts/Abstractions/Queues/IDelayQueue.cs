@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
+using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Queues;
 using TBotPlatform.Results.Abstractions;
 using Telegram.Bot.Types;
@@ -13,7 +13,7 @@ public interface IDelayQueue
     /// <param name="botName">Наименование бота</param>
     /// <param name="chatId">Id чата с которым будем взаимодействовать</param>
     /// <param name="delay">Время задержки отправки сообщения</param>
-    /// <param name="item"></param>Запрос для отправки сообщения</param>
+    /// <param name="item">Запрос для отправки сообщения</param>
     IResult Enqueue(string botName, long chatId, TimeSpan delay, Func<IStateContextMinimal, Task<Message>> item);
 
     /// <summary>

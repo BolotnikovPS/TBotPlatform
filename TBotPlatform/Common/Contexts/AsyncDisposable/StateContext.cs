@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IO;
 using System.Text;
@@ -35,7 +35,7 @@ internal partial class StateContext(
     public MarkupNextState? MarkupNextState { get; private set; }
     public Update? ChatUpdate { get; private set; }
 
-    private const PMode ParseMode = PMode.Html;
+    private PMode ParseMode => telegramContext.GetBotSetting().ParseMode;
     private const string ChooseAction = "😊 Выберите действие";
 
     public void CreateStateContext(Update chatUpdate, MarkupNextState? markupNextState)
@@ -83,7 +83,7 @@ internal partial class StateContext(
             throw new NullReferenceException("История состояния отсутствует.");
         }
 
-        return stateBindFactory.BindState(telegramContext.GetBotSetting().BotName, chatId, stateHistory, cancellationToken);
+        return stateBindFactory.BindState(telegramContext.GetBotSetting().BotName, chatId, stateHistory!, cancellationToken);
     }
 
     public Task<IResult> UnBindState(CancellationToken cancellationToken)

@@ -1,4 +1,4 @@
-﻿using System.Collections.Frozen;
+using System.Collections.Frozen;
 
 namespace TBotPlatform.Contracts.EnumCollection;
 
@@ -7,7 +7,7 @@ public abstract class CollectionBase<T>
 {
     protected abstract FrozenDictionary<T, string> DataCollection { get; }
 
-    public string GetValueByKey(T key) => DataCollection.GetValueOrDefault(key);
+    public string GetValueByKey(T key) => DataCollection.GetValueOrDefault(key) ?? string.Empty;
 
     public T GetKeyByValue(string value) => DataCollection.FirstOrDefault(z => z.Value == value).Key;
 

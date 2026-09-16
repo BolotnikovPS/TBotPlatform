@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Contracts.Abstractions.Factories;
+using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.States;
 using TBotPlatform.Results.Abstractions;
@@ -21,12 +21,12 @@ public interface IStateContext : IStateContextMinimal
     /// <summary>
     /// Информация о сообщении из чата
     /// </summary>
-    Update ChatUpdate { get; }
+    Update? ChatUpdate { get; }
 
     /// <summary>
     /// Информация о состоянии входящей кнопки inline меню
     /// </summary>
-    MarkupNextState MarkupNextState { get; }
+    MarkupNextState? MarkupNextState { get; }
 
     /// <summary>
     /// Осуществляет запрос в чат, отличающийся от заданного в <see cref="IStateContextFactory"/>
@@ -40,7 +40,6 @@ public interface IStateContext : IStateContextMinimal
     /// <summary>
     /// Осуществляет запрос в чат с задержкой
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     /// <param name="timeSpan">Время задержки</param>
     /// <param name="request">Запрос для отправки сообщения</param>
     /// <returns></returns>

@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.Bots.Markups;
 using TBotPlatform.Extension;
@@ -80,7 +80,7 @@ internal partial class StateContext
 
         if (inlineMarkupMassiveList.CheckAny())
         {
-            inlineKeyboard = inlineMarkupMassiveList.Map();
+            inlineKeyboard = inlineMarkupMassiveList!.Map();
         }
 
         return SendOrUpdateTextMessage(text, inlineKeyboard, photoData: null, disableNotification, cancellationToken);

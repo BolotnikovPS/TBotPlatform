@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using TBotPlatform.Contracts.Bots.Buttons;
 using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Contracts.Bots.Markups;
@@ -383,7 +383,7 @@ public interface IStateContextMinimal : IAsyncDisposable
     /// </summary>
     /// <param name="text">Текст уведомления</param>
     /// <param name="showAlert">Если true, вместо уведомления в верхней части экрана чата клиент будет показывать оповещение</param>
-    /// <param name="url">URL, который будет открыт клиентом пользователя. Если вы создали <see cref="InlineMarkupCallBackGame"/> и приняли условия через <a href="https://t.me/botfather">@BotFather</a>, укажите URL, который открывает вашу игру.
+    /// <param name="url">URL, который будет открыт клиентом пользователя. Если вы создали <c>InlineMarkupCallBackGame</c> и приняли условия через <a href="https://t.me/botfather">@BotFather</a>, укажите URL, который открывает вашу игру.
     /// В противном случае вы можете использовать ссылки типа <c>t.me/your_bot?start=XXXX</c>, которые открывают вашего бота с параметром.</param>
     /// <param name="cacheTime">Максимальное время в секундах, в течение которого результат запроса обратного вызова может отображаться на стороне клиента</param>
     /// <param name="cancellationToken"></param>

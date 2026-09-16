@@ -1,4 +1,4 @@
-﻿namespace TBotPlatform.Extension;
+namespace TBotPlatform.Extension;
 
 public static partial class Extensions
 {
@@ -7,7 +7,7 @@ public static partial class Extensions
     /// </summary>
     /// <param name="s"></param>
     /// <returns></returns>
-    public static bool CheckAny(this string s)
+    public static bool CheckAny(this string? s)
         => !string.IsNullOrWhiteSpace(s);
 
     /// <summary>
@@ -16,7 +16,7 @@ public static partial class Extensions
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
     /// <returns></returns>
-    public static bool CheckAny<T>(this List<T> collection)
+    public static bool CheckAny<T>(this List<T>? collection)
         where T : class
         => collection?.Count > 0;
 
@@ -26,7 +26,7 @@ public static partial class Extensions
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
     /// <returns></returns>
-    public static bool CheckAny<T>(this IEnumerable<T> collection)
+    public static bool CheckAny<T>(this IEnumerable<T>? collection)
         where T : class
         => collection?.Any() == true;
 
@@ -36,7 +36,7 @@ public static partial class Extensions
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
     /// <returns></returns>
-    public static bool CheckAny<T>(this IQueryable<T> collection)
+    public static bool CheckAny<T>(this IQueryable<T>? collection)
         where T : class
         => collection?.Any() == true;
 }

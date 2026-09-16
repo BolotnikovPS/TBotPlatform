@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.State;
 using TBotPlatform.Contracts.Attributes;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.StateFactory;
-using TBotPlatform.Contracts.Bots.Users;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Common.Builder;
@@ -19,19 +18,18 @@ internal partial class BotBuilder
             throw new InvalidDataException("Отсутствуют потенциальные состояния.");
         }
 
-        var stateInterfaceName = typeof(IState<UserBase>).Name;
-        const string menuButtonInterfaceName = nameof(IMenuButton);
+        var stateInterfaceName = typeof(IState<>);
 
         var states = new List<StateFactoryData>();
 
-        foreach (var stateType in PotentialStateTypes.Distinct())
+        foreach (var stateType in PotentialStateTypes!.Distinct())
         {
             if (states.Any(z => z.StateTypeName == stateType.Name))
             {
                 continue;
             }
 
-            var isIStateType = stateType.GetInterfaces().Any(x => x.Name == stateInterfaceName);
+            var isIStateType = stateType.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == stateInterfaceName);
 
             if (!isIStateType)
             {
@@ -76,11 +74,9 @@ internal partial class BotBuilder
 
             if (attr.MenuType.IsNotNull())
             {
-                var isIMenuButtonType = attr.MenuType.GetInterfaces().Any(x => x.Name == menuButtonInterfaceName);
-
-                if (!isIMenuButtonType)
+                if (!typeof(IMenuButton).IsAssignableFrom(attr.MenuType))
                 {
-                    throw new($"Класс {attr.MenuType.Name} не наследуется от {menuButtonInterfaceName}");
+                    throw new($"Класс {attr.MenuType.Name} не наследуется от {nameof(IMenuButton)}");
                 }
             }
 
@@ -91,8 +87,8 @@ internal partial class BotBuilder
             }
 
             var newState = new StateFactoryData(
-                stateType.Name,
-                attr.MenuType?.Name,
+                stateType,
+                attr.MenuType,
                 attr.IsInlineState,
                 attr.IsLockUserState,
                 attr.IsRegistrationState,

@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Contracts.Cache;
+using TBotPlatform.Contracts.Cache;
 using TBotPlatform.Extension;
 using TBotPlatform.Results.Abstractions;
 
@@ -31,8 +31,7 @@ internal partial class StateFactory
 
         while (statesInMemoryOrEmpty.Count > MaxState)
         {
-            var toRemove = statesInMemoryOrEmpty.FirstOrDefault();
-            statesInMemoryOrEmpty.Remove(toRemove);
+            statesInMemoryOrEmpty.RemoveAt(0);
         }
 
         var values = new UserStateInCache

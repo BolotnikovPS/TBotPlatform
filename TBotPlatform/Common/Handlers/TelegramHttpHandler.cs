@@ -1,13 +1,14 @@
-﻿using ComposableAsync;
+﻿#nullable enable
 using Microsoft.Extensions.Logging;
 using System.Net;
-using System.Text;
+using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Extension;
+using ComposableAsync;
 
 namespace TBotPlatform.Common.Handlers;
 
-internal class TelegramHttpHandler(ILogger<TelegramHttpHandler> logger, IDispatcher dispatcher) : DelegatingHandler
+internal class TelegramHttpHandler(ILogger<TelegramHttpHandler> logger, IDispatcher dispatcher, TBotSetting botSetting) : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
@@ -17,32 +18,23 @@ internal class TelegramHttpHandler(ILogger<TelegramHttpHandler> logger, IDispatc
             request.Headers.Remove(DefaultHeadersConstant.ContextOperation);
         }
 
-        Exception exception = null;
-        var sbLog = new StringBuilder($"Request: {request.ToJson()}");
+        Exception? exception = null;
+        HttpStatusCode? statusCode = null;
+        TimeSpan? retryAfter = null;
         try
         {
-            if (request.Content.IsNotNull())
-            {
-                var resultRequest = await request.Content!.ReadAsStringAsync(cancellationToken);
-                sbLog.AppendLine(resultRequest.ToJson());
-            }
-
             var response = await dispatcher.Enqueue(() => base.SendAsync(request, cancellationToken), cancellationToken);
-
-            sbLog.AppendLine($"Response: {response.ToJson()}");
+            statusCode = response.StatusCode;
 
             if (response.StatusCode == HttpStatusCode.TooManyRequests && response.Headers.RetryAfter.IsNotNull())
             {
-                sbLog.AppendLine($"Delay: {response!.Headers!.RetryAfter!.Delta.ToString()}");
+                retryAfter = response.Headers.RetryAfter!.Delta;
             }
 
-            if (response.Content.IsNull())
+            if (botSetting.VerboseLog && request.Content.IsNotNull())
             {
-                return response;
+                logger.LogDebug("{operationGuid} Request payload: {payload}", operationGuid, await request.Content!.ReadAsStringAsync(cancellationToken));
             }
-
-            var resultResponse = await response.Content.ReadAsStringAsync(cancellationToken);
-            sbLog.AppendLine($"Response Content: {resultResponse.ToJson()}");
 
             return response;
         }
@@ -54,8 +46,15 @@ internal class TelegramHttpHandler(ILogger<TelegramHttpHandler> logger, IDispatc
         finally
         {
             var logLevel = exception.IsNotNull() ? LogLevel.Error : LogLevel.Debug;
-
-            logger.Log(logLevel, exception, "{operationGuid} {sbLog}", operationGuid, sbLog);
+            logger.Log(
+                logLevel,
+                exception,
+                "{operationGuid} {method} {uri} {statusCode} {retryAfter}",
+                operationGuid,
+                request.Method,
+                request.RequestUri,
+                statusCode,
+                retryAfter);
         }
     }
 }

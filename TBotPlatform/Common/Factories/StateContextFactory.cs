@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IO;
@@ -27,7 +27,7 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
     public IStateContextMinimal GetStateContext(string botName, long chatId)
     {
         ArgumentNullException.ThrowIfNull(botName);
-        ArgumentNullException.ThrowIfNull(chatId);
+        chatId.ThrowIfInvalidChatId();
 
         var scope = serviceScopeFactory.CreateAsyncScope();
         var telegramContext = scope.ServiceProvider.GetRequiredKeyedService<ITelegramContext>(botName);
@@ -83,7 +83,7 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
 
         var stateType = stateHistory.StateType;
 
-        var isStateType = stateType.GetInterfaces().Any(x => x.Name == typeof(IState<T>).Name);
+        var isStateType = typeof(IState<T>).IsAssignableFrom(stateType);
 
         if (!isStateType)
         {
@@ -107,6 +107,8 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
             // ignored
         }
 
+        var errorText = stateContext.TelegramContext.GetBotSetting().StateErrorText;
+
         Exception? exception = null;
         try
         {
@@ -116,25 +118,43 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "{stateName}. {errorText}", stateType.Name, ErrorText);
+            logger.LogError(ex, "{stateName}. {errorText}", stateType.Name, errorText);
             exception = ex;
         }
 
         if (exception.IsNull())
         {
+            await AnswerCallbackQueryIfNeeded(stateContext, cancellationToken);
             return;
         }
 
         try
         {
-            await stateContext.SendTextMessage(ErrorText, cancellationToken);
+            await stateContext.SendTextMessage(errorText, cancellationToken);
         }
         catch
         {
             // ignored
         }
 
-        await state!.HandleError(stateContext, user, exception, cancellationToken);
+        await state!.HandleError(stateContext, user, exception!, cancellationToken);
+    }
+
+    private static async Task AnswerCallbackQueryIfNeeded(StateContext stateContext, CancellationToken cancellationToken)
+    {
+        if (stateContext.ChatUpdate?.Type != UpdateType.CallbackQuery)
+        {
+            return;
+        }
+
+        try
+        {
+            await stateContext.AnswerCallbackQuery(string.Empty, false, string.Empty, null, cancellationToken);
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     private static void Validation<T>(StateHistory stateHistory, T user) where T : UserBase

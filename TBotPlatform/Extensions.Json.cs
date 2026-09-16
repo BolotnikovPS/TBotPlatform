@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace TBotPlatform.Extension;
 
@@ -12,26 +12,26 @@ public static partial class Extensions
 
     public static string ToJson(this object obj, Formatting formatting)
         => obj.IsNotNull()
-            ? JsonConvert.SerializeObject(obj, formatting, JsonSettings)
-            : null;
+            ? JsonConvert.SerializeObject(obj, formatting, JsonSettings)!
+            : null!;
 
     public static string ToJson<T>(this T obj)
         where T : class
-        => obj?.ToJson(Formatting.None);
+        => obj?.ToJson(Formatting.None)!;
 
     public static string ToJson(this object obj)
-        => obj?.ToJson(Formatting.None);
+        => obj?.ToJson(Formatting.None)!;
 
-    public static T FromJson<T>(this string value)
+    public static T FromJson<T>(this string? value)
         => value.IsNotNull()
-            ? JsonConvert.DeserializeObject<T>(value, JsonSettings)
-            : default;
+            ? JsonConvert.DeserializeObject<T>(value!, JsonSettings)!
+            : default!;
 
-    public static bool TryParseJson<T>(this string value, out T result)
+    public static bool TryParseJson<T>(this string? value, out T result)
     {
         if (value.IsNull())
         {
-            result = default;
+            result = default!;
             return false;
         }
 
@@ -42,7 +42,7 @@ public static partial class Extensions
         }
         catch
         {
-            result = default;
+            result = default!;
         }
 
         return false;
