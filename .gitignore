@@ -361,4 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/Rents.View/Docs/ContractRent.html
+
+.zvec-grep
+CHANGELOG.MD
