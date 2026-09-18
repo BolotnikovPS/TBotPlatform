@@ -5,6 +5,8 @@ using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Handlers;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Extension;
+using TBotPlatform.Results;
+using TBotPlatform.Results.Abstractions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -26,7 +28,7 @@ internal class TelegramUpdateProcessor(ILogger<TelegramUpdateProcessor> logger, 
         return Task.WhenAll(groups);
     }
 
-    public async Task ProcessUpdate(string botName, Update update, CancellationToken cancellationToken)
+    public async Task<IResult> ProcessUpdate(string botName, Update update, CancellationToken cancellationToken)
     {
         var timer = System.Diagnostics.Stopwatch.StartNew();
         Exception? exception = null;
@@ -58,19 +60,19 @@ internal class TelegramUpdateProcessor(ILogger<TelegramUpdateProcessor> logger, 
                           ?? throw new InvalidOperationException("Обработчик сообщений отсутствует.");
 
             var resultReceivingHandler = await handler.HandleUpdate(botName, update, markupNextState, telegramMessageUserData, cancellationToken);
-            if (!resultReceivingHandler.IsSuccess)
-            {
-                throw new InvalidOperationException(resultReceivingHandler.Error?.Description ?? "Не удалось обработать данные запроса с telegram");
-            }
+            return resultReceivingHandler.IsSuccess
+                ? Result.Success()
+                : Result.Failure(resultReceivingHandler.Error ?? ErrorResult.Failure("Не удалось обработать данные запроса с telegram"));
         }
         catch (Exception ex)
         {
             exception = ex;
+            return Result.Failure(ErrorResult.Failure(ex.Message));
         }
         finally
         {
             timer.Stop();
-            var logLevel = exception.IsNotNull() ? LogLevel.Error : LogLevel.Debug;
+            var logLevel = exception.IsNull() ? LogLevel.Debug : LogLevel.Error;
             logger.Log(
                 logLevel,
                 exception,

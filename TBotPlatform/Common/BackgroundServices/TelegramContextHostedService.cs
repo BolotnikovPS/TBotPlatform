@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using TBotPlatform.Common.BackgroundServices.Base;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Handlers;
+using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Extension;
 using Telegram.Bot;
 
@@ -37,13 +38,7 @@ internal class TelegramContextHostedService(
 
         if (settings.WebhookUrl.IsNotNull())
         {
-            await telegramContext.SetWebhook(
-                settings.WebhookUrl!,
-                secretToken: settings.WebhookSecretToken,
-                cancellationToken: cancellationToken
-                );
-
-            logger.LogDebug("Webhook для бота {bot} установлен: {url}", bot, settings.WebhookUrl);
+            await SetWebhookWithRetry(telegramContext, settings, bot, cancellationToken);
 
             try
             {
@@ -89,6 +84,49 @@ internal class TelegramContextHostedService(
             catch (Exception ex)
             {
                 logger.LogError(ex, "Неожиданное исключение при обработке обновлений бота {bot}", bot);
+            }
+        }
+    }
+
+    private async Task SetWebhookWithRetry(ITelegramContext telegramContext, TBotSetting settings, string bot, CancellationToken cancellationToken)
+    {
+        const int maxAttempts = 3;
+        var allowedUpdates = settings.UpdatePolicy?.Type;
+
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                await telegramContext.SetWebhook(
+                    settings.WebhookUrl!,
+                    secretToken: settings.WebhookSecretToken,
+                    allowedUpdates: allowedUpdates,
+                    cancellationToken: cancellationToken
+                    );
+
+                logger.LogDebug("Webhook для бота {bot} установлен: {url}", bot, settings.WebhookUrl);
+                return;
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception ex) when (attempt < maxAttempts)
+            {
+                logger.LogWarning(
+                    ex,
+                    "Не удалось установить webhook для бота {bot} (попытка {attempt}/{maxAttempts}). Повтор через {seconds} c.",
+                    bot,
+                    attempt,
+                    maxAttempts,
+                    attempt * 2);
+
+                await Task.Delay(TimeSpan.FromSeconds(attempt * 2), cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Не удалось установить webhook для бота {bot}", bot);
+                throw;
             }
         }
     }

@@ -1,4 +1,5 @@
 #nullable enable
+using TBotPlatform.Results.Abstractions;
 using Telegram.Bot.Types;
 
 namespace TBotPlatform.Contracts.Abstractions.Handlers;
@@ -7,8 +8,9 @@ public interface ITelegramUpdateProcessor
 {
     /// <summary>
     /// Обрабатывает одно обновление. Можно вызывать из webhook.
+    /// Возвращает <see cref="IResult"/>. При неудаче webhook-эндпоинт должен вернуть Telegram не-2xx HTTP-статус, чтобы Telegram повторил доставку.
     /// </summary>
-    Task ProcessUpdate(string botName, Update update, CancellationToken cancellationToken);
+    Task<IResult> ProcessUpdate(string botName, Update update, CancellationToken cancellationToken);
 
     /// <summary>
     /// Обрабатывает пачку обновлений: разные чаты параллельно, один чат — последовательно.
