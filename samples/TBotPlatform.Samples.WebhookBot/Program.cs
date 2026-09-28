@@ -3,6 +3,7 @@ using TBotPlatform.Common.Dependencies;
 using TBotPlatform.Contracts.Abstractions.Handlers;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Samples.WebhookBot;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -53,12 +54,17 @@ builder.Services
                UpdateType.EditedChannelPost,
                UpdateType.ShippingQuery,
                UpdateType.PreCheckoutQuery,
+               UpdateType.Poll,
                UpdateType.PollAnswer,
                UpdateType.BusinessConnection,
                UpdateType.BusinessMessage,
                UpdateType.EditedBusinessMessage,
                UpdateType.DeletedBusinessMessages,
                UpdateType.PurchasedPaidMedia,
+               UpdateType.ManagedBot,
+               UpdateType.GuestMessage,
+               UpdateType.Subscription,
+               UpdateType.StoppedMessageGeneration,
            ],
        },
    })
@@ -77,8 +83,10 @@ var app = builder.Build();
 
 var secretToken = Environment.GetEnvironmentVariable("TELEGRAM_WEBHOOK_SECRET_TOKEN");
 
-app.MapPost("/api/telegram/webhook", async (HttpContext context, ITelegramUpdateProcessor processor, CancellationToken ct) =>
+app.MapPost("/api/telegram/webhook", async (HttpContext context, ITelegramUpdateProcessor processor, ILoggerFactory loggerFactory, CancellationToken ct) =>
 {
+    var logger = loggerFactory.CreateLogger("TelegramWebhook");
+
     if (!string.IsNullOrEmpty(secretToken))
     {
         var header = context.Request.Headers["X-Telegram-Bot-Api-Secret-Token"].ToString();
@@ -88,14 +96,28 @@ app.MapPost("/api/telegram/webhook", async (HttpContext context, ITelegramUpdate
         }
     }
 
-    var update = await context.Request.ReadFromJsonAsync<Update>(cancellationToken: ct);
+    // JsonBotAPI.Options обязателен: Bot API использует snake_case, а не политику по умолчанию.
+    var update = await context.Request.ReadFromJsonAsync<Update>(JsonBotAPI.Options, ct);
     if (update is null)
     {
         return Results.BadRequest();
     }
 
     var result = await processor.ProcessUpdate("webhook", update, ct);
-    return result.IsSuccess ? Results.Ok() : Results.StatusCode(500);
+    if (result.IsSuccess)
+    {
+        return Results.Ok();
+    }
+
+    logger.LogError(
+        "Обновление {updateId} типа {updateType} не обработано: {error}",
+        update.Id,
+        update.Type,
+        result.Error?.Description);
+
+    // 500 заставляет Telegram повторять апдейт; используем его только для ошибок,
+    // которые могут быть временными (сбой обработки состояния, недоступность кэша и т.п.).
+    return Results.StatusCode(500);
 });
 
 app.Run();

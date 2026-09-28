@@ -18,9 +18,11 @@ internal class TelegramDelayHostedService(ILogger<TelegramDelayHostedService> lo
             Exception? exception = null;
             try
             {
-                await using var scope = services.CreateAsyncScope();
-                var stateContextFactory = scope.ServiceProvider.GetRequiredService<IStateContextFactory>();
-                var stateContextMinimal = stateContextFactory.GetStateContext(request.BotName, request.ChatId);
+                var stateContextFactory = services.GetRequiredService<IStateContextFactory>();
+
+                // StateContext владеет собственным AsyncServiceScope и обязан освобождать его,
+                // иначе scope (вместе со scoped-сервисами и HttpClient) утекает на каждый отложенный запрос.
+                await using var stateContextMinimal = stateContextFactory.GetStateContext(request.BotName, request.ChatId);
 
                 await request.Value.Invoke(stateContextMinimal);
             }

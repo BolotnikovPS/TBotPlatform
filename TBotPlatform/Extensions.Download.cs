@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Bots.FileDatas;
@@ -60,7 +60,7 @@ public static partial class Extensions
 
         if (message.IsNull()
             || message!.Document.IsNull()
-            || !message.Document!.MimeType!.Contains("image")
+            || message.Document!.MimeType?.Contains("image") != true
            )
         {
             return FailureResult();

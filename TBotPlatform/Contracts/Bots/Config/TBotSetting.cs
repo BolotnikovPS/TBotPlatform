@@ -30,10 +30,46 @@ public class TBotSetting
     public TBotSettingUpdatePolicy? UpdatePolicy { get; set; }
 
     /// <summary>
-    /// Время ожидания между получением новых сообщений от telegram. Заполнить в случае использования <see cref="IBotPlatformBuilder.AddHostedService" />
+    /// Время ожидания между получением новых сообщений от telegram.
+    /// Не используется при long polling: получение обновлений выполняет Telegram.Bot
+    /// (удержание запроса GetUpdates регулируется <see cref="RequestTimeout" />).
+    /// Параметр оставлен для обратной совместимости
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public int HostWaitMilliSecond { get; set; } = 1000;
+
+    /// <summary>
+    /// Базовый URL локального Bot API Server (например, http://localhost:8081).
+    /// Если задан, клиент работает с локальным сервером вместо https://api.telegram.org
+    /// </summary>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string? BaseUrl { get; init; }
+
+    /// <summary>
+    /// Использовать тестовое окружение Bot API (…/bot{token}/test)
+    /// </summary>
+    public bool UseTestEnvironment { get; init; }
+
+    /// <summary>
+    /// Количество автоматических повторов запроса при ответе 429 "Too Many Requests".
+    /// Если не задано, используется значение по умолчанию Telegram.Bot
+    /// </summary>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int? RetryCount { get; init; }
+
+    /// <summary>
+    /// Порог RetryAfter (в секундах), при котором выполняется автоматический повтор запроса.
+    /// Если не задано, используется значение по умолчанию Telegram.Bot
+    /// </summary>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int? RetryThreshold { get; init; }
+
+    /// <summary>
+    /// Таймаут HTTP-запросов к Telegram. Для long polling это же значение используется как время удержания запроса GetUpdates.
+    /// Если не задано, используется значение по умолчанию HttpClient (100 секунд)
+    /// </summary>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public TimeSpan? RequestTimeout { get; init; }
 
     /// <summary>
     /// URL вебхука. Если задан, бот работает в режиме webhook вместо long polling.

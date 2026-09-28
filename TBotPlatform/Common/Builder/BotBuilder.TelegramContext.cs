@@ -55,18 +55,27 @@ internal partial class BotBuilder
     private static AsyncPolicy<HttpResponseMessage> GetRetryPolicy(TBotSettingHttpPolicy httpPolicy)
         => HttpPolicyExtensions
           .HandleTransientHttpError()
-          .OrResult(
-               res =>
-                   res.Headers.IsNotNull()
-                   && httpPolicy.BadStatuses.IsNull()
-                       ? res.StatusCode.NotIn(HttpStatusCode.OK, HttpStatusCode.NoContent)
-                       : ((int)res.StatusCode).In(httpPolicy.BadStatuses!)
-               )
+          .OrResult(response => IsRetryableStatusCode(httpPolicy, response))
           .WaitAndRetryAsync(
                httpPolicy.RetryCount,
                (_, response, _) => response?.Result?.Headers.RetryAfter?.Delta ?? TimeSpan.FromMilliseconds(httpPolicy.RetryMilliSecondInterval),
                (_, _, _, _) => Task.CompletedTask
                );
+
+    /// <summary>
+    /// Дополнительные (не transient) статусы, которые повторяет Polly.
+    /// </summary>
+    /// <remarks>
+    /// 429 (TooManyRequests) намеренно исключён: его повторяет сам TelegramBotClient
+    /// (TelegramBotClientOptions.RetryCount/RetryThreshold + RetryAfter), иначе один запрос
+    /// уходит в сеть RetryCount * RetryCount раз.
+    /// Пустой <see cref="TBotSettingHttpPolicy.BadStatuses"/> означает «повторять только transient-ошибки»:
+    /// ответы 400/401/403/404 детерминированы и повтор их бессмысленен.
+    /// </remarks>
+    private static bool IsRetryableStatusCode(TBotSettingHttpPolicy httpPolicy, HttpResponseMessage response)
+        => response.StatusCode != HttpStatusCode.TooManyRequests
+           && httpPolicy.BadStatuses.IsNotNull()
+           && ((int)response.StatusCode).In(httpPolicy.BadStatuses!);
 
     private static TimeLimiter GetLimeLimiter(int telegramRequestMilliSecondInterval)
         => TimeLimiter.GetFromMaxCountByInterval(RateContextConstant.MaxCountIteration, TimeSpan.FromMilliseconds(telegramRequestMilliSecondInterval));

@@ -84,6 +84,10 @@ public static partial class Extensions
         telegramMessageUserData = update.Type switch
         {
             UpdateType.Message => new(update.Message?.From, update.Message?.Chat),
+            UpdateType.GuestMessage => new(update.GuestMessage?.From, update.GuestMessage?.Chat),
+            UpdateType.ManagedBot => new(update.ManagedBot?.User, chatOrNull: null),
+            UpdateType.Subscription => new(update.Subscription?.User, chatOrNull: null),
+            UpdateType.StoppedMessageGeneration => new(userOrNull: null, update.StoppedMessageGeneration?.Chat),
             UpdateType.InlineQuery => new(update.InlineQuery?.From, chatOrNull: null),
             UpdateType.ChosenInlineResult => new(update.ChosenInlineResult?.From, chatOrNull: null),
             UpdateType.CallbackQuery => new(update.CallbackQuery?.From, update.CallbackQuery?.Message?.Chat),

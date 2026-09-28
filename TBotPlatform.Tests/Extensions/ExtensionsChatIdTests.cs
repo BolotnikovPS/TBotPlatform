@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using TBotPlatform.Contracts.Bots.Exceptions;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Tests.Extensions;
@@ -14,5 +15,5 @@ public class ExtensionsChatIdTests
     [TestCase(long.MinValue)]
     [TestCase(long.MaxValue)]
     public void ThrowIfInvalidChatId_WhenInvalid_Throws(long chatId)
-        => Assert.Throws<ArgumentOutOfRangeException>(() => chatId.ThrowIfInvalidChatId());
+        => Assert.Throws<ChatIdArgException>(() => chatId.ThrowIfInvalidChatId());
 }

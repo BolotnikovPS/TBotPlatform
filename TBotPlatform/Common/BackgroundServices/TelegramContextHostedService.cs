@@ -1,11 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TBotPlatform.Common.BackgroundServices.Base;
+using TBotPlatform.Common.Handlers;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Handlers;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Extension;
 using Telegram.Bot;
+using Telegram.Bot.Exceptions;
+using Telegram.Bot.Polling;
 
 namespace TBotPlatform.Common.BackgroundServices;
 
@@ -16,21 +19,44 @@ internal class TelegramContextHostedService(
     ITelegramUpdateProcessor updateProcessor
     ) : BackgroundServiceBase<TelegramContextHostedService>
 {
+    private const int UpdatesLimitMin = 1;
+    private const int UpdatesLimitMax = 100;
+
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var taskList = bots.Select(bot => Task.Factory.StartNew(
-            () => ExecuteBot(bot, stoppingToken),
+            () => ExecuteBotSafe(bot, stoppingToken),
             stoppingToken,
             TaskCreationOptions.LongRunning,
-            TaskScheduler.Current
+            TaskScheduler.Default
             ).Unwrap());
 
         return Task.WhenAll(taskList);
     }
 
+    private async Task ExecuteBotSafe(string bot, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await ExecuteBot(bot, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // Ожидаемое завершение при остановке сервиса.
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Бот {bot} остановлен из-за необработанного исключения", bot);
+        }
+    }
+
     private async Task ExecuteBot(string bot, CancellationToken cancellationToken)
     {
-        var telegramContext = services.GetRequiredKeyedService<ITelegramContext>(bot);
+        // Scoped-сервисы (включая keyed ITelegramContext) резолвятся из scope на время жизни бота,
+        // иначе они захватываются из корневого провайдера (captive dependency).
+        await using var botScope = services.CreateAsyncScope();
+
+        var telegramContext = botScope.ServiceProvider.GetRequiredKeyedService<ITelegramContext>(bot);
         var settings = telegramContext.GetBotSetting();
         var me = await telegramContext.GetMe(cancellationToken);
 
@@ -57,34 +83,27 @@ internal class TelegramContextHostedService(
             return;
         }
 
-        var offset = 0;
-        var updateType = settings.UpdatePolicy.IsNotNull()
-            ? settings.UpdatePolicy!.Type?.ToList()
-            : null;
-        var limit = settings.UpdatePolicy.IsNotNull()
-            ? settings.UpdatePolicy?.Capacity
-            : null;
-
-        while (!cancellationToken.IsCancellationRequested)
+        // Получение обновлений делегируется Telegram.Bot (long polling с корректным offset,
+        // DropPendingUpdates и типизированными ошибками) вместо ручного цикла GetUpdates.
+        var receiverOptions = new ReceiverOptions
         {
-            try
-            {
-                var updates = await telegramContext.GetUpdates(offset, limit, allowedUpdates: updateType, cancellationToken: cancellationToken);
-                if (updates.IsNull() || updates.Length == 0)
-                {
-                    await Task.Delay(settings.HostWaitMilliSecond, cancellationToken);
-                    continue;
-                }
+            AllowedUpdates = settings.UpdatePolicy?.Type,
 
-                await updateProcessor.ProcessUpdates(bot, updates, cancellationToken);
-                offset = updates[^1].Id + 1;
+            // Telegram Bot API принимает limit только в диапазоне 1..100, иначе 400 Bad Request.
+            Limit = settings.UpdatePolicy?.Capacity is { } capacity
+                ? Math.Clamp(capacity, UpdatesLimitMin, UpdatesLimitMax)
+                : null,
+        };
 
-                await Task.Delay(settings.HostWaitMilliSecond, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Неожиданное исключение при обработке обновлений бота {bot}", bot);
-            }
+        var updateHandler = new TelegramUpdateHandler(updateProcessor, bot, logger);
+
+        try
+        {
+            await telegramContext.ReceiveAsync(updateHandler, receiverOptions, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // Ожидаемое завершение при остановке сервиса.
         }
     }
 
@@ -109,6 +128,18 @@ internal class TelegramContextHostedService(
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
+                throw;
+            }
+            catch (ApiRequestException ex) when (ex.ErrorCode is 401 or 404)
+            {
+                // Постоянные ошибки (неверный токен, неизвестный метод): повтор не поможет.
+                logger.LogError(
+                    ex,
+                    "Не удалось установить webhook для бота {bot}: Telegram API вернул {errorCode}",
+                    bot,
+                    ex.ErrorCode
+                    );
+
                 throw;
             }
             catch (Exception ex) when (attempt < maxAttempts)

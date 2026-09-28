@@ -83,11 +83,22 @@ internal class DelayQueue : IDelayQueue
                 signalTask = _signal.Task;
             }
 
-            var delayTask = wait == Timeout.InfiniteTimeSpan
-                ? Task.Delay(Timeout.Infinite, cancellationToken)
-                : Task.Delay(wait, cancellationToken);
+            // Отдельный CTS: без отмены Task.Delay продолжает жить после срабатывания сигнала,
+            // а при пустой очереди копится бессрочный Task.Delay(Timeout.Infinite).
+            using var delayCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-            await Task.WhenAny(signalTask, delayTask).ConfigureAwait(false);
+            var delayTask = wait == Timeout.InfiniteTimeSpan
+                ? Task.Delay(Timeout.Infinite, delayCts.Token)
+                : Task.Delay(wait, delayCts.Token);
+
+            try
+            {
+                await Task.WhenAny(signalTask, delayTask).ConfigureAwait(false);
+            }
+            finally
+            {
+                await delayCts.CancelAsync().ConfigureAwait(false);
+            }
         }
     }
 

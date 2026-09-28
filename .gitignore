@@ -364,3 +364,6 @@ FodyWeavers.xsd
 
 .zvec-grep
 CHANGELOG.MD
+
+# Локальные замеры покрытия (dotnet test --collect:"XPlat Code Coverage" --results-directory .coverage-*)
+.coverage*/

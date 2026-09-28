@@ -29,6 +29,13 @@ public interface IStateContext : IStateContextMinimal
     MarkupNextState? MarkupNextState { get; }
 
     /// <summary>
+    /// Возвращает ссылку вида <c>https://t.me/...</c> на сообщение, от которого пришел запрос.
+    /// Для приватных чатов и обычных групп ссылка недоступна — возвращается null
+    /// </summary>
+    /// <returns></returns>
+    string? GetMessageLink();
+
+    /// <summary>
     /// Осуществляет запрос в чат, отличающийся от заданного в <see cref="IStateContextFactory"/>
     /// </summary>
     /// <typeparam name="T"></typeparam>

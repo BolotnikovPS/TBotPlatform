@@ -23,14 +23,19 @@ public abstract class StartReceivingHandlerBase<TUser>(IStateFactory stateFactor
         CancellationToken cancellationToken
         )
     {
-        var chatId = telegramData.ChatOrNull?.Id
-                     ?? throw new InvalidOperationException("В обновлении отсутствует чат.");
+        var chatId = telegramData.ChatOrNull?.Id;
+        if (chatId is null)
+        {
+            // Обработчик состояний не может работать без чата: возвращаем ошибку вместо исключения,
+            // чтобы сбой был виден как результат обработки, а не как необработанное исключение.
+            return Result.Failure(ErrorResult.NotFound("В обновлении отсутствует чат."));
+        }
 
         var user = await GetOrCreateUser(botName, telegramData, cancellationToken);
 
         await BeforeHandleAsync(botName, update, user, cancellationToken);
 
-        var state = await ResolveState(botName, chatId, update, markupNextState, user, cancellationToken);
+        var state = await ResolveState(botName, chatId.Value, update, markupNextState, user, cancellationToken);
         if (!state.IsSuccess)
         {
             return Result.Failure(state.Error ?? ErrorResult.NotFound("Состояние не найдено"));

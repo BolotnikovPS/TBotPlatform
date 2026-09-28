@@ -60,7 +60,12 @@ internal class MenuButtonFactory(IServiceScopeFactory serviceScopeFactory) : IMe
 
         var mainButtons = await GetMainButtons(user, menuStateType);
 
-        if (mainButtons.IsSuccess && mainButtons.Value.Count == 0)
+        if (!mainButtons.IsSuccess)
+        {
+            return Result.Failure(mainButtons.Error!);
+        }
+
+        if (mainButtons.Value.Count == 0)
         {
             return Result.Failure(ErrorResult.Failure("Кнопки не сформированы или массив равен 0."));
         }

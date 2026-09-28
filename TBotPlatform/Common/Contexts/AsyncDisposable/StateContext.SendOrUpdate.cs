@@ -118,6 +118,29 @@ internal partial class StateContext
 
         if (photoData.IsNotNull())
         {
+            // Если запрос пришел по кнопке сообщения с фотографией, обновляем медиа на месте:
+            // сообщение не удаляется и не пересылается заново, позиция в истории чата сохраняется
+            if (ChatUpdate.IsNotNull() && ChatUpdate!.CallbackQuery.WithPhoto())
+            {
+                CallbackQueryValidOrThrow(ChatUpdate.CallbackQuery);
+
+                await using var mediaStream = mgr.GetStream(photoData!.Bytes);
+
+                var media = new InputMediaPhoto(InputFile.FromStream(mediaStream, photoData.Name))
+                {
+                    Caption = text,
+                    ParseMode = ParseMode,
+                };
+
+                return await telegramContext.EditMessageMedia(
+                    chatId,
+                    ChatUpdate.CallbackQuery!.Message!.MessageId,
+                    media,
+                    replyMarkup: inlineKeyboard,
+                    cancellationToken: cancellationToken
+                    );
+            }
+
             var checkToDelete = ChatUpdate.IsNotNull()
                                 && ChatUpdate!.CallbackQuery.IsNotNull()
                                 && (DateTime.UtcNow - ChatUpdate.CallbackQuery!.Message!.Date).TotalDays < 1;

@@ -22,6 +22,6 @@ set TELEGRAM_WEBHOOK_SECRET_TOKEN=super-secret
 
 Библиотека сама вызывает `SetWebhook` при старте. В эндпоинте:
 
-- проверяется заголовок `X-Telegram-Bot-Api-Secret-Token` (если задан);
-- тело десериализуется в `Update` и передаётся в `ITelegramUpdateProcessor.ProcessUpdate`;
-- при ошибке обработки возвращается HTTP 500, чтобы Telegram повторил доставку update.
+- проверяется заголовок `X-Telegram-Bot-Api-Secret-Token` (если задан) — при несовпадении возвращается HTTP 401, и доставка не повторяется;
+- тело десериализуется в `Update` через `JsonBotAPI.Options` (snake_case-имена Bot API) и передаётся в `ITelegramUpdateProcessor.ProcessUpdate`;
+- ошибки обработки логируются (update id, тип, текст ошибки) и возвращается HTTP 500 — только в этом случае Telegram повторит доставку update.

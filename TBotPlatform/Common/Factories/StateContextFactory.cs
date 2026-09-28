@@ -68,9 +68,19 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         var stateContext = new StateContext(scope, stateHistory, stateBindFactory, telegramContext, delayQueue, mgr, user.ChatId);
         stateContext.CreateStateContext(chatUpdate, markupNextState);
 
-        await Request(stateContext, user, stateHistory, cancellationToken);
+        try
+        {
+            await Request(stateContext, user, stateHistory, cancellationToken);
 
-        return stateContext;
+            return stateContext;
+        }
+        catch
+        {
+            // StateContext владеет scope — при ошибке до возврата вызывающему его нужно освободить здесь.
+            await stateContext.DisposeAsync();
+
+            throw;
+        }
     }
 
     private async Task Request<T>(StateContext stateContext, T user, StateHistory stateHistory, CancellationToken cancellationToken)
@@ -102,9 +112,9 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         {
             await stateContext.SendChatAction(ChatAction.Typing, cancellationToken);
         }
-        catch
+        catch (Exception) when (!cancellationToken.IsCancellationRequested)
         {
-            // ignored
+            // typing — необязательное действие, его сбой не должен влиять на обработку состояния
         }
 
         var errorText = stateContext.TelegramContext.GetBotSetting().StateErrorText;
@@ -151,9 +161,9 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         {
             await stateContext.AnswerCallbackQuery(string.Empty, false, string.Empty, null, cancellationToken);
         }
-        catch
+        catch (Exception) when (!cancellationToken.IsCancellationRequested)
         {
-            // ignored
+            // ответ на callback необязателен, его сбой не должен ломать обработку
         }
     }
 
