@@ -1,64 +1,64 @@
-using TBotPlatform.Contracts.Bots.Users;
+﻿using TBotPlatform.Contracts.Bots.Users;
 
 namespace TBotPlatform.Contracts.Bots.StateFactory;
 
 /// <summary>
-/// Описание состояния
+/// State description.
 /// </summary>
 public class StateFactoryData
 {
     /// <summary>
-    /// Перечень типов кнопок соответствующих состоянию
+    /// List of button types matching the state.
     /// </summary>
     public List<string> ButtonsTypes { get; set; } = null!;
 
     /// <summary>
-    /// Перечень типов текста соответствующих состоянию
+    /// List of text types matching the state.
     /// </summary>
     public List<string> TextsTypes { get; set; } = null!;
 
     /// <summary>
-    /// Перечень типов команд соответствующих состоянию
+    /// List of command types matching the state.
     /// </summary>
     public List<string> CommandsTypes { get; set; } = null!;
 
     /// <summary>
-    /// Наименование типа состояния
+    /// Name of the state type.
     /// </summary>
     public string StateTypeName { get; set; } = null!;
 
     /// <summary>
-    /// Тип состояния, если известен на этапе регистрации
+    /// State type, if known at registration time.
     /// </summary>
     public Type? StateType { get; set; }
 
     /// <summary>
-    /// Наименование типа кнопок состояния
+    /// Name of the state button type.
     /// </summary>
     public string? MenuTypeName { get; set; }
 
     /// <summary>
-    /// Тип меню, если известен на этапе регистрации
+    /// Menu type, if known at registration time.
     /// </summary>
     public Type? MenuType { get; set; }
 
     /// <summary>
-    /// Состояние вызывается только с inline кнопок
+    /// The state is invoked only from inline buttons.
     /// </summary>
     public bool IsInlineState { get; set; }
 
     /// <summary>
-    /// Состояние вызывается только при наличии блокировки у пользователя
+    /// The state is invoked only when the user is locked.
     /// </summary>
     public bool IsLockUserState { get; set; }
 
     /// <summary>
-    /// Показывает что состояние относится уровню регистрации пользователя
+    /// Indicates the state belongs to the user registration level.
     /// </summary>
     public bool IsRegistrationState { get; set; }
 
     /// <summary>
-    /// Показывает что состояние относится к пользователя <see cref="UserBase.IsAdmin"/>
+    /// Indicates the state belongs to an admin user <see cref="UserBase.IsAdmin"/>.
     /// </summary>
     public bool IsAdminState { get; set; }
 

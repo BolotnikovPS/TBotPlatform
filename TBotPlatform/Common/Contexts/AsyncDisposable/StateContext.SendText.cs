@@ -33,7 +33,7 @@ internal partial class StateContext
 
         if (text.IsNull())
         {
-            // Сообщение не отправляется, но возвращать null вместо Task нельзя — вызывающий получит NRE на await.
+            // The message is not sent, but returning null instead of a Task is not allowed: the caller would get an NRE on await.
             return Task.FromResult<Message>(null!);
         }
 
@@ -65,13 +65,13 @@ internal partial class StateContext
 
         if (text.IsNull() || entities.IsNull() || entities.Count == 0)
         {
-            // Сообщение не отправляется, но возвращать null вместо Task нельзя — вызывающий получит NRE на await.
+            // The message is not sent, but returning null instead of a Task is not allowed: the caller would get an NRE on await.
             return Task.FromResult<Message>(null!);
         }
 
         TextLengthValidOrThrow(text);
 
-        // Разметка передается сущностями, поэтому parse mode отключен: Telegram не принимает их одновременно.
+        // Markup is passed as entities, so parse mode is disabled: Telegram does not accept both at the same time.
         return telegramContext.SendMessage(
             chatId,
             text,
@@ -88,7 +88,6 @@ internal partial class StateContext
 
         if (text.IsNull())
         {
-            // Сообщение не отправляется, но возвращать null вместо Task нельзя — вызывающий получит NRE на await.
             return Task.FromResult<Message>(null!);
         }
 

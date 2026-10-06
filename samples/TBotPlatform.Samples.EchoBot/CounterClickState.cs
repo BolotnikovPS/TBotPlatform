@@ -5,8 +5,8 @@ using TBotPlatform.Contracts.Attributes;
 namespace TBotPlatform.Samples.EchoBot;
 
 /// <summary>
-/// Обрабатывает нажатия на кнопку счётчика: пересчитывает подпись и заменяет клавиатуру
-/// у того же сообщения (без удаления и повторной отправки).
+/// Handles presses on the counter button: recalculates the caption and replaces the keyboard
+/// of the same message (without deleting it and sending it again).
 /// </summary>
 [StateInlineActivator]
 internal sealed class CounterClickState : BaseStateHandler<EchoUser>

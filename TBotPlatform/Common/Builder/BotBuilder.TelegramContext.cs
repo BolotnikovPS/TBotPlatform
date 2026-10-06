@@ -63,14 +63,14 @@ internal partial class BotBuilder
                );
 
     /// <summary>
-    /// Дополнительные (не transient) статусы, которые повторяет Polly.
+    /// Additional (non-transient) statuses that Polly retries.
     /// </summary>
     /// <remarks>
-    /// 429 (TooManyRequests) намеренно исключён: его повторяет сам TelegramBotClient
-    /// (TelegramBotClientOptions.RetryCount/RetryThreshold + RetryAfter), иначе один запрос
-    /// уходит в сеть RetryCount * RetryCount раз.
-    /// Пустой <see cref="TBotSettingHttpPolicy.BadStatuses"/> означает «повторять только transient-ошибки»:
-    /// ответы 400/401/403/404 детерминированы и повтор их бессмысленен.
+    /// 429 (TooManyRequests) is deliberately excluded: TelegramBotClient retries it itself
+    /// (TelegramBotClientOptions.RetryCount/RetryThreshold + RetryAfter); otherwise one request
+    /// goes to the network RetryCount * RetryCount times.
+    /// An empty <see cref="TBotSettingHttpPolicy.BadStatuses"/> means "retry only transient errors":
+    /// responses 400/401/403/404 are deterministic, and retrying them is pointless.
     /// </remarks>
     private static bool IsRetryableStatusCode(TBotSettingHttpPolicy httpPolicy, HttpResponseMessage response)
         => response.StatusCode != HttpStatusCode.TooManyRequests

@@ -3,12 +3,12 @@ namespace TBotPlatform.Contracts.Bots.Constant;
 public static partial class MediaGroupConstant
 {
     /// <summary>
-    /// Минимальное количество файлов в альбоме, которое принимает Telegram
+    /// Minimum number of files in an album that Telegram accepts
     /// </summary>
     public const int MinCount = 2;
 
     /// <summary>
-    /// Максимальное количество файлов в альбоме, которое принимает Telegram
+    /// Maximum number of files in an album that Telegram accepts
     /// </summary>
     public const int MaxCount = 10;
 }

@@ -8,21 +8,21 @@ using Telegram.Bot.Types;
 namespace TBotPlatform.Samples.EchoBot;
 
 /// <summary>
-/// Демонстрация постраничного вывода (пагинации).
-/// Номера страниц приходят с inline кнопок <see cref="PaginationsConstant.PreviousPage"/> и
-/// <see cref="PaginationsConstant.NextPage"/>: <see cref="InlineMarkupState"/> сам добавляет к данным
-/// этой кнопки префикс <see cref="PaginationsConstant.PaginationIdentity"/>, а
-/// <c>TryParsePagination</c> разбирает его обратно.
+/// Demonstrates paginated output.
+/// Page numbers come from the inline buttons <see cref="PaginationsConstant.PreviousPage"/> and
+/// <see cref="PaginationsConstant.NextPage"/>: <see cref="InlineMarkupState"/> itself adds the prefix
+/// <see cref="PaginationsConstant.PaginationIdentity"/> to the data of that button, and
+/// <c>TryParsePagination</c> parses it back.
 /// </summary>
 internal static class CityList
 {
     /// <summary>
-    /// Число элементов на странице
+    /// Number of items per page
     /// </summary>
     private const int Step = PaginationsConstant.StepMin;
 
     /// <summary>
-    /// Класс состояния, которое обрабатывает нажатия на кнопки перехода по страницам
+    /// State class that handles next/previous page button presses
     /// </summary>
     private const string PageStateName = nameof(ListPageState);
 
@@ -51,12 +51,12 @@ internal static class CityList
     ];
 
     /// <summary>
-    /// Общее число страниц
+    /// Total page count
     /// </summary>
     public static int PagesCount => (Cities.Count + Step - 1) / Step;
 
     /// <summary>
-    /// Отправляет или обновляет сообщение со страницей списка
+    /// Sends or updates the message with the list page
     /// </summary>
     public static Task<Message> RenderPage(IStateContext context, int page, CancellationToken cancellationToken)
     {

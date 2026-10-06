@@ -14,7 +14,7 @@ using Telegram.Bot.Types;
 namespace TBotPlatform.Tests.Common.Handlers;
 
 /// <summary>
-/// Проверяет обработчик обновлений, через который ReceiveAsync из Telegram.Bot передает апдейты в платформу.
+/// Tests the update handler through which ReceiveAsync from Telegram.Bot passes updates to the platform.
 /// </summary>
 [TestFixture]
 public class TelegramUpdateHandlerTests

@@ -8,13 +8,13 @@ public static partial class Extensions
     private const string AuthDateField = "auth_date";
 
     /// <summary>
-    /// Проверяет и разбирает данные Telegram.WebApp.initData (или LoginWidget)
+    /// Checks and parses Telegram.WebApp.initData (or LoginWidget) data
     /// </summary>
-    /// <param name="initData">Данные вида query string, полученные от Telegram</param>
-    /// <param name="botToken">Токен бота</param>
-    /// <param name="fields">Поля данных без хэша при успешной проверке, иначе null</param>
-    /// <param name="maxAge">Максимальный возраст данных, если требуется защита от повторного использования</param>
-    /// <returns>true, если подпись корректна и данные не устарели</returns>
+    /// <param name="initData">Data in query string form received from Telegram</param>
+    /// <param name="botToken">Bot token</param>
+    /// <param name="fields">Data fields without the hash on successful validation, otherwise null</param>
+    /// <param name="maxAge">Maximum data age, if protection against reuse is required</param>
+    /// <returns>true if the signature is correct and the data is not stale</returns>
     public static bool TryValidateInitData(
         this string? initData,
         string botToken,

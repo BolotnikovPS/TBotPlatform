@@ -12,42 +12,38 @@ namespace TBotPlatform.Common;
 public static partial class Extensions
 {
     /// <summary>
-    /// Скачивает изображение
+    /// Downloads an image
     /// </summary>
-    /// <param name="stateContext">Контекст для обработки сообщения</param>
-    /// <param name="message">Сообщение</param>
+    /// <param name="stateContext">Context used to process the message</param>
+    /// <param name="message">The message</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     public static Task<IResult<FileData?>> DownloadImage(this IStateContext stateContext, Message? message, CancellationToken cancellationToken)
         => stateContext.TelegramContext.DownloadImage(message, cancellationToken);
 
     /// <summary>
-    /// Скачивает документ
+    /// Downloads a document
     /// </summary>
-    /// <param name="stateContext">Контекст для обработки сообщения</param>
-    /// <param name="message">Сообщение</param>
+    /// <param name="stateContext">Context used to process the message</param>
+    /// <param name="message">The message</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     public static Task<IResult<FileData?>> DownloadDocument(this IStateContext stateContext, Message? message, CancellationToken cancellationToken)
         => stateContext.TelegramContext.DownloadDocument(message, cancellationToken);
 
     /// <summary>
-    /// Скачивает файл
+    /// Downloads a file
     /// </summary>
-    /// <param name="stateContext">Контекст для обработки сообщения</param>
-    /// <param name="fileId">Id файла</param>
+    /// <param name="stateContext">Context used to process the message</param>
+    /// <param name="fileId">File id</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     public static Task<IResult<FileData?>> DownloadFile(this IStateContext stateContext, string fileId, CancellationToken cancellationToken)
         => stateContext.TelegramContext.DownloadFileData(fileId, cancellationToken);
 
     /// <summary>
-    /// Скачивает изображение
+    /// Downloads an image
     /// </summary>
-    /// <param name="telegramContext">Контекст telegram</param>
-    /// <param name="message">Сообщение</param>
+    /// <param name="telegramContext">Telegram context</param>
+    /// <param name="message">The message</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     public static Task<IResult<FileData?>> DownloadImage(this ITelegramContext telegramContext, Message? message, CancellationToken cancellationToken)
     {
         if (message.IsNotNull()
@@ -71,12 +67,11 @@ public static partial class Extensions
     }
 
     /// <summary>
-    /// Скачивает документ 
+    /// Downloads a document
     /// </summary>
-    /// <param name="telegramContext">Контекст telegram</param>
-    /// <param name="message">Сообщение </param>
+    /// <param name="telegramContext">Telegram context</param>
+    /// <param name="message">The message</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     public static Task<IResult<FileData?>> DownloadDocument(this ITelegramContext telegramContext, Message? message, CancellationToken cancellationToken)
     {
         if (message.IsNull()

@@ -26,8 +26,8 @@ public abstract class StartReceivingHandlerBase<TUser>(IStateFactory stateFactor
         var chatId = telegramData.ChatOrNull?.Id;
         if (chatId is null)
         {
-            // Обработчик состояний не может работать без чата: возвращаем ошибку вместо исключения,
-            // чтобы сбой был виден как результат обработки, а не как необработанное исключение.
+            // The state handler cannot work without a chat: return an error instead of throwing,
+            // so the failure is visible as a processing result rather than as an unhandled exception.
             return Result.Failure(ErrorResult.NotFound("В обновлении отсутствует чат."));
         }
 
@@ -51,13 +51,13 @@ public abstract class StartReceivingHandlerBase<TUser>(IStateFactory stateFactor
     protected abstract Task<TUser> GetOrCreateUser(string botName, TelegramMessageUserData telegramData, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Вызывается перед обработкой обновления.
+    /// Called before the update is handled.
     /// </summary>
     protected virtual Task BeforeHandleAsync(string botName, Update update, TUser user, CancellationToken cancellationToken)
         => Task.CompletedTask;
 
     /// <summary>
-    /// Вызывается после успешной обработки обновления.
+    /// Called after the update has been handled successfully.
     /// </summary>
     protected virtual Task AfterHandleAsync(string botName, Update update, TUser user, CancellationToken cancellationToken)
         => Task.CompletedTask;

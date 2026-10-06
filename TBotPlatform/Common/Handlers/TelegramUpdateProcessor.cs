@@ -50,9 +50,9 @@ internal class TelegramUpdateProcessor(ILogger<TelegramUpdateProcessor> logger, 
 
             if (!update.TryGetMessageUserData(out var telegramMessageUserData) || telegramMessageUserData.IsNull())
             {
-                // Тип обновления не поддержан платформой (например новый UpdateType из свежей версии Bot API).
-                // Считаем такое обновление обработанным: иначе Telegram будет повторять его бесконечно (webhook)
-                // либо попытка обработать его каждый цикл будет засорять лог (polling).
+                // The update type is not supported by the platform (for example, a new UpdateType from a newer Bot API version).
+                // Such an update is treated as processed: otherwise Telegram will repeat it indefinitely (webhook)
+                // or an attempt to process it every cycle will pollute the log (polling).
                 logger.LogWarning(
                     "Обновление {updateId} типа {updateType} не поддержано платформой и пропущено",
                     update.Id,
@@ -63,8 +63,8 @@ internal class TelegramUpdateProcessor(ILogger<TelegramUpdateProcessor> logger, 
 
             if (telegramMessageUserData!.ChatOrNull.IsNull())
             {
-                // Состояния и контекст платформы привязаны к чату, поэтому обновления без чата
-                // (InlineQuery, ChosenInlineResult, ShippingQuery, PreCheckoutQuery, Poll и т.п.) пропускаются.
+                // Platform states and context are bound to a chat, so updates without a chat
+                // (InlineQuery, ChosenInlineResult, ShippingQuery, PreCheckoutQuery, Poll, etc.) are skipped.
                 logger.LogWarning(
                     "Обновление {updateId} типа {updateType} не содержит чата и пропущено",
                     update.Id,
@@ -94,8 +94,8 @@ internal class TelegramUpdateProcessor(ILogger<TelegramUpdateProcessor> logger, 
         {
             timer.Stop();
 
-            // 403 (бот заблокирован пользователем или не может начать диалог) — штатная ситуация,
-            // а не сбой платформы, поэтому уровень лога понижается.
+            // 403 (the bot is blocked by the user or cannot start a conversation) is an expected situation,
+            // not a platform failure, so the log level is lowered.
             var logLevel = exception switch
             {
                 null => LogLevel.Debug,

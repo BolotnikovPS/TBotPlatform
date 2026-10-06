@@ -19,8 +19,8 @@ using Telegram.Bot.Types;
 namespace TBotPlatform.Tests.Common.Builder;
 
 /// <summary>
-/// Проверяет сборщик бота: контекст telegram, обработчик событий, сканирование состояний
-/// с валидациями и состав регистрируемых сервисов.
+/// Tests the bot builder: telegram context, receiving handler, state scanning
+/// with validations, and the set of registered services.
 /// </summary>
 [TestFixture]
 public class BotBuilderTests

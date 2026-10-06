@@ -5,7 +5,7 @@ using TBotPlatform.Contracts.Attributes;
 namespace TBotPlatform.Samples.EchoBot;
 
 /// <summary>
-/// Точка входа в счётчик: отправляет сообщение с inline кнопкой.
+/// Entry point of the counter: sends a message with an inline button.
 /// </summary>
 [StateActivator(typeof(MainMenu), ButtonsTypes = ["Счётчик"])]
 internal sealed class CounterState : BaseStateHandler<EchoUser>

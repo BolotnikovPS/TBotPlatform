@@ -13,8 +13,8 @@ using TBotPlatform.Contracts.Bots.Config;
 namespace TBotPlatform.Tests.Common.Builder;
 
 /// <summary>
-/// Проверяет сборщик платформы: добавление ботов, кеша и фабрик, их валидации при сборке
-/// и состав регистрируемых сервисов.
+/// Tests the platform builder: adding bots, cache and factories, their build-time
+/// validations, and the set of registered services.
 /// </summary>
 [TestFixture]
 public class BotPlatformBuilderTests
@@ -221,8 +221,8 @@ public class BotPlatformBuilderTests
         => _services.SingleOrDefault(z => z.ServiceType == serviceType);
 
     /// <summary>
-    /// Пакет Microsoft.Extensions.Hosting.Abstractions не подключён к тестовому проекту напрямую,
-    /// поэтому тип сервиса определяется по полному имени.
+    /// The Microsoft.Extensions.Hosting.Abstractions package is not referenced by the test project directly,
+    /// so the service type is identified by its full name.
     /// </summary>
     private List<ServiceDescriptor> GetHostedServiceDescriptors()
         => _services

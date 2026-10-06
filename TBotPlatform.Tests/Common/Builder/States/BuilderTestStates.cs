@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using TBotPlatform.Contracts.Abstractions;
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Abstractions.State;
@@ -12,7 +12,7 @@ using TBotPlatform.Results.Abstractions;
 namespace TBotPlatform.Tests.Common.Builder.States;
 
 /// <summary>
-/// Пользователь платформы для тестовых состояний.
+/// Platform user for test states.
 /// </summary>
 public sealed class BuilderTestUser : UserBase
 {
@@ -20,7 +20,7 @@ public sealed class BuilderTestUser : UserBase
 }
 
 /// <summary>
-/// Меню для тестовых состояний.
+/// Menu for test states.
 /// </summary>
 public sealed class BuilderTestMenuButton : IMenuButton
 {
@@ -31,7 +31,7 @@ public sealed class BuilderTestMenuButton : IMenuButton
 }
 
 /// <summary>
-/// Базовое состояние: тело обработки в тестах не используется, важна лишь регистрация типов.
+/// Base state: the handler body is not used in tests; only type registration matters.
 /// </summary>
 public abstract class BuilderTestStateBase : IState<BuilderTestUser>
 {
@@ -43,13 +43,13 @@ public abstract class BuilderTestStateBase : IState<BuilderTestUser>
 }
 
 /// <summary>
-/// Активатор с одновременным указанием inline-состояния и меню (недопустимая комбинация).
+/// Activator that sets an inline state and a menu at the same time (invalid combination).
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class InlineWithMenuTestActivatorAttribute()
     : StateActivatorBaseAttribute(isInlineState: true, menuType: typeof(BuilderTestMenuButton));
 
-// --- Валидные состояния, участвующие в сканировании сборки -------------------------------------
+// --- Valid states participating in the assembly scan ---------------------------------------------
 
 [StateInlineActivator(CommandsTypes = [CommandTypesConstant.StartCommand], TextsTypes = ["builder-start-text"])]
 public sealed class StartBuilderTestState : BuilderTestStateBase
@@ -66,21 +66,21 @@ public sealed class MenuBuilderTestState : BuilderTestStateBase
 {
 }
 
-// --- Нарушитель: атрибут есть, а IState<> не реализован (ломает сканирование сборки) -------------
+// --- Violator: has the attribute but does not implement IState<> (breaks the assembly scan) -------
 
 [StateInlineActivator]
 public sealed class AaaNotAStateBuilderTestState
 {
 }
 
-// --- Состояния, доступные только другому боту ---------------------------------------------------
+// --- States available only to another bot ----------------------------------------------------------
 
 [StateInlineActivator(OnlyForBot = "other-bot", TextsTypes = ["builder-other-text"])]
 public sealed class OnlyForOtherBotBuilderTestState : BuilderTestStateBase
 {
 }
 
-// --- Дубли по ButtonsTypes / TextsTypes ---------------------------------------------------------
+// --- Duplicates by ButtonsTypes / TextsTypes ------------------------------------------------------
 
 [StateInlineActivator(OnlyForBot = "conflict-bot", ButtonsTypes = ["conflict-button"])]
 public sealed class ConflictButtonsBuilderStateOne : BuilderTestStateBase
@@ -102,7 +102,7 @@ public sealed class ConflictTextsBuilderStateTwo : BuilderTestStateBase
 {
 }
 
-// --- Дубли по IsLockUserState / IsRegistrationState ---------------------------------------------
+// --- Duplicates by IsLockUserState / IsRegistrationState ------------------------------------------
 
 [StateInlineActivator(OnlyForBot = "lock-bot", IsLockUserState = true)]
 public sealed class LockBuilderStateOne : BuilderTestStateBase
@@ -124,7 +124,7 @@ public sealed class RegistrationBuilderStateTwo : BuilderTestStateBase
 {
 }
 
-// --- Дубли команды /start -----------------------------------------------------------------------
+// --- Duplicate /start commands ---------------------------------------------------------------------
 
 [StateInlineActivator(OnlyForBot = "multi-start-bot", CommandsTypes = [CommandTypesConstant.StartCommand])]
 public sealed class MultiStartBuilderStateOne : BuilderTestStateBase
@@ -136,7 +136,7 @@ public sealed class MultiStartBuilderStateTwo : BuilderTestStateBase
 {
 }
 
-// --- Некорректные атрибуты ----------------------------------------------------------------------
+// --- Invalid attributes ----------------------------------------------------------------------------
 
 [StateActivator(typeof(string), OnlyForBot = "bad-menu-bot")]
 public sealed class BadMenuBuilderTestState : BuilderTestStateBase
@@ -148,7 +148,7 @@ public sealed class InlineWithMenuBuilderTestState : BuilderTestStateBase
 {
 }
 
-// --- Дубли по имени типа состояния (см. States/Duplicates) --------------------------------------
+// --- Duplicates by state type name (see States/Duplicates) ------------------------------------------
 
 [StateInlineActivator(OnlyForBot = "duplicate-bot", TextsTypes = ["duplicate-name-text"])]
 public sealed class DuplicateNamedBuilderTestState : BuilderTestStateBase

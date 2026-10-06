@@ -3,7 +3,7 @@ namespace TBotPlatform.Contracts.Bots.Buttons;
 public class MainButtonMassive
 {
     /// <summary>
-    /// Коллекция кнопок
+    /// Button collection
     /// </summary>
     public MainButtonList MainButtons { get; set; } = null!;
 }

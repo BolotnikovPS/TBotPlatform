@@ -35,9 +35,9 @@ var platform = builder.Services
    .AddReceivingHandler<EchoReceivingHandler>()
    .Build();
 
-// Мультибот: если задан токен второго бота, платформа поднимает для него отдельный получатель обновлений.
-// Все keyed-регистрации (ITelegramContext, IStartReceivingHandler, StateFactoryDataCollection) изолированы по BotName,
-// состояния и обработчик переиспользуются.
+// Multi-bot: if a second bot token is set, the platform starts a separate update receiver for it.
+// All keyed registrations (ITelegramContext, IStartReceivingHandler, StateFactoryDataCollection) are isolated by BotName,
+// states and the handler are reused.
 if (!string.IsNullOrWhiteSpace(secondToken))
 {
     Console.WriteLine("Поднимаю второго бота: echo2.");
@@ -57,8 +57,8 @@ if (!string.IsNullOrWhiteSpace(secondToken))
 
 var cacheBuilder = platform.AddCache();
 
-// Redis нужен, когда ботов обслуживает несколько инстансов приложения:
-// кэш состояний и распределённые блокировки становятся общими.
+// Redis is needed when several application instances serve the bots:
+// the state cache and distributed locks become shared.
 if (!string.IsNullOrWhiteSpace(redisConnection))
 {
     Console.WriteLine("Использую Redis-кэш.");

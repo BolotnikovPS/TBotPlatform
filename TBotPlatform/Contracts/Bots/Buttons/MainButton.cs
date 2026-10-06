@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Contracts.Bots.Constant;
+using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Extension;
 
 namespace TBotPlatform.Contracts.Bots.Buttons;
@@ -22,7 +22,7 @@ public class MainButton
     }
 
     /// <summary>
-    /// Тип кнопки
+    /// Button type
     /// </summary>
     public string ButtonName { get; private set; }
 }

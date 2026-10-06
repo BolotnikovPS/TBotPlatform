@@ -71,8 +71,8 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
     }
 
     /// <summary>
-    /// Метаданные запроса, вычисляемые один раз на тип: быстрый установщик ProtectContent
-    /// (скомпилированное выражение вместо рефлексии на каждом вызове) и свойства для verbose-логирования.
+    /// Request metadata computed once per type: a fast ProtectContent setter
+    /// (a compiled expression instead of reflection on every call) and the properties used for verbose logging.
     /// </summary>
     private sealed class RequestMeta
     {
@@ -189,7 +189,7 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
 
         try
         {
-            // GetInfoAndDownloadFile получает метаданные файла и сразу пишет содержимое в поток.
+            // GetInfoAndDownloadFile gets file metadata and writes content to stream immediately.
             var file = await this.GetInfoAndDownloadFile(fileId, fileStream, cancellationToken);
 
             fileStream.Position = 0;
@@ -211,8 +211,8 @@ internal class TelegramContext : TelegramBotClient, ITelegramContext, IAsyncDisp
         }
         catch (Exception)
         {
-            // Файл недоступен (устаревший file_id, слишком большой размер и т.п.) — возвращаем Failure,
-            // как и раньше, чтобы вызывающий код работал с Result, а не с исключением.
+            // The file is unavailable (stale file_id, too large size, etc.) - return Failure,
+            // as before, so the calling code works with Result instead of an exception.
             return ResultT<FileData?>.Failure(ErrorResult.NotFound(""));
         }
     }

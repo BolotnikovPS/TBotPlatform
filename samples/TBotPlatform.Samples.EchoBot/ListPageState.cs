@@ -5,11 +5,11 @@ using TBotPlatform.Contracts.Attributes;
 namespace TBotPlatform.Samples.EchoBot;
 
 /// <summary>
-/// Обрабатывает нажатия на кнопки перехода по страницам списка.
+/// Handles presses on the buttons that navigate through the pages of the list.
 /// </summary>
 /// <remarks>
-/// Сообщение не переотправляется: <c>SendOrUpdateTextMessage</c> редактирует то же сообщение,
-/// на кнопке которого был callback (позиция в истории чата сохраняется).
+/// The message is not re-sent: <c>SendOrUpdateTextMessage</c> edits the same message
+/// whose button triggered the callback (its position in the chat history is preserved).
 /// </remarks>
 [StateInlineActivator]
 internal sealed class ListPageState : BaseStateHandler<EchoUser>

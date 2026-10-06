@@ -16,8 +16,8 @@ using Telegram.Bot.Types.Enums;
 namespace TBotPlatform.Tests.Common.Handlers;
 
 /// <summary>
-/// Проверяет процессор обновлений: маршрутизацию в keyed-обработчик бота, разбор данных inline-кнопки,
-/// пропуск неподдерживаемых обновлений и превращение любых сбоев в результат-провал.
+/// Tests the update processor: routing to the bot's keyed handler, parsing inline-button data,
+/// skipping unsupported updates, and turning any failure into a failed result.
 /// </summary>
 [TestFixture]
 public class TelegramUpdateProcessorTests

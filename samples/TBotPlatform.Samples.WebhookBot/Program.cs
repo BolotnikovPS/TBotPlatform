@@ -96,7 +96,7 @@ app.MapPost("/api/telegram/webhook", async (HttpContext context, ITelegramUpdate
         }
     }
 
-    // JsonBotAPI.Options обязателен: Bot API использует snake_case, а не политику по умолчанию.
+    // JsonBotAPI.Options is required: the Bot API uses snake_case, not the default policy.
     var update = await context.Request.ReadFromJsonAsync<Update>(JsonBotAPI.Options, ct);
     if (update is null)
     {
@@ -115,8 +115,8 @@ app.MapPost("/api/telegram/webhook", async (HttpContext context, ITelegramUpdate
         update.Type,
         result.Error?.Description);
 
-    // 500 заставляет Telegram повторять апдейт; используем его только для ошибок,
-    // которые могут быть временными (сбой обработки состояния, недоступность кэша и т.п.).
+    // HTTP 500 causes Telegram to retry the update; use it only for errors
+    // that could be transient (state processing failure, cache unavailability, etc.).
     return Results.StatusCode(500);
 });
 

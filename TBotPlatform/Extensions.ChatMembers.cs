@@ -5,18 +5,18 @@ namespace TBotPlatform.Extension;
 public static partial class Extensions
 {
     /// <summary>
-    /// Проверяет, что участник чата является администратором или владельцем чата
+    /// Checks that the chat member is an administrator or chat owner
     /// </summary>
-    /// <param name="chatMember">Участник чата</param>
-    /// <returns>true, если участник администратор или владелец</returns>
+    /// <param name="chatMember">Chat member</param>
+    /// <returns>true if the member is an administrator or owner</returns>
     public static bool IsAdminOrCreator(this ChatMember? chatMember)
         => chatMember is ChatMemberOwner or ChatMemberAdministrator;
 
     /// <summary>
-    /// Проверяет, что участник находится в чате
+    /// Checks that the chat member is still in the chat (not left, not banned)
     /// </summary>
-    /// <param name="chatMember">Участник чата</param>
-    /// <returns>true, если участник не покинул чат и не заблокирован</returns>
+    /// <param name="chatMember">Chat member</param>
+    /// <returns>true when the member has not left the chat and is not banned</returns>
     public static bool IsInChat(this ChatMember? chatMember)
         => chatMember switch
         {

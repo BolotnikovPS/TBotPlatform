@@ -22,7 +22,7 @@ public static partial class Extensions
             var fullKey = CreateCollectionKey(collection, value.Key);
             var tag = CreateCollectionTag(collection);
 
-            // Добавляем значение с тегом коллекции (FusionCache сам сериализует через NewtonsoftJson)
+            // Add the value with the collection tag (FusionCache serializes it itself via NewtonsoftJson)
             await fusionCache.SetAsync(fullKey, value, tags: [tag], token: cancellationToken);
 
             return Result.Success();
@@ -202,8 +202,8 @@ public static partial class Extensions
     {
         try
         {
-            // Проверяем факт наличия ключа: тип значения заранее неизвестен,
-            // поэтому читаем его как object (иначе для нестроковых значений будет ошибка приведения типа).
+            // Check whether the key exists: the value type is unknown in advance,
+            // so read it as object (otherwise non-string values cause a cast error).
             var exists = await fusionCache.TryGetAsync<object>(key, token: cancellationToken);
 
             return ResultT<bool>.Success(exists.HasValue);

@@ -76,7 +76,7 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         }
         catch
         {
-            // StateContext владеет scope — при ошибке до возврата вызывающему его нужно освободить здесь.
+            // StateContext owns the scope — if an error occurs before it is returned to the caller, it must be released here.
             await stateContext.DisposeAsync();
 
             throw;
@@ -114,7 +114,7 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         }
         catch (Exception) when (!cancellationToken.IsCancellationRequested)
         {
-            // typing — необязательное действие, его сбой не должен влиять на обработку состояния
+            // typing is an optional action; its failure should not affect state processing
         }
 
         var errorText = stateContext.TelegramContext.GetBotSetting().StateErrorText;
@@ -163,7 +163,7 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         }
         catch (Exception) when (!cancellationToken.IsCancellationRequested)
         {
-            // ответ на callback необязателен, его сбой не должен ломать обработку
+            // answering a callback is optional; its failure must not break processing
         }
     }
 

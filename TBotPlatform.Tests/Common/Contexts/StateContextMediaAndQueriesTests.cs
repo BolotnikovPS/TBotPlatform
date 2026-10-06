@@ -20,7 +20,7 @@ using Telegram.Bot.Types.Payments;
 namespace TBotPlatform.Tests.Common.Contexts;
 
 /// <summary>
-/// Проверяет валидацию и проброс параметров в новых методах StateContext: альбомы, inline-разметка, платежи и inline-режим.
+/// Tests validation and parameter pass-through in the newer StateContext methods: albums, inline markup, payments, and inline mode.
 /// </summary>
 [TestFixture]
 public class StateContextMediaAndQueriesTests

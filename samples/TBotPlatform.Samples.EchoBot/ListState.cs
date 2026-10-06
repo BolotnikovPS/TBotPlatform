@@ -5,12 +5,12 @@ using TBotPlatform.Contracts.Attributes;
 namespace TBotPlatform.Samples.EchoBot;
 
 /// <summary>
-/// Точка входа в постраничный список: показывает первую страницу.
+/// Entry point of the paginated list: shows the first page.
 /// </summary>
 /// <remarks>
-/// На одном классе нельзя совмещать <see cref="StateActivatorAttribute"/> и
-/// <see cref="StateInlineActivatorAttribute"/>: построитель состояний читает только первый
-/// найденный атрибут, поэтому переходы по страницам обрабатывает отдельное состояние
+/// A single class cannot combine <see cref="StateActivatorAttribute"/> and
+/// <see cref="StateInlineActivatorAttribute"/>: the state builder reads only the first
+/// found attribute, so page transitions are handled by a separate state
 /// <see cref="ListPageState"/>.
 /// </remarks>
 [StateActivator(typeof(MainMenu), ButtonsTypes = ["Список"])]

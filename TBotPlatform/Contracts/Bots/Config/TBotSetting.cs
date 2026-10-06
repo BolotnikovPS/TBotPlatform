@@ -9,98 +9,98 @@ namespace TBotPlatform.Contracts.Bots.Config;
 public class TBotSetting
 {
     /// <summary>
-    /// Наименование бота
+    /// Bot name
     /// </summary>
     public required string BotName { get; set; }
 
     /// <summary>
-    /// Токен бота
+    /// Bot token
     /// </summary>
     public required string Token { get; init; }
 
     /// <summary>
-    /// Конфиденциальные настройки бота по отправке сообщений
+    /// Confidential bot settings for sending messages
     /// </summary>
     public bool ProtectContent { get; init; }
 
     /// <summary>
-    /// Информация о механимзе получения обновлений от telegram
+    /// Information about the mechanism for receiving updates from Telegram
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public TBotSettingUpdatePolicy? UpdatePolicy { get; set; }
 
     /// <summary>
-    /// Время ожидания между получением новых сообщений от telegram.
-    /// Не используется при long polling: получение обновлений выполняет Telegram.Bot
-    /// (удержание запроса GetUpdates регулируется <see cref="RequestTimeout" />).
-    /// Параметр оставлен для обратной совместимости
+    /// Wait time between receiving new messages from Telegram.
+    /// Not used for long polling: Telegram Bot performs GetUpdates requests
+    /// (the hold time of GetUpdates request is governed by <see cref="RequestTimeout" />).
+    /// Parameter kept for backward compatibility
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public int HostWaitMilliSecond { get; set; } = 1000;
 
     /// <summary>
-    /// Базовый URL локального Bot API Server (например, http://localhost:8081).
-    /// Если задан, клиент работает с локальным сервером вместо https://api.telegram.org
+    /// Base URL of the local Bot API Server (for example, http://localhost:8081).
+    /// If specified, the client works with a local server instead of https://api.telegram.org
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public string? BaseUrl { get; init; }
 
     /// <summary>
-    /// Использовать тестовое окружение Bot API (…/bot{token}/test)
+    /// Use the test environment of Bot API (…/bot{token}/test)
     /// </summary>
     public bool UseTestEnvironment { get; init; }
 
     /// <summary>
-    /// Количество автоматических повторов запроса при ответе 429 "Too Many Requests".
-    /// Если не задано, используется значение по умолчанию Telegram.Bot
+    /// Number of automatic retries on 429 "Too Many Requests" response.
+    /// If not specified, the default value of Telegram.Bot is used
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public int? RetryCount { get; init; }
 
     /// <summary>
-    /// Порог RetryAfter (в секундах), при котором выполняется автоматический повтор запроса.
-    /// Если не задано, используется значение по умолчанию Telegram.Bot
+    /// RetryAfter threshold (in seconds), at which automatic request retry is executed.
+    /// If not specified, the default value of Telegram.Bot is used
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public int? RetryThreshold { get; init; }
 
     /// <summary>
-    /// Таймаут HTTP-запросов к Telegram. Для long polling это же значение используется как время удержания запроса GetUpdates.
-    /// Если не задано, используется значение по умолчанию HttpClient (100 секунд)
+    /// HTTP request timeout to Telegram. For long polling, this same value is used as the GetUpdates request hold time.
+    /// If not specified, the default value of HttpClient (100 seconds) is used
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public TimeSpan? RequestTimeout { get; init; }
 
     /// <summary>
-    /// URL вебхука. Если задан, бот работает в режиме webhook вместо long polling.
+    /// Webhook URL. If specified, the bot works in webhook mode instead of long polling.
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public string? WebhookUrl { get; init; }
 
     /// <summary>
-    /// Секретный токен для проверки входящих запросов webhook (заголовок X-Telegram-Bot-Api-Secret-Token).
+    /// Secret token for verifying incoming webhook requests (header X-Telegram-Bot-Api-Secret-Token).
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public string? WebhookSecretToken { get; init; }
 
     /// <summary>
-    /// Настройки политик для работы с telegram
+    /// Policies settings for working with Telegram
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public TBotSettingHttpPolicy HttpPolicy { get; set; } = new();
 
     /// <summary>
-    /// Режим разметки исходящих сообщений
+    /// Message formatting mode for outgoing messages
     /// </summary>
     public ParseMode ParseMode { get; init; } = ParseMode.Html;
 
     /// <summary>
-    /// Текст пользователю при необработанной ошибке состояния
+    /// Text for the user when an unhandled state error occurs
     /// </summary>
-    public string StateErrorText { get; init; } = "🆘 Произошла ошибка при обработке запроса.";
+    public string StateErrorText { get; init; } = "🆘 An error occurred while processing the request.";
 
     /// <summary>
-    /// Писать тела HTTP-запросов и полей Telegram API в лог. По умолчанию выключено.
+    /// Log HTTP request bodies and Telegram API fields. Disabled by default.
     /// </summary>
     public bool VerboseLog { get; init; }
 }

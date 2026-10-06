@@ -5,9 +5,9 @@ namespace TBotPlatform.Extension;
 public static partial class Extensions
 {
     /// <summary>
-    /// Проверяет, что chatId пригоден для вызовов Telegram API.
+    /// Checks that the chatId is valid for Telegram API calls.
     /// </summary>
-    /// <exception cref="ChatIdArgException">chatId равен 0, <see cref="long.MinValue"/> или <see cref="long.MaxValue"/>.</exception>
+    /// <exception cref="ChatIdArgException">chatId equals 0, <see cref="long.MinValue"/> or <see cref="long.MaxValue"/>.</exception>
     public static void ThrowIfInvalidChatId(this long chatId)
     {
         if (chatId is 0 or long.MinValue or long.MaxValue)

@@ -10,8 +10,8 @@ using TBotPlatform.Contracts.Bots.Constant;
 namespace TBotPlatform.Tests.Common.Handlers;
 
 /// <summary>
-/// Проверяет <see cref="TelegramHttpHandler"/>: извлечение служебного заголовка операции,
-/// фиксацию Retry-After, логирование payload при verbose-режиме и уровня лога при ошибке.
+/// Tests <see cref="TelegramHttpHandler"/>: extracting the operation's service header,
+/// capturing Retry-After, verbose payload logging, and the error log level.
 /// </summary>
 [TestFixture]
 public class TelegramHttpHandlerTests

@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Contracts.Bots;
+using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Results.Abstractions;
 
 namespace TBotPlatform.Contracts.Abstractions.Factories;
@@ -6,96 +6,85 @@ namespace TBotPlatform.Contracts.Abstractions.Factories;
 public interface IStateFactory : IStateBindFactory
 {
     /// <summary>
-    /// Проверяет наличие состояния
+    /// Checks if a state exists
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="nameOfState">Название состояния</param>
-    /// <returns></returns>
+    /// <param name="botName">Bot name</param>
+    /// <param name="nameOfState">State name</param>
     IResult<bool> HasState(string botName, string nameOfState);
 
     /// <summary>
-    /// Проверяет наличие состояниq
+    /// Checks if states exist
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="nameOfStates">Название состояний</param>
-    /// <returns></returns>
+    /// <param name="botName">Bot name</param>
+    /// <param name="nameOfStates">State names</param>
     IResult<bool> HasStates(string botName, string[] nameOfStates);
 
     /// <summary>
-    /// Получает состояние по его названию или /start
+    /// Gets a state by its name or /start
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="nameOfState">Название состояния</param>
-    /// <returns></returns>
+    /// <param name="botName">Bot name</param>
+    /// <param name="nameOfState">State name</param>
     IResult<StateHistory> GetStateByNameOrDefault(string botName, string nameOfState = "");
 
     /// <summary>
-    /// Получает состояние по типу кнопки или /start
+    /// Gets a state by button type or /start
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="chatId">Id чата</param>
-    /// <param name="buttonTypeValue">Тип кнопки</param>
+    /// <param name="botName">Bot name</param>
+    /// <param name="chatId">Chat id</param>
+    /// <param name="buttonTypeValue">Button type</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<IResult<StateHistory>> GetStateByButtonsTypeOrDefault(string botName, long chatId, string buttonTypeValue, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Получает состояние по типу команды или /start
+    /// Gets a state by command type or /start
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="chatId">Id чата</param>
-    /// <param name="commandTypeValue">Тип команды</param>
+    /// <param name="botName">Bot name</param>
+    /// <param name="chatId">Chat id</param>
+    /// <param name="commandTypeValue">Command type</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<IResult<StateHistory>> GetStateByCommandsTypeOrDefault(string botName, long chatId, string commandTypeValue, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Получает состояние по типу текста или /start
+    /// Gets a state by text type or /start
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="chatId">Id чата</param>
-    /// <param name="textTypeValue">Тип текста</param>
-    /// <returns></returns>
+    /// <param name="botName">Bot name</param>
+    /// <param name="chatId">Chat id</param>
+    /// <param name="textTypeValue">Text type</param>
     IResult<StateHistory> GetStateByTextsTypeOrDefault(string botName, long chatId, string textTypeValue);
 
     /// <summary>
-    /// Получает первоначальное состояние или /start
+    /// Gets the initial state or /start
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="chatId">Id чата</param>
+    /// <param name="botName">Bot name</param>
+    /// <param name="chatId">Chat id</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<IResult<StateHistory>> GetStateMain(string botName, long chatId, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Получает предыдущие или первоначальное состояние, у которого есть меню или /start
+    /// Gets the previous or initial state that has a menu or /start
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="chatId">Id чата</param>
+    /// <param name="botName">Bot name</param>
+    /// <param name="chatId">Chat id</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<IResult<StateHistory>> GetStatePreviousOrMain(string botName, long chatId, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Получает последнее состояние с меню, из истории состояний
+    /// Gets the last state with a menu from the state history
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="chatId">Id чата</param>
+    /// <param name="botName">Bot name</param>
+    /// <param name="chatId">Chat id</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<IResult<StateHistory>> GetLastStateWithMenu(string botName, long chatId, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Получает состояние для заблокированных пользователей
+    /// Gets a state for blocked users
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <returns></returns>
+    /// <param name="botName">Bot name</param>
     IResult<StateHistory> GetLockState(string botName);
 
     /// <summary>
-    /// Получает состояние для заблокированных пользователей
+    /// Gets a state for registration
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <returns></returns>
+    /// <param name="botName">Bot name</param>
     IResult<StateHistory> GetRegistrationState(string botName);
 }

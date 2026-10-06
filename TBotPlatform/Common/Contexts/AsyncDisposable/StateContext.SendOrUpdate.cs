@@ -118,8 +118,8 @@ internal partial class StateContext
 
         if (photoData.IsNotNull())
         {
-            // Если запрос пришел по кнопке сообщения с фотографией, обновляем медиа на месте:
-            // сообщение не удаляется и не пересылается заново, позиция в истории чата сохраняется
+            // If the request came from a button of a message with a photo, the media is updated in place:
+            // the message is neither deleted nor re-sent, so its position in the chat history is preserved
             if (ChatUpdate.IsNotNull() && ChatUpdate!.CallbackQuery.WithPhoto())
             {
                 CallbackQueryValidOrThrow(ChatUpdate.CallbackQuery);

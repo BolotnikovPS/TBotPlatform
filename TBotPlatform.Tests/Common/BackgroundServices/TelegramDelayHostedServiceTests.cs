@@ -14,12 +14,12 @@ using Telegram.Bot.Types;
 namespace TBotPlatform.Tests.Common.BackgroundServices;
 
 /// <summary>
-/// Проверяет фоновый сервис отложенных сообщений: извлечение элемента из очереди, вызов обработчика,
-/// освобождение scope контекста состояния и корректное завершение по отмене.
+/// Checks the delayed message background service: dequeuing an item, invoking the handler,
+/// releasing the state context scope, and completing correctly on cancellation.
 /// </summary>
 /// <remarks>
-/// ExecuteAsync вызывается напрямую (через рефлексию): пакет Microsoft.Extensions.Hosting.Abstractions
-/// не подключён к тестовому проекту, поэтому члены базового BackgroundService недоступны.
+/// ExecuteAsync is invoked directly (via reflection): the Microsoft.Extensions.Hosting.Abstractions
+/// package is not referenced by the test project, so the base BackgroundService members are unavailable.
 /// </remarks>
 [TestFixture]
 public class TelegramDelayHostedServiceTests
@@ -217,7 +217,7 @@ public class TelegramDelayHostedServiceTests
                  .Invoke(service, [cancellationToken])!;
 
     /// <summary>
-    /// Ожидает завершения ExecuteAsync, считая отмену ожидаемым способом остановки сервиса.
+    /// Waits for ExecuteAsync to finish, treating cancellation as the expected way the service stops.
     /// </summary>
     private static async Task CompleteExecuteAsync(Task executeTask)
     {
@@ -227,7 +227,7 @@ public class TelegramDelayHostedServiceTests
         }
         catch (OperationCanceledException)
         {
-            // Ожидаемое завершение по отмене токена.
+            // Expected termination due to token cancellation.
         }
     }
 
@@ -239,7 +239,7 @@ public class TelegramDelayHostedServiceTests
     };
 
     /// <summary>
-    /// Возвращает управление только при отмене токена: имитирует пустую очередь отложенных сообщений.
+    /// Returns only when the token is cancelled: simulates an empty delayed-message queue.
     /// </summary>
     private static async Task<DelayQueueItem> WaitForCancellation(
         CancellationToken cancellationToken,

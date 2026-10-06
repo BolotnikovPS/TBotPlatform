@@ -6,8 +6,8 @@ using ZiggyCreatures.Caching.Fusion;
 namespace TBotPlatform.Tests.Extensions;
 
 /// <summary>
-/// Проверяет расширения <see cref="Extensions"/> над <see cref="IFusionCache"/>:
-/// одиночные значения, коллекции со тегами и обработку отсутствующих данных.
+/// Tests the <see cref="Extensions"/> methods on <see cref="IFusionCache"/>:
+/// single values, tagged collections, and handling of missing data.
 /// </summary>
 [TestFixture]
 public class ExtensionsCacheTests

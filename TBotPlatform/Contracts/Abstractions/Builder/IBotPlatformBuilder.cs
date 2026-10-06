@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TBotPlatform.Contracts.Abstractions.Factories;
 using TBotPlatform.Contracts.Bots.Config;
@@ -8,34 +8,29 @@ namespace TBotPlatform.Contracts.Abstractions.Builder;
 public interface IBotPlatformBuilder
 {
     /// <summary>
-    /// Добавляет бота <see cref="IBotBuilder"/>
+    /// Adds a bot <see cref="IBotBuilder"/>
     /// </summary>
-    /// <param name="botSetting">Настройки контекста бота</param>
-    /// <returns></returns>
+    /// <param name="botSetting">Bot context settings</param>
     IBotBuilder AddBot(TBotSetting botSetting);
 
     /// <summary>
-    /// Добавляет кеш для работы ботов <see cref="ICacheBuilder"/>
+    /// Adds a cache for bot operation <see cref="ICacheBuilder"/>
     /// </summary>
-    /// <returns></returns>
     ICacheBuilder AddCache();
 
     /// <summary>
-    /// Добавляет фоновый сервиса для получения обновлений telegram
+    /// Adds a background service for receiving Telegram updates
     /// </summary>
-    /// <returns></returns>
     IBotPlatformBuilder AddHostedService();
 
     /// <summary>
-    /// Добавляет фабрики для работы ботов <see cref="IStateFactory"/>, <see cref="IStateBindFactory"/>, <see cref="IStateContextFactory"/>, <see cref="IMenuButtonFactory"/>
+    /// Adds factories for bot operation <see cref="IStateFactory"/>, <see cref="IStateBindFactory"/>, <see cref="IStateContextFactory"/>, <see cref="IMenuButtonFactory"/>
     /// </summary>
-    /// <param name="executingAssembly">Сборка в которой находятся потенциальные состояния</param>
-    /// <returns></returns>
+    /// <param name="executingAssembly">Assembly that contains the potential states</param>
     IBotPlatformBuilder AddFactories(Assembly executingAssembly);
 
     /// <summary>
-    /// Собирает платформу
+    /// Builds the platform
     /// </summary>
-    /// <returns></returns>
     IServiceCollection Build();
 }

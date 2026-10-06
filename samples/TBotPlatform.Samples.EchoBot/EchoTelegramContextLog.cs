@@ -5,8 +5,8 @@ using TBotPlatform.Contracts.Statistics;
 namespace TBotPlatform.Samples.EchoBot;
 
 /// <summary>
-/// Пример собственного лога взаимодействия с Telegram.
-/// Подключается вместо стандартного: <c>AddTelegramContext&lt;EchoTelegramContextLog&gt;()</c>.
+/// Example of a custom Telegram interaction log.
+/// Connect it instead of the standard one: <c>AddTelegramContext&lt;EchoTelegramContextLog&gt;()</c>.
 /// </summary>
 internal sealed class EchoTelegramContextLog(ILogger<EchoTelegramContextLog> logger) : ITelegramContextLog
 {

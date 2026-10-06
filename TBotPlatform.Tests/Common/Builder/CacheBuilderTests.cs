@@ -10,8 +10,8 @@ using ZiggyCreatures.Caching.Fusion;
 namespace TBotPlatform.Tests.Common.Builder;
 
 /// <summary>
-/// Проверяет сборщик кеша: выбор Redis / memory / пользовательского кеша, запрет повторной
-/// регистрации кеша и регистрацию распределённой блокировки при сборке.
+/// Tests the cache builder: choosing Redis / memory / user cache, forbidding duplicate
+/// cache registration, and registering the distributed lock on build.
 /// </summary>
 [TestFixture]
 public class CacheBuilderTests

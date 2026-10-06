@@ -3,7 +3,7 @@ namespace TBotPlatform.Extension;
 public static partial class Extensions
 {
     /// <summary>
-    /// Проверяет структуры на != default
+    /// Checks structures for != default
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
@@ -13,7 +13,7 @@ public static partial class Extensions
         => !obj.Equals(default(T));
 
     /// <summary>
-    /// Проверяет объект на != null
+    /// Checks an object for != null
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>

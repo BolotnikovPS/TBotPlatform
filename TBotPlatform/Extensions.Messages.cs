@@ -9,38 +9,38 @@ namespace TBotPlatform.Common;
 public static partial class Extensions
 {
     /// <summary>
-    /// Проверяет наличие фотографии
+    /// Checks whether a photo is present
     /// </summary>
-    /// <param name="callbackQuery">Сообщение</param>
+    /// <param name="callbackQuery">The message</param>
     /// <returns></returns>
     public static bool WithPhoto(this CallbackQuery? callbackQuery) => callbackQuery?.Message?.Type == MessageType.Photo;
 
     /// <summary>
-    /// Проверяет наличие изображение, даже если оно в документе
+    /// Checks if an image is present, even if it's in a document
     /// </summary>
-    /// <param name="message">Сообщение</param>
+    /// <param name="message">The message</param>
     /// <returns></returns>
     public static bool WithImage(this Message? message) => message.IsNotNull() && (message?.Document?.MimeType?.Contains("image") == true || message!.Photo.IsNotNull());
 
     /// <summary>
-    /// Проверяет наличие документа, кроме фото
+    /// Checks if a document is present, excluding photos
     /// </summary>
-    /// <param name="message">Сообщение</param>
+    /// <param name="message">The message</param>
     /// <returns></returns>
     public static bool WithDocument(this Message? message) => message.IsNotNull() && !message.WithImage() && message!.Document.IsNotNull();
 
     /// <summary>
-    /// Проверяет тип сообщения
+    /// Checks whether the message is a forward
     /// </summary>
-    /// <param name="message">Сообщение</param>
+    /// <param name="message">The message</param>
     /// <returns></returns>
     public static bool IsForwardMessage(this Message? message) => message.IsNotNull() && message!.ForwardOrigin.IsNotNull();
 
     /// <summary>
-    /// Получает текст сообщения
+    /// Gets the message text
     /// </summary>
-    /// <param name="message">Сообщение</param>
-    /// <param name="text">Текст сообщения</param>
+    /// <param name="message">The message</param>
+    /// <param name="text">Message text</param>
     /// <returns></returns>
     public static bool TryGetText(this Message? message, out string? text)
     {
@@ -55,10 +55,10 @@ public static partial class Extensions
     }
 
     /// <summary>
-    /// Получает текст сообщения
+    /// Gets the message text
     /// </summary>
-    /// <param name="callbackQuery">Сообщение</param>
-    /// <param name="text">Текст сообщения</param>
+    /// <param name="callbackQuery">The message</param>
+    /// <param name="text">Message text</param>
     /// <returns></returns>
     public static bool TryGetText(this CallbackQuery? callbackQuery, out string? text)
     {
@@ -74,10 +74,10 @@ public static partial class Extensions
     }
 
     /// <summary>
-    /// Получает данные о пользователе и чате
+    /// Gets user and chat data from an update
     /// </summary>
-    /// <param name="update">Запрос с telegram</param>
-    /// <param name="telegramMessageUserData">Выходные данные о входящем запросе</param>
+    /// <param name="update">Update from Telegram</param>
+    /// <param name="telegramMessageUserData">Output data about the incoming request</param>
     /// <returns></returns>
     public static bool TryGetMessageUserData(this Update update, out TelegramMessageUserData? telegramMessageUserData)
     {

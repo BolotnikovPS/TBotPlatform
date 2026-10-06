@@ -10,10 +10,10 @@ using Telegram.Bot.Types;
 namespace TBotPlatform.Common.Handlers;
 
 /// <summary>
-/// Обработчик обновлений для механизма получения апдейтов из Telegram.Bot
+/// Update handler for the Telegram.Bot update-receiving mechanism
 /// (<see cref="TelegramBotClientExtensions.ReceiveAsync(ITelegramBotClient, IUpdateHandler, ReceiverOptions?, CancellationToken)"/>).
-/// Передаёт обновления в <see cref="ITelegramUpdateProcessor"/> и типизированно логирует ошибки получения
-/// (в том числе <see cref="ApiRequestException.ErrorCode"/> и <see cref="ApiRequestException.Parameters"/>).
+/// Passes updates to <see cref="ITelegramUpdateProcessor"/> and logs errors during receiving
+/// (including <see cref="ApiRequestException.ErrorCode"/> and <see cref="ApiRequestException.Parameters"/>).
 /// </summary>
 internal sealed class TelegramUpdateHandler(
     ITelegramUpdateProcessor updateProcessor,
@@ -28,7 +28,7 @@ internal sealed class TelegramUpdateHandler(
     {
         switch (exception)
         {
-            // 400/403 — постоянные ошибки (некорректный запрос, бот заблокирован): повтор не поможет.
+            // 400/403 — permanent errors (invalid request, bot is blocked): retry won't help.
             case ApiRequestException apiException when apiException.ErrorCode is 400 or 403:
                 logger.LogWarning(
                     "Ошибка Telegram API {errorCode} при получении обновлений бота {bot} (источник {source}): {message}",
@@ -52,7 +52,7 @@ internal sealed class TelegramUpdateHandler(
                 break;
 
             case OperationCanceledException when cancellationToken.IsCancellationRequested:
-                // Ожидаемое завершение при остановке сервиса.
+                // Expected shutdown when the service stops.
                 break;
 
             default:

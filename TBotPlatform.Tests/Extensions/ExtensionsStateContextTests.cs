@@ -15,8 +15,8 @@ using Telegram.Bot.Types.Enums;
 namespace TBotPlatform.Tests.Extensions;
 
 /// <summary>
-/// Проверяет расширение <see cref="Extensions.TryGetStateResult"/>: результат состояния
-/// доступен только для реального <see cref="StateContext"/>, для любого другого контекста — false.
+/// Tests the <see cref="Extensions.TryGetStateResult"/> extension: the state result
+/// is available only for a real <see cref="StateContext"/>; for any other context — false.
 /// </summary>
 [TestFixture]
 public class ExtensionsStateContextTests

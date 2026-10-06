@@ -1,7 +1,7 @@
-﻿namespace TBotPlatform.Contracts.Bots.Exceptions;
+namespace TBotPlatform.Contracts.Bots.Exceptions;
 
 public class TextLengthException(int currentLength, int maxLength)
-    : ArgumentException($"Длина сообщения в {currentLength} больше максимальной длины в {maxLength}", ErrorCode)
+    : ArgumentException($"Message length {currentLength} exceeds the maximum length of {maxLength}", ErrorCode)
 {
     private const string ErrorCode = "TextLength";
 }

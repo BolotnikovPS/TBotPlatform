@@ -21,8 +21,8 @@ using Telegram.Bot.Types.Enums;
 namespace TBotPlatform.Tests.Common.Factories;
 
 /// <summary>
-/// Проверяет фабрику контекста состояния: валидацию аргументов, выбор состояния из DI,
-/// владение scope (освобождение при ошибке) и сценарии обработки состояния.
+/// Tests the state context factory: argument validation, selecting the state from DI,
+/// scope ownership (released on error), and state-handling scenarios.
 /// </summary>
 [TestFixture]
 public class StateContextFactoryTests
@@ -157,8 +157,8 @@ public class StateContextFactoryTests
             Assert.That(exception, Is.Not.Null);
             Assert.That(exception!.Message, Is.EqualTo("Пользователь не является администратором."));
 
-            // Проверка администратора выполняется до создания scope, поэтому освобождать нечего:
-            // контейнер вообще не получал запрос на keyed ITelegramContext.
+            // The administrator check runs before the scope is created, so there is nothing to release:
+            // the container never received a request for the keyed ITelegramContext.
             Assert.That(_telegramContextDisposed, Is.False);
         }
     }

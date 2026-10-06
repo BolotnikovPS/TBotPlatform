@@ -16,7 +16,7 @@ using Telegram.Bot.Types.Enums;
 namespace TBotPlatform.Tests.Common.Contexts;
 
 /// <summary>
-/// Проверяет, что StateContext передает в Telegram.Bot именно те параметры, которые получил от вызывающего кода.
+/// Tests that StateContext passes to Telegram.Bot exactly the parameters it received from the calling code.
 /// </summary>
 [TestFixture]
 public class StateContextTests

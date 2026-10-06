@@ -83,8 +83,8 @@ internal class DelayQueue : IDelayQueue
                 signalTask = _signal.Task;
             }
 
-            // Отдельный CTS: без отмены Task.Delay продолжает жить после срабатывания сигнала,
-            // а при пустой очереди копится бессрочный Task.Delay(Timeout.Infinite).
+            // Separate CTS: without cancellation the Task.Delay keeps running after the signal fires,
+            // and an empty queue accumulates an endless Task.Delay(Timeout.Infinite).
             using var delayCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
             var delayTask = wait == Timeout.InfiniteTimeSpan

@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Contracts.Bots;
+using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Results.Abstractions;
 
 namespace TBotPlatform.Contracts.Abstractions.Factories;
@@ -6,39 +6,35 @@ namespace TBotPlatform.Contracts.Abstractions.Factories;
 public interface IStateBindFactory
 {
     /// <summary>
-    /// Получает зафиксированное состояние
+    /// Gets the bound state.
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="chatId">Id чата</param>
+    /// <param name="botName">Bot name</param>
+    /// <param name="chatId">Chat id</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<IResult<StateHistory>> GetBindStateOrNull(string botName, long chatId, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Фиксирует состояние
+    /// Binds the state.
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="chatId">Id чата</param>
-    /// <param name="state">Состояние</param>
+    /// <param name="botName">Bot name</param>
+    /// <param name="chatId">Chat id</param>
+    /// <param name="state">The state</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<IResult> BindState(string botName, long chatId, StateHistory state, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Снимает фиксацию состояния для пользователя
+    /// Unbinds the state for the user.
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="chatId">Id чата</param>
+    /// <param name="botName">Bot name</param>
+    /// <param name="chatId">Chat id</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<IResult> UnBindState(string botName, long chatId, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Проверяет наличие зафиксированного состояния
+    /// Checks whether a state is bound.
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="chatId">Id чата</param>
+    /// <param name="botName">Bot name</param>
+    /// <param name="chatId">Chat id</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<IResult<bool>> HasBindState(string botName, long chatId, CancellationToken cancellationToken);
 }

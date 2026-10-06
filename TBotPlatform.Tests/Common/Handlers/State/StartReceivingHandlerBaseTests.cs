@@ -15,8 +15,8 @@ using Telegram.Bot.Types.Enums;
 namespace TBotPlatform.Tests.Common.Handlers.State;
 
 /// <summary>
-/// Проверяет базовый обработчик состояний: маршрутизацию обновления (inline-данные, зафиксированное состояние,
-/// команда, текст кнопки, последнее меню), порядок вызова хуков и обработку отсутствия чата.
+/// Tests the base state handler: update routing (inline data, pinned state,
+/// command, button text, last menu), hook call order, and missing-chat handling.
 /// </summary>
 [TestFixture]
 public class StartReceivingHandlerBaseTests
@@ -34,7 +34,7 @@ public class StartReceivingHandlerBaseTests
         _stateFactory = new Mock<IStateFactory>();
         _stateContextFactory = new Mock<IStateContextFactory>();
 
-        // По умолчанию состояние не зафиксировано.
+        // By default the state is not pinned.
         _stateFactory
             .Setup(x => x.HasBindState(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(ResultT<bool>.Success(false));
@@ -192,7 +192,7 @@ public class StartReceivingHandlerBaseTests
 
     private void VerifyStateContextCreation(Times times, StateHistory? expectedHistory)
     {
-        // Ветвление вынесено из выражения Moq: pattern matching не поддерживается в деревьях выражений.
+        // The branching is kept out of the Moq expression: pattern matching is not supported in expression trees.
         if (expectedHistory is null)
         {
             _stateContextFactory.Verify(

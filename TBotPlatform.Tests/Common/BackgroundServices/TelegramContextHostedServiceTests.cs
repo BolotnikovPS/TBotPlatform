@@ -15,13 +15,13 @@ using Telegram.Bot.Types;
 namespace TBotPlatform.Tests.Common.BackgroundServices;
 
 /// <summary>
-/// Проверяет фоновый сервис контекста telegram без реальной сети: обращения к Bot API подменяются
-/// моком <see cref="ITelegramContext"/>, проверяются режимы long polling и webhook, обработка ошибок
-/// и освобождение scope бота при остановке.
+/// Tests the Telegram context background service without actual network calls: Telegram Bot API calls are replaced
+/// with a mock of <see cref="ITelegramContext"/>, long polling and webhook modes, error handling
+/// and disposal of the bot scope on shutdown are verified.
 /// </summary>
 /// <remarks>
-/// ExecuteAsync вызывается напрямую (через рефлексию): пакет Microsoft.Extensions.Hosting.Abstractions
-/// не подключён к тестовому проекту, поэтому члены базового BackgroundService недоступны.
+/// ExecuteAsync is called directly (via reflection): the Microsoft.Extensions.Hosting.Abstractions
+/// package is not referenced by the test project, so the base BackgroundService members are unavailable.
 /// </remarks>
 [TestFixture]
 public class TelegramContextHostedServiceTests
@@ -224,7 +224,7 @@ public class TelegramContextHostedServiceTests
                  .Invoke(service, [cancellationToken])!;
 
     /// <summary>
-    /// Ожидает завершения ExecuteAsync, считая отмену ожидаемым способом остановки сервиса.
+    /// Waits for ExecuteAsync to finish, treating cancellation as the expected way the service stops.
     /// </summary>
     private static async Task CompleteExecuteAsync(Task executeTask)
     {
@@ -234,13 +234,13 @@ public class TelegramContextHostedServiceTests
         }
         catch (OperationCanceledException)
         {
-            // Ожидаемое завершение по отмене токена.
+            // Expected termination due to token cancellation.
         }
     }
 
     private static async Task<Update[]> DelayedEmptyUpdates()
     {
-        // Пауза не даёт циклу long polling крутиться вхолостую; отмена обрабатывается ReceiveAsync.
+        // The delay prevents the long polling loop from spinning on empty updates; cancellation is handled by ReceiveAsync.
         await Task.Delay(20, CancellationToken.None);
 
         return [];

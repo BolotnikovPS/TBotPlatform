@@ -9,8 +9,8 @@ using ZiggyCreatures.Caching.Fusion;
 namespace TBotPlatform.Tests.Common.Factories;
 
 /// <summary>
-/// Проверяет кэширующую часть <see cref="StateFactory"/>: стек состояний пользователя,
-/// лимит хранения, привязку состояния и обработку отмены.
+/// Tests the caching part of <see cref="StateFactory"/>: the user state stack,
+/// the storage limit, state binding, and cancellation handling.
 /// </summary>
 [TestFixture]
 public class StateFactoryCacheTests

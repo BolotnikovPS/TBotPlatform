@@ -4,13 +4,13 @@ using TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 namespace TBotPlatform.Samples.EchoBot;
 
 /// <summary>
-/// Демонстрация <c>IStateContext.UpdateInlineMarkup</c>: у сообщения обновляется только клавиатура,
-/// текст и позиция сообщения в чате не меняются.
+/// Demonstrates <c>IStateContext.UpdateInlineMarkup</c>: only the keyboard of the message is updated,
+/// its text and its position in the chat stay unchanged.
 /// </summary>
 internal static class Counter
 {
     /// <summary>
-    /// Клавиатура счётчика: нажатие обрабатывает состояние <see cref="CounterClickState"/>
+    /// Counter keyboard: a press is handled by the <see cref="CounterClickState"/> state
     /// </summary>
     public static InlineMarkupMassiveList CreateMarkup(int count)
         => new()

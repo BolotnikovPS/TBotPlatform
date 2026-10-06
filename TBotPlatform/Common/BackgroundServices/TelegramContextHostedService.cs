@@ -42,7 +42,7 @@ internal class TelegramContextHostedService(
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            // Ожидаемое завершение при остановке сервиса.
+            // Expected termination due to service shutdown.
         }
         catch (Exception ex)
         {
@@ -52,8 +52,8 @@ internal class TelegramContextHostedService(
 
     private async Task ExecuteBot(string bot, CancellationToken cancellationToken)
     {
-        // Scoped-сервисы (включая keyed ITelegramContext) резолвятся из scope на время жизни бота,
-        // иначе они захватываются из корневого провайдера (captive dependency).
+        // Scoped services (including keyed ITelegramContext) are resolved from the scope for the bot's lifetime,
+        // otherwise they are captured from the root provider (captive dependency).
         await using var botScope = services.CreateAsyncScope();
 
         var telegramContext = botScope.ServiceProvider.GetRequiredKeyedService<ITelegramContext>(bot);
@@ -72,7 +72,7 @@ internal class TelegramContextHostedService(
             }
             catch (OperationCanceledException)
             {
-                // Ожидаемое завершение при остановке сервиса.
+                // Expected termination due to service shutdown.
             }
             finally
             {
@@ -83,13 +83,13 @@ internal class TelegramContextHostedService(
             return;
         }
 
-        // Получение обновлений делегируется Telegram.Bot (long polling с корректным offset,
-        // DropPendingUpdates и типизированными ошибками) вместо ручного цикла GetUpdates.
+        // Updates retrieval is delegated to Telegram.Bot (long polling with correct offset,
+        // DropPendingUpdates and typed errors) instead of manual GetUpdates loop.
         var receiverOptions = new ReceiverOptions
         {
             AllowedUpdates = settings.UpdatePolicy?.Type,
 
-            // Telegram Bot API принимает limit только в диапазоне 1..100, иначе 400 Bad Request.
+            // Telegram Bot API accepts limit only in the range 1..100, otherwise 400 Bad Request.
             Limit = settings.UpdatePolicy?.Capacity is { } capacity
                 ? Math.Clamp(capacity, UpdatesLimitMin, UpdatesLimitMax)
                 : null,
@@ -103,7 +103,7 @@ internal class TelegramContextHostedService(
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            // Ожидаемое завершение при остановке сервиса.
+            // Expected termination due to service shutdown.
         }
     }
 
@@ -132,7 +132,7 @@ internal class TelegramContextHostedService(
             }
             catch (ApiRequestException ex) when (ex.ErrorCode is 401 or 404)
             {
-                // Постоянные ошибки (неверный токен, неизвестный метод): повтор не поможет.
+                // Permanent errors (invalid token, unknown method): retrying will not help.
                 logger.LogError(
                     ex,
                     "Не удалось установить webhook для бота {bot}: Telegram API вернул {errorCode}",

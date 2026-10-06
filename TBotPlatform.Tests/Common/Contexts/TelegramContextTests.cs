@@ -14,8 +14,8 @@ using Telegram.Bot.Types;
 namespace TBotPlatform.Tests.Common.Contexts;
 
 /// <summary>
-/// Проверяет применение настроек Telegram.Bot (TelegramBotClientOptions) и работу
-/// переопределенного SendRequest: ProtectContent, verbose-логирование и скачивание файлов.
+/// Tests applying Telegram.Bot settings (TelegramBotClientOptions) and the overridden
+/// SendRequest: ProtectContent, verbose logging, and file downloading.
 /// </summary>
 [TestFixture]
 public class TelegramContextTests
@@ -193,7 +193,7 @@ public class TelegramContextTests
         => new(httpClient, setting, log, new RecyclableMemoryStreamManager());
 
     /// <summary>
-    /// Возвращает заранее заданный ответ на любой запрос и запоминает тело запроса.
+    /// Returns a preset response for any request and records the request body.
     /// </summary>
     private sealed class StubHttpMessageHandler(string responseJson, HttpStatusCode statusCode = HttpStatusCode.OK) : HttpMessageHandler
     {
@@ -214,7 +214,7 @@ public class TelegramContextTests
     }
 
     /// <summary>
-    /// Отвечает метаданными на getFile и содержимым файла на скачивание.
+    /// Responds with getFile metadata and with the file content for downloads.
     /// </summary>
     private sealed class FileStubHttpMessageHandler(byte[] fileBytes, string getFileResponseJson) : HttpMessageHandler
     {

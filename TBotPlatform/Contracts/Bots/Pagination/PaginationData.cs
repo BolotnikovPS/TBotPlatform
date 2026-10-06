@@ -4,27 +4,27 @@ public class PaginationData<T>
     where T : class
 {
     /// <summary>
-    /// Коллекция значений
+    /// Collection of values
     /// </summary>
     public List<T> Values { get; set; } = null!;
 
     /// <summary>
-    /// Необходимость следующей страницы
+    /// Whether the next page is needed
     /// </summary>
     public bool IsNext { get; set; } = false;
 
     /// <summary>
-    /// Необходимость предыдущей страницы
+    /// Whether the previous page is needed
     /// </summary>
     public bool IsPrevious { get; set; } = false;
 
     /// <summary>
-    /// Значение кнопки для перехода на следующую страницу
+    /// Button value for navigating to the next page
     /// </summary>
     public string NextValue { get; set; } = null!;
 
     /// <summary>
-    /// Значение кнопки для перехода на предыдущую страницу
+    /// Button value for navigating to the previous page
     /// </summary>
     public string PreviousValue { get; set; } = null!;
 }
