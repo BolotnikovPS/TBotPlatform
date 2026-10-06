@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using Newtonsoft.Json;
 using System.Net;
 
@@ -7,28 +7,29 @@ namespace TBotPlatform.Contracts.Bots.Config;
 public class TBotSettingHttpPolicy
 {
     /// <summary>
-    /// <see cref="HttpStatusCode"/> по которым требуется выполнить повторный запрос в telegram
+    /// The <see cref="HttpStatusCode"/> values that require a retry request to Telegram
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public int[]? BadStatuses { get; set; }
 
     /// <summary>
-    /// Число повторений
+    /// Number of retry attempts
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public int RetryCount { get; set; } = 3;
 
     /// <summary>
-    /// Интервал между повторениями
+    /// Interval between retry attempts
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public int RetryMilliSecondInterval { get; set; } = 1000;
 
     /// <summary>
-    /// Интервал между отправкой запросов в telegram
-    /// У telegram ограничение, не более 30 обращений в 1 секунду.
-    /// Но часто при установке минимального значения в 1 секунду возникают проблемы взаимодействия, ответ с <see cref="HttpStatusCode.TooManyRequests"/>.
-    /// Для более точной настройки взаимодействия, подберите наиболее подходящий для вас интервал запросов
+    /// Interval between requests sent to Telegram
+    /// Telegram has a limit of no more than 30 requests per second.
+    /// However, when the minimum value of 1 second is set, interaction problems often occur,
+    /// with responses of <see cref="HttpStatusCode.TooManyRequests"/>.
+    /// For more precise interaction tuning, choose the request interval that suits you best
     /// </summary>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public int TelegramRequestMilliSecondInterval { get; set; } = 1000;

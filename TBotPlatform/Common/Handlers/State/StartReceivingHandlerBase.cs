@@ -23,14 +23,19 @@ public abstract class StartReceivingHandlerBase<TUser>(IStateFactory stateFactor
         CancellationToken cancellationToken
         )
     {
-        var chatId = telegramData.ChatOrNull?.Id
-                     ?? throw new InvalidOperationException("В обновлении отсутствует чат.");
+        var chatId = telegramData.ChatOrNull?.Id;
+        if (chatId is null)
+        {
+            // The state handler cannot work without a chat: return an error instead of throwing,
+            // so the failure is visible as a processing result rather than as an unhandled exception.
+            return Result.Failure(ErrorResult.NotFound("В обновлении отсутствует чат."));
+        }
 
         var user = await GetOrCreateUser(botName, telegramData, cancellationToken);
 
         await BeforeHandleAsync(botName, update, user, cancellationToken);
 
-        var state = await ResolveState(botName, chatId, update, markupNextState, user, cancellationToken);
+        var state = await ResolveState(botName, chatId.Value, update, markupNextState, user, cancellationToken);
         if (!state.IsSuccess)
         {
             return Result.Failure(state.Error ?? ErrorResult.NotFound("Состояние не найдено"));
@@ -46,13 +51,13 @@ public abstract class StartReceivingHandlerBase<TUser>(IStateFactory stateFactor
     protected abstract Task<TUser> GetOrCreateUser(string botName, TelegramMessageUserData telegramData, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Вызывается перед обработкой обновления.
+    /// Called before the update is handled.
     /// </summary>
     protected virtual Task BeforeHandleAsync(string botName, Update update, TUser user, CancellationToken cancellationToken)
         => Task.CompletedTask;
 
     /// <summary>
-    /// Вызывается после успешной обработки обновления.
+    /// Called after the update has been handled successfully.
     /// </summary>
     protected virtual Task AfterHandleAsync(string botName, Update update, TUser user, CancellationToken cancellationToken)
         => Task.CompletedTask;

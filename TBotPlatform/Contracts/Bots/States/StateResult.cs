@@ -3,18 +3,17 @@ namespace TBotPlatform.Contracts.Bots.States;
 public class StateResult
 {
     /// <summary>
-    /// Признак необходимости отправки меню
+    /// Indicates whether the menu needs to be sent
     /// </summary>
-    /// <returns></returns>
     public bool IsNeedUpdateMarkup { get; set; }
 
     /// <summary>
-    /// Название следующего состояния
+    /// Name of the next state
     /// </summary>
     public string NextStateName { get; set; } = null!;
 
     /// <summary>
-    /// Дополнительная информация по состоянию
+    /// Additional information about the state
     /// </summary>
     public string Data { get; set; } = null!;
 }

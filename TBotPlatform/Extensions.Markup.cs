@@ -10,11 +10,10 @@ namespace TBotPlatform.Common;
 public static partial class Extensions
 {
     /// <summary>
-    /// Получает кнопки
+    /// Gets the buttons
     /// </summary>
-    /// <param name="replyMarkup">Кнопки</param>
+    /// <param name="replyMarkup"></param>
     /// <param name="inlineMarkupList"></param>
-    /// <returns></returns>
     public static bool TryGetInlineMarkupList(this InlineKeyboardMarkup replyMarkup, out InlineMarkupList? inlineMarkupList)
     {
         inlineMarkupList = null;
@@ -37,11 +36,10 @@ public static partial class Extensions
     }
 
     /// <summary>
-    /// Получает кнопку
+    /// Gets the button
     /// </summary>
-    /// <param name="button">Кнопка</param>
-    /// <param name="inlineMarkupBase">Тип кнопки</param>
-    /// <returns></returns>
+    /// <param name="button">Button</param>
+    /// <param name="inlineMarkupBase">Button type</param>
     public static bool TryGetInlineMarkup(this InlineKeyboardButton button, out InlineMarkupBase? inlineMarkupBase)
     {
         inlineMarkupBase = null;

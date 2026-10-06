@@ -1,6 +1,7 @@
-﻿#nullable enable
+#nullable enable
 using TBotPlatform.Contracts.Bots.Constant;
 using TBotPlatform.Contracts.Bots.Exceptions;
+using TBotPlatform.Contracts.Bots.FileDatas;
 using TBotPlatform.Extension;
 using Telegram.Bot.Types;
 
@@ -29,6 +30,25 @@ internal partial class StateContext
         if (text?.Length > StateContextConstant.TextLength)
         {
             throw new TextLengthException(text.Length, StateContextConstant.TextLength);
+        }
+    }
+
+    private static void MediaGroupValidOrThrow(IReadOnlyList<FileDataBase>? mediaDatas)
+    {
+        if (mediaDatas.IsNull()
+            || mediaDatas!.Count < MediaGroupConstant.MinCount
+            || mediaDatas.Count > MediaGroupConstant.MaxCount
+           )
+        {
+            throw new MediaGroupCountException(mediaDatas?.Count ?? 0);
+        }
+
+        foreach (var mediaData in mediaDatas)
+        {
+            if (mediaData.IsNull() || mediaData!.Bytes.IsNull())
+            {
+                throw new MediaGroupDataException();
+            }
         }
     }
 

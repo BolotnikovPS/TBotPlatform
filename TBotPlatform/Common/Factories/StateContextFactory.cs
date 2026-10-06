@@ -68,9 +68,19 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         var stateContext = new StateContext(scope, stateHistory, stateBindFactory, telegramContext, delayQueue, mgr, user.ChatId);
         stateContext.CreateStateContext(chatUpdate, markupNextState);
 
-        await Request(stateContext, user, stateHistory, cancellationToken);
+        try
+        {
+            await Request(stateContext, user, stateHistory, cancellationToken);
 
-        return stateContext;
+            return stateContext;
+        }
+        catch
+        {
+            // StateContext owns the scope — if an error occurs before it is returned to the caller, it must be released here.
+            await stateContext.DisposeAsync();
+
+            throw;
+        }
     }
 
     private async Task Request<T>(StateContext stateContext, T user, StateHistory stateHistory, CancellationToken cancellationToken)
@@ -102,9 +112,9 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         {
             await stateContext.SendChatAction(ChatAction.Typing, cancellationToken);
         }
-        catch
+        catch (Exception) when (!cancellationToken.IsCancellationRequested)
         {
-            // ignored
+            // typing is an optional action; its failure should not affect state processing
         }
 
         var errorText = stateContext.TelegramContext.GetBotSetting().StateErrorText;
@@ -151,9 +161,9 @@ internal class StateContextFactory(ILogger<StateContextFactory> logger, IService
         {
             await stateContext.AnswerCallbackQuery(string.Empty, false, string.Empty, null, cancellationToken);
         }
-        catch
+        catch (Exception) when (!cancellationToken.IsCancellationRequested)
         {
-            // ignored
+            // answering a callback is optional; its failure must not break processing
         }
     }
 

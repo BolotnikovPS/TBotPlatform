@@ -7,6 +7,7 @@ using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Extension;
 using TBotPlatform.Results;
 using TBotPlatform.Results.Abstractions;
+using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -49,7 +50,27 @@ internal class TelegramUpdateProcessor(ILogger<TelegramUpdateProcessor> logger, 
 
             if (!update.TryGetMessageUserData(out var telegramMessageUserData) || telegramMessageUserData.IsNull())
             {
-                throw new InvalidOperationException("Не удалось обработать входящий запрос с telegram");
+                // The update type is not supported by the platform (for example, a new UpdateType from a newer Bot API version).
+                // Such an update is treated as processed: otherwise Telegram will repeat it indefinitely (webhook)
+                // or an attempt to process it every cycle will pollute the log (polling).
+                logger.LogWarning(
+                    "Обновление {updateId} типа {updateType} не поддержано платформой и пропущено",
+                    update.Id,
+                    update.Type);
+
+                return Result.Success();
+            }
+
+            if (telegramMessageUserData!.ChatOrNull.IsNull())
+            {
+                // Platform states and context are bound to a chat, so updates without a chat
+                // (InlineQuery, ChosenInlineResult, ShippingQuery, PreCheckoutQuery, Poll, etc.) are skipped.
+                logger.LogWarning(
+                    "Обновление {updateId} типа {updateType} не содержит чата и пропущено",
+                    update.Id,
+                    update.Type);
+
+                return Result.Success();
             }
 
             chatId = telegramMessageUserData!.ChatOrNull?.Id ?? 0;
@@ -72,7 +93,16 @@ internal class TelegramUpdateProcessor(ILogger<TelegramUpdateProcessor> logger, 
         finally
         {
             timer.Stop();
-            var logLevel = exception.IsNull() ? LogLevel.Debug : LogLevel.Error;
+
+            // 403 (the bot is blocked by the user or cannot start a conversation) is an expected situation,
+            // not a platform failure, so the log level is lowered.
+            var logLevel = exception switch
+            {
+                null => LogLevel.Debug,
+                ApiRequestException { ErrorCode: 403 } => LogLevel.Warning,
+                _ => LogLevel.Error,
+            };
+
             logger.Log(
                 logLevel,
                 exception,

@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using TBotPlatform.Contracts.Abstractions.Factories;
 using ZiggyCreatures.Caching.Fusion;
 
@@ -7,27 +7,23 @@ namespace TBotPlatform.Contracts.Abstractions.Builder;
 public interface ICacheBuilder
 {
     /// <summary>
-    /// Добавляет Redis cache <see cref="IFusionCache"/>
+    /// Adds Redis cache <see cref="IFusionCache"/>
     /// </summary>
-    /// <param name="redisConnectionString">Строка подключения к redis</param>
-    /// <returns></returns>
+    /// <param name="redisConnectionString">Redis connection string</param>
     IRedisBuilder AddRedisFusionCache(string redisConnectionString);
 
     /// <summary>
-    /// Добавляет in-memory cache <see cref="IFusionCache"/> без Redis
+    /// Adds in-memory cache <see cref="IFusionCache"/> without Redis
     /// </summary>
-    /// <returns></returns>
     ICacheBuilder AddMemoryFusionCache();
 
     /// <summary>
-    /// Проверяет наличие ранее добавленного кеша <see cref="IFusionCache"/>
+    /// Checks for a previously added cache <see cref="IFusionCache"/>
     /// </summary>
-    /// <returns></returns>
     ICacheBuilder CheckCustomFusionCache();
 
     /// <summary>
-    /// Собирает кеш. Добавляет распределенную блокировку на основе кеша <see cref="IDistributedLockFactory"/>
+    /// Builds the cache. Adds a distributed lock based on the cache <see cref="IDistributedLockFactory"/>
     /// </summary>
-    /// <returns></returns>
     IBotPlatformBuilder Build();
 }

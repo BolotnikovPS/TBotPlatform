@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable;
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.Users;
@@ -9,43 +9,39 @@ namespace TBotPlatform.Contracts.Abstractions.Factories;
 public interface IStateContextFactory
 {
     /// <summary>
-    /// Создание контекста состояния. Базовым чатом указывается чат пользователя.
+    /// Creates a state context. The base chat is the user's chat.
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="user">Пользователь с которым будем взаимодействовать</param>
-    /// <returns></returns>
+    /// <param name="botName">Bot name</param>
+    /// <param name="user">User to interact with</param>
     IStateContextMinimal GetStateContext<T>(string botName, T user) where T : UserBase;
 
     /// <summary>
-    /// Создание контекста состояния
+    /// Creates a state context
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="chatId">Id чата с которым будем взаимодействовать</param>
-    /// <returns></returns>
+    /// <param name="botName">Bot name</param>
+    /// <param name="chatId">Chat id to interact with</param>
     IStateContextMinimal GetStateContext(string botName, long chatId);
 
     /// <summary>
-    /// Создание контекста состояния и вызов состояния. Базовым чатом указывается чат пользователя.
+    /// Creates a state context and invokes a state. The base chat is the user's chat.
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="user">Пользователь с которым будем взаимодействовать</param>
-    /// <param name="stateHistory">Вызываемое состояние</param>
-    /// <param name="update">Сообщение с telegram</param>
+    /// <param name="botName">Bot name</param>
+    /// <param name="user">User to interact with</param>
+    /// <param name="stateHistory">State being opened</param>
+    /// <param name="update">Update received from Telegram</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<IStateContextMinimal> CreateStateContext<T>(string botName, T user, StateHistory stateHistory, Update update, CancellationToken cancellationToken)
         where T : UserBase;
 
     /// <summary>
-    /// Создание контекста состояния и вызов состояния. Базовым чатом указывается чат пользователя.
+    /// Creates a state context and invokes a state. The base chat is the user's chat.
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="user">Пользователь с которым будем взаимодействовать</param>
-    /// <param name="stateHistory">Вызываемое состояние</param>
-    /// <param name="update">Сообщение с telegram</param>
-    /// <param name="markupNextState">Данные с кнопки inline</param>
+    /// <param name="botName">Bot name</param>
+    /// <param name="user">User to interact with</param>
+    /// <param name="stateHistory">State being opened</param>
+    /// <param name="update">Update received from Telegram</param>
+    /// <param name="markupNextState">Data from the inline button</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<IStateContextMinimal> CreateStateContext<T>(
         string botName,
         T user,

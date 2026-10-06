@@ -3,12 +3,12 @@ namespace TBotPlatform.Contracts.Bots.FileDatas;
 public class FileDataBase
 {
     /// <summary>
-    /// Название файла
+    /// File name
     /// </summary>
     public string Name { get; set; } = null!;
 
     /// <summary>
-    /// Сам файл
+    /// The file content
     /// </summary>
     public byte[] Bytes { get; set; } = null!;
 }

@@ -5,16 +5,16 @@ using Telegram.Bot.Types.ReplyMarkups;
 namespace TBotPlatform.Contracts.Bots.Markups.InlineMarkups;
 
 /// <summary>
-/// Создание inline кнопки <see cref="InlineKeyboardButton"/>
+/// Creates an inline button <see cref="InlineKeyboardButton"/>
 /// </summary>
-/// <param name="buttonName">Название кнопки</param>
-/// <param name="type">Тип inline кнопки</param>
+/// <param name="buttonName">Button name</param>
+/// <param name="type">Inline button type</param>
 public abstract class InlineMarkupBase(string buttonName, InlineMarkupType type)
 {
     protected readonly InlineMarkupType Type = type;
 
     /// <summary>
-    /// Название inline кнопки
+    /// Inline button name
     /// </summary>
     protected string ButtonName { get; } = buttonName.Length > InlineMarkupConstant.ButtonNameLength
         ? buttonName[..InlineMarkupConstant.ButtonNameLength]

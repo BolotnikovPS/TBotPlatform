@@ -14,7 +14,7 @@ public class InlineMarkupState(string buttonName, string state, string? data = n
     }
 
     /// <summary>
-    /// Данные на inline кнопке
+    /// Data on the inline button
     /// </summary>
     private string MarkupNextStateJson { get; } = new MarkupNextState(
         state,

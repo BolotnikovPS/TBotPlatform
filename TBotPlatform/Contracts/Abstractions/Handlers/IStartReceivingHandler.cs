@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using TBotPlatform.Contracts.Bots;
 using TBotPlatform.Contracts.Bots.ChatUpdate;
 using TBotPlatform.Results.Abstractions;
@@ -9,13 +9,12 @@ namespace TBotPlatform.Contracts.Abstractions.Handlers;
 public interface IStartReceivingHandler
 {
     /// <summary>
-    /// Обрабатывает данные при поступлении запроса от telegram
+    /// Processes data when a request arrives from Telegram
     /// </summary>
-    /// <param name="botName">Наименование бота</param>
-    /// <param name="update">Запрос с telegram</param>
-    /// <param name="markupNextState">Данные с inline кнопки</param>
-    /// <param name="telegramData">Данные о пользователе и чате telegram</param>
+    /// <param name="botName">Bot name</param>
+    /// <param name="update">Update received from Telegram</param>
+    /// <param name="markupNextState">Data from the inline button</param>
+    /// <param name="telegramData">Telegram user and chat data</param>
     /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<IResult> HandleUpdate(string botName, Update update, MarkupNextState? markupNextState, TelegramMessageUserData telegramData, CancellationToken cancellationToken);
 }

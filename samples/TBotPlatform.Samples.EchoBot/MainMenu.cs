@@ -15,7 +15,13 @@ internal sealed class MainMenu : IMenuButton
                 [
                     new MainButtonMassive
                     {
-                        MainButtons = [new MainButton("Ping"), new MainButton("Инфо")],
+                        MainButtons =
+                        [
+                            new MainButton("Ping"),
+                            new MainButton("Инфо"),
+                            new MainButton("Список"),
+                            new MainButton("Счётчик"),
+                        ],
                     },
                 ]));
 }

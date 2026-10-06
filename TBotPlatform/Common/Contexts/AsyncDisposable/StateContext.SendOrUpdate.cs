@@ -118,6 +118,29 @@ internal partial class StateContext
 
         if (photoData.IsNotNull())
         {
+            // If the request came from a button of a message with a photo, the media is updated in place:
+            // the message is neither deleted nor re-sent, so its position in the chat history is preserved
+            if (ChatUpdate.IsNotNull() && ChatUpdate!.CallbackQuery.WithPhoto())
+            {
+                CallbackQueryValidOrThrow(ChatUpdate.CallbackQuery);
+
+                await using var mediaStream = mgr.GetStream(photoData!.Bytes);
+
+                var media = new InputMediaPhoto(InputFile.FromStream(mediaStream, photoData.Name))
+                {
+                    Caption = text,
+                    ParseMode = ParseMode,
+                };
+
+                return await telegramContext.EditMessageMedia(
+                    chatId,
+                    ChatUpdate.CallbackQuery!.Message!.MessageId,
+                    media,
+                    replyMarkup: inlineKeyboard,
+                    cancellationToken: cancellationToken
+                    );
+            }
+
             var checkToDelete = ChatUpdate.IsNotNull()
                                 && ChatUpdate!.CallbackQuery.IsNotNull()
                                 && (DateTime.UtcNow - ChatUpdate.CallbackQuery!.Message!.Date).TotalDays < 1;

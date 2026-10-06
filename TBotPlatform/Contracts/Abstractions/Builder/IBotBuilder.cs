@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using System.Reflection;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Abstractions.Factories;
@@ -9,46 +9,38 @@ namespace TBotPlatform.Contracts.Abstractions.Builder;
 public interface IBotBuilder
 {
     /// <summary>
-    /// Добавляет контекст telegram <see cref="ITelegramContext"/>
+    /// Adds the Telegram context <see cref="ITelegramContext"/>
     /// </summary>
-    /// <typeparam name="TLog"></typeparam>
-    /// <param name="httpClient">Веб клиент</param>
-    /// <returns></returns>
+    /// <param name="httpClient">HTTP client</param>
     IBotBuilder AddTelegramContext<TLog>(Action<HttpClient>? httpClient = null)
         where TLog : ITelegramContextLog;
 
     /// <summary>
-    /// Добавляет контекст telegram <see cref="ITelegramContext"/>
+    /// Adds the Telegram context <see cref="ITelegramContext"/>
     /// </summary>
-    /// <param name="httpClient">Веб клиент</param>
-    /// <returns></returns>
+    /// <param name="httpClient">HTTP client</param>
     IBotBuilder AddTelegramContext(Action<HttpClient>? httpClient = null);
 
     /// <summary>
-    /// Добавляет состояния <see cref="IStateFactory"/>, <see cref="IStateBindFactory"/>, <see cref="IStateContextFactory"/>
+    /// Adds the states <see cref="IStateFactory"/>, <see cref="IStateBindFactory"/>, <see cref="IStateContextFactory"/>
     /// </summary>
-    /// <param name="executingAssembly">Сборка в которой находятся потенциальные состояния</param>
-    /// <returns></returns>
+    /// <param name="executingAssembly">Assembly that contains the potential states</param>
     IBotBuilder AddStates(Assembly executingAssembly);
 
     /// <summary>
-    /// Добавляет состояния <see cref="IStateFactory"/>, <see cref="IStateBindFactory"/>, <see cref="IStateContextFactory"/>
+    /// Adds the states <see cref="IStateFactory"/>, <see cref="IStateBindFactory"/>, <see cref="IStateContextFactory"/>
     /// </summary>
-    /// <param name="potentialStateTypes">Список типов потенциальных состояний</param>
-    /// <returns></returns>
+    /// <param name="potentialStateTypes">List of potential state types</param>
     IBotBuilder AddStates(List<Type> potentialStateTypes);
 
     /// <summary>
-    /// Добавляет обработчик событий от telegram <see cref="IStartReceivingHandler"/>
+    /// Adds the event handler from Telegram <see cref="IStartReceivingHandler"/>
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
     IBotBuilder AddReceivingHandler<T>()
         where T : IStartReceivingHandler;
 
     /// <summary>
-    /// Собирает бота
+    /// Builds the bot
     /// </summary>
-    /// <returns></returns>
     IBotPlatformBuilder Build();
 }

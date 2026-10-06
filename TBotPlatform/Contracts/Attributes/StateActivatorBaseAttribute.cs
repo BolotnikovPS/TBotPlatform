@@ -6,47 +6,47 @@ namespace TBotPlatform.Contracts.Attributes;
 public class StateActivatorBaseAttribute(bool isInlineState, Type? menuType, bool isAdminState = false) : Attribute
 {
     /// <summary>
-    /// Перечень типов кнопок соответствующих состоянию
+    /// List of button types corresponding to the state
     /// </summary>
     public string[] ButtonsTypes { get; set; } = null!;
 
     /// <summary>
-    /// Перечень типов текста соответствующих состоянию
+    /// List of text types corresponding to the state
     /// </summary>
     public string[] TextsTypes { get; set; } = null!;
 
     /// <summary>
-    /// Перечень типов команд соответствующих состоянию
+    /// List of command types corresponding to the state
     /// </summary>
     public string[] CommandsTypes { get; set; } = null!;
 
     /// <summary>
-    /// Тип меню, которое отображается пользователю, для данного состояния
+    /// Menu type displayed to the user for this state
     /// </summary>
     public Type MenuType { get; private set; } = menuType!;
 
     /// <summary>
-    /// Состояние вызывается только с inline кнопок
+    /// The state is invoked only from inline buttons
     /// </summary>
     public bool IsInlineState { get; private set; } = isInlineState;
 
     /// <summary>
-    /// Состояние вызывается только при наличии блокировки у пользователя
+    /// The state is invoked only when the user is locked
     /// </summary>
     public bool IsLockUserState { get; set; }
 
     /// <summary>
-    /// Показывает что состояние относится уровню регистрации пользователя
+    /// Indicates that the state belongs to the user registration level
     /// </summary>
     public bool IsRegistrationState { get; set; }
 
     /// <summary>
-    /// Показывает что состояние относится к пользователя <see cref="UserBase.IsAdmin"/>
+    /// Indicates that the state belongs to the user <see cref="UserBase.IsAdmin"/>
     /// </summary>
     public bool IsAdminState { get; private set; } = isAdminState;
 
     /// <summary>
-    /// Для какого бота доступно состояние
+    /// For which bot the state is available
     /// </summary>
     public string OnlyForBot { get; set; } = null!;
 }

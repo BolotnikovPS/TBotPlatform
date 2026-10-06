@@ -133,7 +133,7 @@ internal partial class StateContext(
     }
 
     public Task<Message> SendPhoto(FileDataBase documentData, bool disableNotification, CancellationToken cancellationToken)
-        => SendPhoto(documentData, caption: null, disableNotification: false, cancellationToken);
+        => SendPhoto(documentData, caption: null, disableNotification, cancellationToken);
 
     public Task<Message> SendPhoto(FileDataBase documentData, CancellationToken cancellationToken)
         => SendPhoto(documentData, disableNotification: false, cancellationToken);

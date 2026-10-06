@@ -3,7 +3,7 @@ namespace TBotPlatform.Extension;
 public static partial class Extensions
 {
     /// <summary>
-    /// Проверяет наличие input в value без регистровой зависимости
+    /// Checks whether input is in value, ignoring case
     /// </summary>
     /// <param name="input"></param>
     /// <param name="value"></param>
@@ -24,7 +24,7 @@ public static partial class Extensions
     }
 
     /// <summary>
-    /// Проверяет отсутствие input в value без регистровой зависимости
+    /// Checks that input is not in value, ignoring case
     /// </summary>
     /// <param name="input"></param>
     /// <param name="value"></param>
@@ -32,7 +32,7 @@ public static partial class Extensions
     public static bool NotIn(this string? input, params string?[] value) => !input.In(value);
 
     /// <summary>
-    /// Проверяет наличие input в value без регистровой зависимости
+    /// Checks whether input is in value, ignoring case
     /// </summary>
     /// <param name="input"></param>
     /// <param name="value"></param>
@@ -58,7 +58,7 @@ public static partial class Extensions
     }
 
     /// <summary>
-    /// Проверяет отсутствие input в value без регистровой зависимости
+    /// Checks that input is not in value, ignoring case
     /// </summary>
     /// <param name="input"></param>
     /// <param name="value"></param>
@@ -67,7 +67,7 @@ public static partial class Extensions
         where T : Enum => !input.In(value);
 
     /// <summary>
-    /// Проверяет наличие input в value без регистровой зависимости
+    /// Checks whether input is in value, ignoring case
     /// </summary>
     /// <param name="input"></param>
     /// <param name="value"></param>
@@ -78,7 +78,7 @@ public static partial class Extensions
     }
 
     /// <summary>
-    /// Проверяет отсутствие input в value без регистровой зависимости
+    /// Checks that input is not in value, ignoring case
     /// </summary>
     /// <param name="input"></param>
     /// <param name="value"></param>
@@ -86,7 +86,7 @@ public static partial class Extensions
     public static bool NotIn(this int input, params int[] value) => !input.In(value);
 
     /// <summary>
-    /// Проверяет наличие input в value без регистровой зависимости
+    /// Checks whether input is in value, ignoring case
     /// </summary>
     /// <param name="input"></param>
     /// <param name="value"></param>
@@ -97,7 +97,7 @@ public static partial class Extensions
     }
 
     /// <summary>
-    /// Проверяет отсутствие input в value без регистровой зависимости
+    /// Checks that input is not in value, ignoring case
     /// </summary>
     /// <param name="input"></param>
     /// <param name="value"></param>
@@ -105,7 +105,7 @@ public static partial class Extensions
     public static bool NotIn(this long input, params long[] value) => !input.In(value);
 
     /// <summary>
-    /// Проверяет наличие input в value без регистровой зависимости
+    /// Checks whether input is in value, ignoring case
     /// </summary>
     /// <param name="input"></param>
     /// <param name="value"></param>
@@ -123,7 +123,7 @@ public static partial class Extensions
     }
 
     /// <summary>
-    /// Проверяет отсутствие input в value без регистровой зависимости
+    /// Checks that input is not in value, ignoring case
     /// </summary>
     /// <param name="input"></param>
     /// <param name="value"></param>

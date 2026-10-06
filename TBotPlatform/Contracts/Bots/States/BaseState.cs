@@ -56,7 +56,7 @@ public abstract class BaseState(IFusionCache cacheService)
             return;
         }
 
-        throw new NotImplementedException($"Для состояния {StateName} не реализован интерфейс {nameof(IFusionCache)}");
+        throw new NotImplementedException($"For state {StateName} the {nameof(IFusionCache)} interface is not implemented");
     }
 
     private string GetCacheKeyName()

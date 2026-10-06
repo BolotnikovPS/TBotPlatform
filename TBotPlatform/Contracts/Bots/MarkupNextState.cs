@@ -5,20 +5,20 @@ using TBotPlatform.Extension;
 namespace TBotPlatform.Contracts.Bots;
 
 /// <summary>
-/// Данные с кнопки inline
+/// Data from the inline button
 /// </summary>
-/// <param name="state">Состояние</param>
-/// <param name="data">Данные состояния</param>
+/// <param name="state">The state to invoke</param>
+/// <param name="data">Data for the state</param>
 public class MarkupNextState(string state, string? data = null)
 {
     /// <summary>
-    /// Состояние которое необходимо вызывать
+    /// The state that needs to be invoked
     /// </summary>
     [JsonProperty("s", NullValueHandling = NullValueHandling.Ignore)]
     public string State { get; private set; } = state;
 
     /// <summary>
-    /// Данные для состояния
+    /// Data for the state
     /// </summary>
     [JsonProperty("d", NullValueHandling = NullValueHandling.Ignore)]
     public string? Data { get; private set; } = data;

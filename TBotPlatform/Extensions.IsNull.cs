@@ -3,7 +3,7 @@ namespace TBotPlatform.Extension;
 public static partial class Extensions
 {
     /// <summary>
-    /// Проверяет структуры на default
+    /// Checks structs for default
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
@@ -13,7 +13,7 @@ public static partial class Extensions
         => !obj.IsNotDefault();
 
     /// <summary>
-    /// Проверяет объект на null
+    /// Checks whether the object is null
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
@@ -21,7 +21,7 @@ public static partial class Extensions
         => !obj.IsNotNull();
 
     /// <summary>
-    /// Проверяет объект на null
+    /// Checks whether the object is null
     /// </summary>
     /// <param name="s"></param>
     /// <returns></returns>
@@ -29,7 +29,7 @@ public static partial class Extensions
         => !s.CheckAny();
 
     /// <summary>
-    /// Проверяет List на отсутствие данных
+    /// Checks whether the list has no items
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
@@ -39,7 +39,7 @@ public static partial class Extensions
         => !collection.CheckAny();
 
     /// <summary>
-    /// Проверяет IEnumerable на отсутствие данных
+    /// Checks whether the enumerable has no items
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
@@ -49,7 +49,7 @@ public static partial class Extensions
         => !collection.CheckAny();
 
     /// <summary>
-    /// Проверяет IQueryable на отсутствие данных
+    /// Checks whether the queryable has no items
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>

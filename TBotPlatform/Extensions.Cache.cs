@@ -1,4 +1,4 @@
-﻿using TBotPlatform.Contracts.Abstractions.Cache;
+using TBotPlatform.Contracts.Abstractions.Cache;
 using TBotPlatform.Results;
 using TBotPlatform.Results.Abstractions;
 using ZiggyCreatures.Caching.Fusion;
@@ -10,17 +10,26 @@ public static partial class Extensions
     private const string DataNotFound = "Данных не найдено.";
     private const string CollectionTagPrefix = "collection:";
 
-    public static async Task<IResult> AddValueToCollection(this IFusionCache fusionCache, string collection, IKeyInCache value)
+    public static async Task<IResult> AddValueToCollection(
+        this IFusionCache fusionCache,
+        string collection,
+        IKeyInCache value,
+        CancellationToken cancellationToken = default
+        )
     {
         try
         {
             var fullKey = CreateCollectionKey(collection, value.Key);
             var tag = CreateCollectionTag(collection);
 
-            // Добавляем значение с тегом коллекции (FusionCache сам сериализует через NewtonsoftJson)
-            await fusionCache.SetAsync(fullKey, value, tags: [tag]);
+            // Add the value with the collection tag (FusionCache serializes it itself via NewtonsoftJson)
+            await fusionCache.SetAsync(fullKey, value, tags: [tag], token: cancellationToken);
 
             return Result.Success();
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch
         {
@@ -28,17 +37,26 @@ public static partial class Extensions
         }
     }
 
-    public static async Task<IResult<T>> GetValueFromCollection<T>(this IFusionCache fusionCache, string collection, string key)
+    public static async Task<IResult<T>> GetValueFromCollection<T>(
+        this IFusionCache fusionCache,
+        string collection,
+        string key,
+        CancellationToken cancellationToken = default
+        )
         where T : IKeyInCache
     {
         try
         {
             var fullKey = CreateCollectionKey(collection, key);
-            var value = await fusionCache.TryGetAsync<T>(fullKey);
+            var value = await fusionCache.TryGetAsync<T>(fullKey, token: cancellationToken);
 
             return value.HasValue
                 ? ResultT<T>.Success(value.Value)
                 : ResultT<T>.Failure(ErrorResult.NotFound(DataNotFound));
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch
         {
@@ -46,15 +64,24 @@ public static partial class Extensions
         }
     }
 
-    public static async Task<IResult> RemoveValueFromCollection(this IFusionCache fusionCache, string collection, string key)
+    public static async Task<IResult> RemoveValueFromCollection(
+        this IFusionCache fusionCache,
+        string collection,
+        string key,
+        CancellationToken cancellationToken = default
+        )
     {
         try
         {
             var fullKey = CreateCollectionKey(collection, key);
 
-            await fusionCache.RemoveAsync(fullKey);
+            await fusionCache.RemoveAsync(fullKey, token: cancellationToken);
 
             return Result.Success();
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch
         {
@@ -62,15 +89,23 @@ public static partial class Extensions
         }
     }
 
-    public static async Task<IResult> RemoveCollection(this IFusionCache fusionCache, string collection)
+    public static async Task<IResult> RemoveCollection(
+        this IFusionCache fusionCache,
+        string collection,
+        CancellationToken cancellationToken = default
+        )
     {
         try
         {
             var tag = CreateCollectionTag(collection);
 
-            await fusionCache.RemoveByTagAsync(tag);
+            await fusionCache.RemoveByTagAsync(tag, token: cancellationToken);
 
             return Result.Success();
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch
         {
@@ -78,23 +113,36 @@ public static partial class Extensions
         }
     }
 
-    public static async Task<IResult<T>> GetValue<T>(this IFusionCache fusionCache, string key)
+    public static async Task<IResult<T>> GetValue<T>(
+        this IFusionCache fusionCache,
+        string key,
+        CancellationToken cancellationToken = default
+        )
         where T : IKeyInCache
     {
-        var value = await fusionCache.TryGetAsync<T>(key);
+        var value = await fusionCache.TryGetAsync<T>(key, token: cancellationToken);
 
         return value.HasValue
             ? ResultT<T>.Success(value.Value)
             : ResultT<T>.Failure(ErrorResult.NotFound(DataNotFound));
     }
 
-    public static async Task<IResult> SetValue(this IFusionCache fusionCache, IKeyInCache value, TimeSpan expiryTime)
+    public static async Task<IResult> SetValue(
+        this IFusionCache fusionCache,
+        IKeyInCache value,
+        TimeSpan expiryTime,
+        CancellationToken cancellationToken = default
+        )
     {
         try
         {
-            await fusionCache.SetAsync(value.Key, value, expiryTime);
+            await fusionCache.SetAsync(value.Key, value, expiryTime, token: cancellationToken);
 
             return Result.Success();
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch
         {
@@ -102,13 +150,21 @@ public static partial class Extensions
         }
     }
 
-    public static async Task<IResult> SetValue(this IFusionCache fusionCache, IKeyInCache value)
+    public static async Task<IResult> SetValue(
+        this IFusionCache fusionCache,
+        IKeyInCache value,
+        CancellationToken cancellationToken = default
+        )
     {
         try
         {
-            await fusionCache.SetAsync(value.Key, value);
+            await fusionCache.SetAsync(value.Key, value, token: cancellationToken);
 
             return Result.Success();
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch
         {
@@ -116,13 +172,21 @@ public static partial class Extensions
         }
     }
 
-    public static async Task<IResult> RemoveValue(this IFusionCache fusionCache, string key)
+    public static async Task<IResult> RemoveValue(
+        this IFusionCache fusionCache,
+        string key,
+        CancellationToken cancellationToken = default
+        )
     {
         try
         {
-            await fusionCache.RemoveAsync(key);
+            await fusionCache.RemoveAsync(key, token: cancellationToken);
 
             return Result.Success();
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch
         {
@@ -130,13 +194,23 @@ public static partial class Extensions
         }
     }
 
-    public static async Task<IResult<bool>> KeyExists(this IFusionCache fusionCache, string key)
+    public static async Task<IResult<bool>> KeyExists(
+        this IFusionCache fusionCache,
+        string key,
+        CancellationToken cancellationToken = default
+        )
     {
         try
         {
-            var exists = await fusionCache.TryGetAsync<string>(key);
+            // Check whether the key exists: the value type is unknown in advance,
+            // so read it as object (otherwise non-string values cause a cast error).
+            var exists = await fusionCache.TryGetAsync<object>(key, token: cancellationToken);
 
             return ResultT<bool>.Success(exists.HasValue);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch
         {

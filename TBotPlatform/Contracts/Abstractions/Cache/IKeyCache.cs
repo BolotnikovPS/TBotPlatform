@@ -3,7 +3,7 @@
 public interface IKeyInCache
 {
     /// <summary>
-    /// Ключ для поиска в кэше
+    /// Key to look up in the cache
     /// </summary>
     string Key { get; }
 }

@@ -3,7 +3,7 @@ namespace TBotPlatform.Extension;
 public static partial class Extensions
 {
     /// <summary>
-    /// Проверяет объект на != null
+    /// Checks that the string contains non-whitespace data
     /// </summary>
     /// <param name="s"></param>
     /// <returns></returns>
@@ -11,7 +11,7 @@ public static partial class Extensions
         => !string.IsNullOrWhiteSpace(s);
 
     /// <summary>
-    /// Проверяет List на наличие данных
+    /// Checks that the list has items
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
@@ -21,7 +21,7 @@ public static partial class Extensions
         => collection?.Count > 0;
 
     /// <summary>
-    /// Проверяет IEnumerable на наличие данных
+    /// Checks that the enumerable has items
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>
@@ -31,7 +31,7 @@ public static partial class Extensions
         => collection?.Any() == true;
 
     /// <summary>
-    /// Проверяет IQueryable на наличие данных
+    /// Checks that the queryable has items
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="collection"></param>

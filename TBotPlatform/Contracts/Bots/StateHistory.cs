@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using TBotPlatform.Contracts.Bots.Users;
 
 namespace TBotPlatform.Contracts.Bots;
@@ -6,22 +6,22 @@ namespace TBotPlatform.Contracts.Bots;
 public class StateHistory
 {
     /// <summary>
-    /// Тип состояния
+    /// State type
     /// </summary>
     public Type StateType { get; }
 
     /// <summary>
-    /// Тип кнопок состояния
+    /// State buttons type
     /// </summary>
     public Type? MenuStateTypeOrNull { get; }
 
     /// <summary>
-    /// Состояние вызывается только с inline кнопок
+    /// Indicates that the state is invoked only from inline buttons
     /// </summary>
     public bool IsInlineState { get; }
 
     /// <summary>
-    /// Показывает что состояние относится к пользователя <see cref="UserBase.IsAdmin"/>
+    /// Indicates that the state belongs to users with <see cref="UserBase.IsAdmin"/>
     /// </summary>
     public bool IsAdminState { get; set; }
 
