@@ -13,6 +13,7 @@ TBotPlatform is built on top of [Telegram.Bot](https://www.nuget.org/packages/Te
 - **State machine** — model your bot flow as states activated via attributes (`[StateActivator]`, `[StateInlineActivator]`, `[AdminStateActivator]`, ...).
 - **Multi-bot** — run several bots in a single host using keyed services.
 - **Resilient HTTP pipeline** — Polly retries (including `Retry-After` handling) plus request rate limiting; retries are not amplified on `429` and permanent `4xx` errors are not retried.
+- **SOCKS5 proxy** — route all Telegram API traffic through a SOCKS5 proxy (RFC 1928) per bot, with optional username/password authentication, without affecting retries, rate limiting or caching.
 - **Caching** — FusionCache with Redis or in-memory backends, fail-safe enabled, all extensions accept a `CancellationToken`.
 - **Delayed messages** — schedule messages via a background queue.
 - **Distributed locks** — built on FusionCache.
@@ -60,6 +61,7 @@ See the [samples](samples/TBotPlatform.Samples.EchoBot) folder for a complete ru
 | Property | Description |
 | --- | --- |
 | `BaseUrl` | Base URL of a local Bot API server. |
+| `Proxy` | SOCKS5 proxy settings (`TBotSettingProxy`): host, port and optional credentials. |
 | `UseTestEnvironment` | Use the Telegram test environment. |
 | `RetryCount` / `RetryThreshold` | Built-in retry count and the `Retry-After` threshold of `TelegramBotClient`. |
 | `RequestTimeout` | Per-request timeout of the underlying `HttpClient`. |
@@ -68,6 +70,16 @@ See the [samples](samples/TBotPlatform.Samples.EchoBot) folder for a complete ru
 | `UpdatePolicy` | Allowed `UpdateType`s and update batch capacity. |
 
 Updates are received through `TelegramBotClientExtensions.ReceiveAsync` with `ReceiverOptions`; polling errors and per-update errors are reported through `IUpdateHandler` (`TelegramUpdateHandler`) with typed `ApiRequestException` handling.
+
+## SOCKS5 proxy
+
+Set `TBotSetting.Proxy` to route every Telegram API request of a bot through a SOCKS5 proxy. This includes long polling, media downloads and webhook registration. The proxy is transparent to the rest of the pipeline: Polly retries, `Retry-After` handling, request rate limiting and caching behave exactly as without a proxy.
+
+Implementation notes:
+
+- Built on a minimal, dependency-free RFC 1928 client wired through `SocketsHttpHandler.ConnectCallback`, so the .NET `WebProxy` limitation (HTTP/CONNECT only) does not apply.
+- Supports IPv4, IPv6 and domain destinations; for domains the DNS resolution is delegated to the proxy.
+- Supports the no-auth and username/password (RFC 1929) authentication methods.
 
 ## Concepts
 

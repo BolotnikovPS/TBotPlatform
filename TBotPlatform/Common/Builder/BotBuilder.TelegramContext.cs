@@ -6,8 +6,10 @@ using Polly;
 using Polly.Extensions.Http;
 using RateLimiter;
 using System.Net;
+using System.Net.Sockets;
 using TBotPlatform.Common.Contexts;
 using TBotPlatform.Common.Handlers;
+using TBotPlatform.Common.Socks5;
 using TBotPlatform.Contracts.Abstractions.Contexts;
 using TBotPlatform.Contracts.Bots.Config;
 using TBotPlatform.Contracts.Bots.Constant;
@@ -32,6 +34,16 @@ internal partial class BotBuilder
         var policy = GetRetryPolicy(botSetting.HttpPolicy);
 
         var httpBuilder = serviceCollection.AddHttpClient(botSetting.BotName);
+
+        if (botSetting.Proxy.IsNotNull())
+        {
+            httpBuilder.ConfigurePrimaryHttpMessageHandler(
+                () => new SocketsHttpHandler
+                {
+                    ConnectCallback = (context, cancellationToken) =>
+                        Socks5Client.ConnectAsync(context, botSetting.Proxy!, cancellationToken),
+                });
+        }
 
         if (HttpClient.IsNotNull())
         {

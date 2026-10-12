@@ -46,6 +46,12 @@ public class TBotSetting
     public string? BaseUrl { get; init; }
 
     /// <summary>
+    /// SOCKS5 proxy settings. If specified, all Telegram API traffic is routed through the proxy.
+    /// </summary>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public TBotSettingProxy? Proxy { get; init; }
+
+    /// <summary>
     /// Use the test environment of Bot API (…/bot{token}/test)
     /// </summary>
     public bool UseTestEnvironment { get; init; }
