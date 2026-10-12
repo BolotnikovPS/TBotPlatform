@@ -146,9 +146,9 @@ public class BotPlatformBuilderTests
         {
             Assert.That(GetDescriptor(typeof(IDelayQueue))?.Lifetime, Is.EqualTo(ServiceLifetime.Singleton));
             Assert.That(GetDescriptor(typeof(ITelegramUpdateProcessor))?.Lifetime, Is.EqualTo(ServiceLifetime.Singleton));
-            Assert.That(GetDescriptor(typeof(IStateFactory))?.Lifetime, Is.EqualTo(ServiceLifetime.Scoped));
-            Assert.That(GetDescriptor(typeof(IStateBindFactory))?.Lifetime, Is.EqualTo(ServiceLifetime.Scoped));
-            Assert.That(GetDescriptor(typeof(IStateContextFactory))?.Lifetime, Is.EqualTo(ServiceLifetime.Scoped));
+            Assert.That(GetDescriptor(typeof(IStateFactory))?.Lifetime, Is.EqualTo(ServiceLifetime.Singleton));
+            Assert.That(GetDescriptor(typeof(IStateBindFactory))?.Lifetime, Is.EqualTo(ServiceLifetime.Singleton));
+            Assert.That(GetDescriptor(typeof(IStateContextFactory))?.Lifetime, Is.EqualTo(ServiceLifetime.Singleton));
             Assert.That(GetDescriptor(typeof(IMenuButtonFactory))?.Lifetime, Is.EqualTo(ServiceLifetime.Singleton));
             Assert.That(GetDescriptor(typeof(IDistributedLockFactory))?.Lifetime, Is.EqualTo(ServiceLifetime.Singleton));
         }
@@ -196,7 +196,7 @@ public class BotPlatformBuilderTests
 
         _builder.Build();
 
-        Assert.That(GetDescriptor(typeof(StateFactory))?.Lifetime, Is.EqualTo(ServiceLifetime.Scoped));
+        Assert.That(GetDescriptor(typeof(StateFactory))?.Lifetime, Is.EqualTo(ServiceLifetime.Singleton));
     }
 
     private void PreparePlatform(bool useHostedService = false)
