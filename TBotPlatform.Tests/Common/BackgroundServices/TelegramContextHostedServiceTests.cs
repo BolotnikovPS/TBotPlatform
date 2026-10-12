@@ -163,6 +163,47 @@ public class TelegramContextHostedServiceTests
     }
 
     [Test]
+    public async Task ExecuteAsync_WhenGetMeFailsTransiently_RestartsBotAndPollsUpdates()
+    {
+        var getMeFailed = true;
+        var updatesRequested = new TaskCompletionSource();
+
+        _telegramContext
+            .Setup(x => x.SendRequest(It.IsAny<GetMeRequest>(), It.IsAny<CancellationToken>()))
+            .Returns<GetMeRequest, CancellationToken>((_, _) =>
+            {
+                if (getMeFailed)
+                {
+                    getMeFailed = false;
+
+                    return Task.FromException<User>(new HttpRequestException("network down"));
+                }
+
+                return Task.FromResult(new User { Id = 1, IsBot = true, FirstName = "bot" });
+            });
+
+        _telegramContext
+            .Setup(x => x.SendRequest(It.IsAny<GetUpdatesRequest>(), It.IsAny<CancellationToken>()))
+            .Callback(() => updatesRequested.TrySetResult())
+            .Returns<GetUpdatesRequest, CancellationToken>((_, _) => DelayedEmptyUpdates());
+
+        var service = CreateService([BotName]);
+        using var cts = new CancellationTokenSource();
+
+        var executeTask = StartExecute(service, cts.Token);
+
+        await updatesRequested.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        cts.Cancel();
+        await CompleteExecuteAsync(executeTask);
+
+        using (Assert.EnterMultipleScope())
+        {
+            _telegramContext.Verify(x => x.SendRequest(It.IsAny<GetMeRequest>(), It.IsAny<CancellationToken>()), Times.AtLeast(2));
+            _telegramContext.Verify(x => x.SendRequest(It.IsAny<GetUpdatesRequest>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce);
+        }
+    }
+
+    [Test]
     public async Task ExecuteAsync_WhenWebhookSetupFailsWithApiError_DoesNotRetryAndCompletes()
     {
         _setting = CreateSetting(webhookUrl: "https://example.test/hook");

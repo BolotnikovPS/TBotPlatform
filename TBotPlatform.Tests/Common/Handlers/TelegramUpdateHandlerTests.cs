@@ -41,7 +41,7 @@ public class TelegramUpdateHandlerTests
     [TestCase(409)]
     [TestCase(429)]
     [TestCase(500)]
-    public void HandleErrorAsync_WhenApiExceptionReceived_DoesNotThrow(int errorCode)
+    public async Task HandleErrorAsync_WhenApiExceptionReceived_DoesNotThrow(int errorCode)
     {
         var handler = new TelegramUpdateHandler(Mock.Of<ITelegramUpdateProcessor>(), "bot", Mock.Of<ILogger>());
 
@@ -51,17 +51,17 @@ public class TelegramUpdateHandlerTests
             new ResponseParameters { RetryAfter = 3, MigrateToChatId = 555 }
             );
 
-        Assert.DoesNotThrowAsync(
+        await Assert.DoesNotThrowAsync(
             () => handler.HandleErrorAsync(Mock.Of<ITelegramBotClient>(), exception, HandleErrorSource.PollingError, CancellationToken.None)
             );
     }
 
     [Test]
-    public void HandleErrorAsync_WhenUnexpectedExceptionReceived_DoesNotThrow()
+    public async Task HandleErrorAsync_WhenUnexpectedExceptionReceived_DoesNotThrow()
     {
         var handler = new TelegramUpdateHandler(Mock.Of<ITelegramUpdateProcessor>(), "bot", Mock.Of<ILogger>());
 
-        Assert.DoesNotThrowAsync(
+        await Assert.DoesNotThrowAsync(
             () => handler.HandleErrorAsync(
                 Mock.Of<ITelegramBotClient>(),
                 new InvalidOperationException("boom"),
@@ -72,14 +72,14 @@ public class TelegramUpdateHandlerTests
     }
 
     [Test]
-    public void HandleErrorAsync_WhenServiceStopped_DoesNotThrow()
+    public async Task HandleErrorAsync_WhenServiceStopped_DoesNotThrow()
     {
         var handler = new TelegramUpdateHandler(Mock.Of<ITelegramUpdateProcessor>(), "bot", Mock.Of<ILogger>());
 
         using var cts = new CancellationTokenSource();
         cts.Cancel();
 
-        Assert.DoesNotThrowAsync(
+        await Assert.DoesNotThrowAsync(
             () => handler.HandleErrorAsync(
                 Mock.Of<ITelegramBotClient>(),
                 new OperationCanceledException(),

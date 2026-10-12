@@ -33,15 +33,15 @@ public class StateContextMediaAndQueriesTests
         var telegramContext = CreateTelegramContextMock();
         await using var stateContext = CreateStateContext(telegramContext.Object, ChatIdValue);
 
-        Assert.ThrowsAsync<MediaGroupCountException>(
+        await Assert.ThrowsAsync<MediaGroupCountException>(
             () => stateContext.SendMediaGroup([CreateFileData()], CancellationToken.None)
             );
 
-        Assert.ThrowsAsync<MediaGroupCountException>(
+        await Assert.ThrowsAsync<MediaGroupCountException>(
             () => stateContext.SendMediaGroup([.. Enumerable.Range(0, 11).Select(_ => CreateFileData())], CancellationToken.None)
             );
 
-        Assert.ThrowsAsync<MediaGroupCountException>(
+        await Assert.ThrowsAsync<MediaGroupCountException>(
             () => stateContext.SendMediaGroup(null!, CancellationToken.None)
             );
 
@@ -63,7 +63,7 @@ public class StateContextMediaAndQueriesTests
             new FileData { Name = "broken.png", Bytes = null!, Size = 0, FileId = "broken" },
         };
 
-        Assert.ThrowsAsync<MediaGroupDataException>(() => stateContext.SendMediaGroup(mediaDatas, CancellationToken.None));
+        await Assert.ThrowsAsync<MediaGroupDataException>(() => stateContext.SendMediaGroup(mediaDatas, CancellationToken.None));
     }
 
     [Test]

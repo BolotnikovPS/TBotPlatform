@@ -23,33 +23,33 @@ public class MenuButtonFactoryTests
     }
 
     [Test]
-    public void GetMainButtons_WhenStateHistoryMenuStateTypeOrNullIsNull_ThrowsArgumentNullException()
+    public async Task GetMainButtons_WhenStateHistoryMenuStateTypeOrNullIsNull_ThrowsArgumentNullException()
     {
         var user = new Mock<UserBase>().Object;
         var stateHistory = new StateHistory(typeof(object), null);
 
-        Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await _factory.GetMainButtons(user, stateHistory));
     }
 
     [Test]
-    public void UpdateMainButtonsByState_WhenStateHistoryIsNull_ThrowsArgumentNullException()
+    public async Task UpdateMainButtonsByState_WhenStateHistoryIsNull_ThrowsArgumentNullException()
     {
         var user = new Mock<UserBase>().Object;
         var stateContext = new Mock<TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable.IStateContextMinimal>().Object;
 
-        Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await _factory.UpdateMainButtonsByState(user, stateContext, (StateHistory)null!, CancellationToken.None));
     }
 
     [Test]
-    public void UpdateMainButtonsByState_WhenStateHistoryMenuStateTypeOrNullIsNull_ThrowsArgumentNullException()
+    public async Task UpdateMainButtonsByState_WhenStateHistoryMenuStateTypeOrNullIsNull_ThrowsArgumentNullException()
     {
         var user = new Mock<UserBase>().Object;
         var stateContext = new Mock<TBotPlatform.Contracts.Abstractions.Contexts.AsyncDisposable.IStateContextMinimal>().Object;
         var stateHistory = new StateHistory(typeof(object), null);
 
-        Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await _factory.UpdateMainButtonsByState(user, stateContext, stateHistory, CancellationToken.None));
     }
 

@@ -260,7 +260,7 @@ public class StateFactoryCacheTests
         using var cancellationTokenSource = new CancellationTokenSource();
         await cancellationTokenSource.CancelAsync();
 
-        Assert.ThrowsAsync<OperationCanceledException>(async () =>
+        await Assert.ThrowsAsync<OperationCanceledException>(async () =>
             await _factory.GetStateMain(BotName, ChatIdValue, cancellationTokenSource.Token));
     }
 
