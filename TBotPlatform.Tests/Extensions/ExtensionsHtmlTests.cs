@@ -73,4 +73,16 @@ public class ExtensionsHtmlTests
             Assert.That(string.Empty.ToPlainLength(), Is.Zero);
         }
     }
+
+    [Test]
+    public void ToPlainLength_WhenTextHasAstralSymbols_CountsUnicodeCharacters()
+    {
+        // Emoji are astral symbols (surrogate pairs in UTF-16). PlainLength counts code points,
+        // not UTF-16 code units, so "😀" must count as 1 character.
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That("😀".ToPlainLength(), Is.EqualTo(1));
+            Assert.That("<b>😀😀</b>".ToPlainLength(), Is.EqualTo(2));
+        }
+    }
 }

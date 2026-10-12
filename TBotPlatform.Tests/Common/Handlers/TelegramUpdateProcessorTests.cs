@@ -50,12 +50,12 @@ public class TelegramUpdateProcessorTests
     public void TearDown() => _provider.Dispose();
 
     [Test]
-    public void ProcessUpdates_WhenUpdatesAreEmpty_DoesNotResolveAnythingFromContainer()
+    public async Task ProcessUpdates_WhenUpdatesAreEmpty_DoesNotResolveAnythingFromContainer()
     {
         var services = new Mock<IServiceProvider>();
         var processor = new TelegramUpdateProcessor(NullLogger<TelegramUpdateProcessor>.Instance, services.Object);
 
-        Assert.DoesNotThrowAsync(() => processor.ProcessUpdates(BotName, [], CancellationToken.None));
+        await Assert.DoesNotThrowAsync(() => processor.ProcessUpdates(BotName, [], CancellationToken.None));
 
         services.VerifyNoOtherCalls();
     }
@@ -174,7 +174,7 @@ public class TelegramUpdateProcessorTests
 
         IResult? result = null;
 
-        Assert.DoesNotThrowAsync(async () => result = await _processor.ProcessUpdate(BotName, update, CancellationToken.None));
+        await Assert.DoesNotThrowAsync(async () => result = await _processor.ProcessUpdate(BotName, update, CancellationToken.None));
 
         using (Assert.EnterMultipleScope())
         {

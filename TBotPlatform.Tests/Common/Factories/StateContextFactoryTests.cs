@@ -99,38 +99,38 @@ public class StateContextFactoryTests
     }
 
     [Test]
-    public void CreateStateContext_WhenUserIsNull_Throws()
+    public async Task CreateStateContext_WhenUserIsNull_Throws()
     {
         CreateFactory();
 
-        Assert.ThrowsAsync<ArgumentNullException>(() =>
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
             _factory.CreateStateContext<TestUser>(BotName, null!, new StateHistory(typeof(TestState)), CreateTextUpdate(), CancellationToken.None));
     }
 
     [Test]
-    public void CreateStateContext_WhenStateHistoryIsNull_Throws()
+    public async Task CreateStateContext_WhenStateHistoryIsNull_Throws()
     {
         CreateFactory();
 
-        Assert.ThrowsAsync<ArgumentNullException>(() =>
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
             _factory.CreateStateContext(BotName, CreateUser(), null!, CreateTextUpdate(), CancellationToken.None));
     }
 
     [Test]
-    public void CreateStateContext_WhenChatUpdateIsNull_Throws()
+    public async Task CreateStateContext_WhenChatUpdateIsNull_Throws()
     {
         CreateFactory();
 
-        Assert.ThrowsAsync<ArgumentNullException>(() =>
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
             _factory.CreateStateContext(BotName, CreateUser(), new StateHistory(typeof(TestState)), null!, CancellationToken.None));
     }
 
     [Test]
-    public void CreateStateContext_WhenStateTypeIsNotState_ThrowsAndReleasesScope()
+    public async Task CreateStateContext_WhenStateTypeIsNotState_ThrowsAndReleasesScope()
     {
         CreateFactory();
 
-        var exception = Assert.CatchAsync<Exception>(() =>
+        var exception = await Assert.CatchAsync<Exception>(() =>
             _factory.CreateStateContext(BotName, CreateUser(), new StateHistory(typeof(string)), CreateTextUpdate(), CancellationToken.None));
 
         using (Assert.EnterMultipleScope())
@@ -142,14 +142,14 @@ public class StateContextFactoryTests
     }
 
     [Test]
-    public void CreateStateContext_WhenAdminStateRequestedBySimpleUser_Throws()
+    public async Task CreateStateContext_WhenAdminStateRequestedBySimpleUser_Throws()
     {
         CreateFactory();
 
         var user = CreateUser(isAdmin: false);
         var stateHistory = new StateHistory(typeof(TestState), isAdminState: true);
 
-        var exception = Assert.CatchAsync<Exception>(() =>
+        var exception = await Assert.CatchAsync<Exception>(() =>
             _factory.CreateStateContext(BotName, user, stateHistory, CreateTextUpdate(), CancellationToken.None));
 
         using (Assert.EnterMultipleScope())
@@ -205,7 +205,7 @@ public class StateContextFactoryTests
 
         IStateContextMinimal? stateContext = null;
 
-        Assert.DoesNotThrowAsync(async () =>
+        await Assert.DoesNotThrowAsync(async () =>
             stateContext = await _factory.CreateStateContext(BotName, CreateUser(), new StateHistory(typeof(TestState)), CreateTextUpdate(), CancellationToken.None));
 
         await using (stateContext)

@@ -70,9 +70,23 @@ internal partial class BotBuilder
           .OrResult(response => IsRetryableStatusCode(httpPolicy, response))
           .WaitAndRetryAsync(
                httpPolicy.RetryCount,
-               (_, response, _) => response?.Result?.Headers.RetryAfter?.Delta ?? TimeSpan.FromMilliseconds(httpPolicy.RetryMilliSecondInterval),
+               (attempt, response, _) => GetRetryDelay(httpPolicy, attempt, response),
                (_, _, _, _) => Task.CompletedTask
                );
+
+    /// <summary>
+    /// Delay for one Polly retry. Respects a server-provided <c>Retry-After</c> header verbatim;
+    /// otherwise uses exponential backoff with full jitter seeded from <see cref="TBotSettingHttpPolicy.RetryMilliSecondInterval"/>.
+    /// </summary>
+    private static TimeSpan GetRetryDelay(TBotSettingHttpPolicy httpPolicy, int attempt, DelegateResult<HttpResponseMessage> response)
+    {
+        if (response.Result?.Headers.RetryAfter?.Delta is { } retryAfter)
+        {
+            return retryAfter;
+        }
+
+        return Backoff.GetDelay(attempt, TimeSpan.FromMilliseconds(httpPolicy.RetryMilliSecondInterval));
+    }
 
     /// <summary>
     /// Additional (non-transient) statuses that Polly retries.

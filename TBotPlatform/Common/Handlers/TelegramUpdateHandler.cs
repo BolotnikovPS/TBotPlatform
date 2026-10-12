@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using TBotPlatform.Contracts.Abstractions.Handlers;
 using Telegram.Bot;
@@ -21,6 +22,9 @@ internal sealed class TelegramUpdateHandler(
     ILogger logger
     ) : IUpdateHandler
 {
+    private int _consecutivePollingErrors;
+    private long _lastPollingErrorTimestamp;
+
     public Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         => updateProcessor.ProcessUpdate(botName, update, cancellationToken);
 
@@ -60,6 +64,35 @@ internal sealed class TelegramUpdateHandler(
                 break;
         }
 
-        return Task.CompletedTask;
+        if (source is not HandleErrorSource.PollingError || cancellationToken.IsCancellationRequested)
+        {
+            return Task.CompletedTask; ;
+        }
+
+        // ReceiveAsync keeps polling immediately after HandleErrorAsync returns, so a network outage would
+        // otherwise become a hot loop (one failed HTTP request + Error log per pass). Apply an exponential
+        // backoff with full jitter here; the delay is awaited by ReceiveAsync before the next GetUpdates.
+        return DelayForPollingBackoff(cancellationToken);
+    }
+
+    private Task DelayForPollingBackoff(CancellationToken cancellationToken)
+    {
+        var now = Stopwatch.GetTimestamp();
+        var last = Interlocked.Exchange(ref _lastPollingErrorTimestamp, now);
+
+        var attempt = last != 0
+                      && Stopwatch.GetElapsedTime(last, now) <= Backoff.ResetThreshold
+            ? Interlocked.Increment(ref _consecutivePollingErrors)
+            : (_consecutivePollingErrors = 1);
+
+        var delay = Backoff.GetDelay(attempt);
+
+        logger.LogDebug(
+            "Пауза {seconds} с. перед следующей попыткой получения обновлений бота {bot} (последовательная ошибка {attempt})",
+            delay.TotalSeconds,
+            botName,
+            attempt);
+
+        return Task.Delay(delay, cancellationToken);
     }
 }

@@ -41,8 +41,7 @@ internal static class Socks5Client
 
             try
             {
-                await HandshakeAsync(stream, proxy, cancellationToken).ConfigureAwait(false);
-                await ConnectAsync(stream, context.DnsEndPoint, cancellationToken).ConfigureAwait(false);
+                await ConnectThroughStreamAsync(stream, context.DnsEndPoint, proxy, cancellationToken).ConfigureAwait(false);
 
                 return stream;
             }
@@ -57,6 +56,20 @@ internal static class Socks5Client
             socket.Dispose();
             throw;
         }
+    }
+
+    /// <summary>
+    /// Runs the SOCKS5 handshake and CONNECT negotiation over an already-established stream.
+    /// Extracted so the protocol can be tested against an in-memory or loopback proxy without a real <see cref="SocketsHttpConnectionContext"/>.
+    /// </summary>
+    internal static async Task ConnectThroughStreamAsync(
+        Stream stream,
+        DnsEndPoint endpoint,
+        TBotSettingProxy proxy,
+        CancellationToken cancellationToken)
+    {
+        await HandshakeAsync(stream, proxy, cancellationToken).ConfigureAwait(false);
+        await ConnectAsync(stream, endpoint, cancellationToken).ConfigureAwait(false);
     }
 
     private static async Task HandshakeAsync(Stream stream, TBotSettingProxy proxy, CancellationToken cancellationToken)
@@ -149,7 +162,7 @@ internal static class Socks5Client
         await ReadExactlyAsync(stream, addressLength + 2, cancellationToken).ConfigureAwait(false);
     }
 
-    private static byte[] BuildConnectRequest(string host, int port)
+    internal static byte[] BuildConnectRequest(string host, int port)
     {
         if (IPAddress.TryParse(host, out var ip))
         {
@@ -199,7 +212,7 @@ internal static class Socks5Client
         return result;
     }
 
-    private static string DescribeReply(byte code)
+    internal static string DescribeReply(byte code)
         => code switch
         {
             0x01 => "general failure",

@@ -51,15 +51,15 @@ public class DistributedLockFactoryTests
         const string key = "held-lock";
         await using var first = await _testClass.AcquireLock(key, TimeSpan.FromSeconds(5), CancellationToken.None);
 
-        Assert.ThrowsAsync<TimeoutException>(async () =>
+        await Assert.ThrowsAsync<TimeoutException>(async () =>
             await _testClass.AcquireLock(key, TimeSpan.FromMilliseconds(200), CancellationToken.None));
     }
 
     [TestCase("")]
     [TestCase("   ")]
-    public void CannotCallAcquireLockWithInvalidKey(string value) => Assert.ThrowsAsync<ArgumentNullException>(() => _testClass.AcquireLock(value, TimeSpan.FromSeconds(219), CancellationToken.None));
+    public async Task CannotCallAcquireLockWithInvalidKey(string value) => await Assert.ThrowsAsync<ArgumentNullException>(() => _testClass.AcquireLock(value, TimeSpan.FromSeconds(219), CancellationToken.None));
 
     [TestCase("")]
     [TestCase("   ")]
-    public void CannotCallIsLockedWithInvalidKey(string value) => Assert.ThrowsAsync<ArgumentNullException>(() => _testClass.IsLocked(value, CancellationToken.None));
+    public async Task CannotCallIsLockedWithInvalidKey(string value) => await Assert.ThrowsAsync<ArgumentNullException>(() => _testClass.IsLocked(value, CancellationToken.None));
 }

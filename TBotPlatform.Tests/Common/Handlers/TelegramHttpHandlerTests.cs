@@ -131,7 +131,7 @@ public class TelegramHttpHandlerTests
         using var client = CreateClient(logger, stub, CreateBotSetting());
         using var request = CreateRequest(HttpMethod.Get);
 
-        Assert.ThrowsAsync<InvalidOperationException>(async () => await client.SendAsync(request));
+        await Assert.ThrowsAsync<InvalidOperationException>(async () => await client.SendAsync(request));
 
         var lastEntry = logger.Entries.Last();
 

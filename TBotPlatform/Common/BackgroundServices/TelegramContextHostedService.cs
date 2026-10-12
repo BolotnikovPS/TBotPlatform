@@ -36,17 +36,52 @@ internal class TelegramContextHostedService(
 
     private async Task ExecuteBotSafe(string bot, CancellationToken cancellationToken)
     {
-        try
+        // A bot that fails on startup (GetMe), during webhook setup or on the long-polling loop is restarted
+        // with an exponential backoff instead of stopping forever: the host keeps running while one bot is down.
+        for (var attempt = 0; !cancellationToken.IsCancellationRequested; attempt++)
         {
-            await ExecuteBot(bot, cancellationToken);
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-            // Expected termination due to service shutdown.
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Бот {bot} остановлен из-за необработанного исключения", bot);
+            try
+            {
+                await ExecuteBot(bot, cancellationToken);
+                return;
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // Expected termination due to service shutdown.
+                return;
+            }
+            catch (ApiRequestException ex) when (ex.ErrorCode is 400 or 401 or 403 or 404)
+            {
+                // Permanent Telegram API errors (invalid token, unknown method): restarting will not help.
+                logger.LogError(ex, "Бот {bot} остановлен: Telegram API вернул постоянную ошибку {errorCode}", bot, ex.ErrorCode);
+                return;
+            }
+            catch (InvalidOperationException ex)
+            {
+                // DI misconfiguration (for example, the bot is not registered): restarting will not help.
+                logger.LogError(ex, "Бот {bot} остановлен из-за ошибки конфигурации", bot);
+                return;
+            }
+            catch (Exception ex)
+            {
+                var delay = Backoff.GetDelay(attempt + 1);
+
+                logger.LogError(
+                    ex,
+                    "Бот {bot} остановлен из-за необработанного исключения. Перезапуск через {seconds} с. (попытка {attempt})",
+                    bot,
+                    delay.TotalSeconds,
+                    attempt + 1);
+
+                try
+                {
+                    await Task.Delay(delay, cancellationToken);
+                }
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+            }
         }
     }
 

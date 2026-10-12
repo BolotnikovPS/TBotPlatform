@@ -98,15 +98,15 @@ internal partial class BotPlatformBuilder(IServiceCollection serviceCollection) 
         serviceCollection
            .AddSingleton<IDelayQueue, DelayQueue>()
            .AddSingleton<ITelegramUpdateProcessor, TelegramUpdateProcessor>()
-           .AddScoped(s =>
+           .AddSingleton(s =>
            {
                var cache = s.GetRequiredService<IFusionCache>();
 
                return new StateFactory(cache, s, FactoriesExecutingAssembly);
            })
-           .AddScoped<IStateFactory>(src => src.GetRequiredService<StateFactory>())
-           .AddScoped<IStateBindFactory>(src => src.GetRequiredService<StateFactory>())
-           .AddScoped<IStateContextFactory, StateContextFactory>()
+           .AddSingleton<IStateFactory>(src => src.GetRequiredService<StateFactory>())
+           .AddSingleton<IStateBindFactory>(src => src.GetRequiredService<StateFactory>())
+           .AddSingleton<IStateContextFactory, StateContextFactory>()
            .AddSingleton<IMenuButtonFactory, MenuButtonFactory>()
            .AddHostedService<TelegramDelayHostedService>();
 

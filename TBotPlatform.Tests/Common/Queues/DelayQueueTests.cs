@@ -69,12 +69,12 @@ public class DelayQueueTests
     }
 
     [Test]
-    public void Dequeue_WhenCancelled_ThrowsOperationCanceledException()
+    public async Task Dequeue_WhenCancelled_ThrowsOperationCanceledException()
     {
         using var cts = new CancellationTokenSource();
         cts.Cancel();
 
-        Assert.ThrowsAsync<OperationCanceledException>(async () => await _queue.Dequeue(cts.Token));
+        await Assert.ThrowsAsync<OperationCanceledException>(async () => await _queue.Dequeue(cts.Token));
     }
 
     [Test]
